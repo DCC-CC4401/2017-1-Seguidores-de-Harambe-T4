@@ -1,0 +1,443 @@
+{% extends 'main/baseVFijo.html' %}
+{% block content %}
+
+<script>
+ $(document).ready(function(){
+    $('.modal').modal();
+  });
+
+</script>
+
+
+
+
+    <main>
+<!--  -->
+{#    Perfil del vendedor           #}
+    <div class="container">
+        <div id="profile-page-header" class="card">
+
+            <!-- Fondo del vendedor -->
+            <div class="card-image waves-effect waves-block waves-light">
+                <img class="activator" src="../static/img/food-background3.png" alt="user background">
+            </div>
+
+            <!-- Imagen del perfil en pantallas grandes -->
+            <div class="row hide-on-small-and-down">
+                <a class="card-profile-image-large">
+                    <img style="margin-top: 20%;" id="img-perfil-desktop" src="" alt="profile image" class="circle z-depth-2 responsive-img activator">
+                </a>
+            </div>
+
+            <!-- Imagen del perfil en pantallas medianas/pequeñas -->
+            <div class="row show-on-small hide-on-med-and-up">
+                <a class="card-profile-image-small">
+                    <img id="img-perfil-movil" src="" alt="profile image" class="circle z-depth-2 responsive-img activator">
+                </a>
+            </div>
+
+            <!-- Info del vendedor desktop -->
+            <div class="card-content s12">
+                <div class="row">
+                    <div class="col s3 offset-s2 hide-on-med-and-down">
+
+                        <!-- Nombre -->
+                        <h4 class="card-title grey-text flow-text text-darken-4">{{nombre}}</h4>
+
+                        <!-- Tipo -->
+                        <p class="medium-small flow-text grey-text">&emsp;&emsp;&ensp;Vendedor Fijo</p>
+
+                        <!-- Horario -->
+                        <p class="flow-text text-darken-4" style="font-size: 0.88rem;">
+                            &ensp;Horario: <a class="light-green-text">{{horarioIni}} - {{horarioFin}}</a>
+                        </p>
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="col s3 l2 hide-on-med-and-down center-align">
+                        <h4 class="card-title flow-text text-darken-4">Estado</h4>
+                        <p class="" id="estado-desktop"></p>
+                    </div>
+
+                    <!-- Formas de pago -->
+                    <div class="col s3 l2 hide-on-med-and-down center-align">
+                        <h3 class=" grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Formas de pago</h3>
+                        <p class="medium-small flow-text grey-text" id="medios-pago-desktop"></p>
+                    </div>
+
+                    <!-- Favoritos -->
+                    <div class="col s3 l2 hide-on-med-and-down center-align">
+                        <div class="switch" style="margin-left: 10px;">
+                            <label>
+                                <h4 class="card-title grey-text flow-text text-darken-4">Favoritos</h4>
+                                <!--<input type="checkbox"><span class="lever"></span>-->
+                                <h6><i class="material-icons amber-text" >grade</i>
+                                    <span class=" grey-text flow-text text-darken-4"style="font-size:24px; line-height:35px;" id="favoritos-desktop"></span>
+                                </h6>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Boton para Editar -->
+                {% comment %}<div class="col s3 l2 hide-on-med-and-down right-align">
+                    <a class="btn-floating activator waves-effect waves-light darken-2">
+                          <i class="material-icons">mode_edit</i>
+                      </a>
+                 </div>{% endcomment %}
+            </div>
+
+            <!-- Info del vendedor movil -->
+            <div class = "row show-on-medium-and-down hide-on-med-and-up"></div>
+            <div class = "row show-on-medium-and-down hide-on-med-and-up"></div>
+            <div class = "row show-on-medium-and-down hide-on-med-and-up"></div>
+            <div class = "row show-on-medium-and-down hide-on-med-and-up"></div>
+            <div class="row show-on-medium-and-down hide-on-med-and-up">
+                <div class="col s2 m2 offset-s1">
+
+                    <!-- Nombre -->
+                    <h4 class="card-title grey-text flow-text text-darken-4">{{nombre}}</h4>
+
+                    <!-- Tipo -->
+                    <p class="medium-small flow-text grey-text">&ensp;Vendedor Fijo</p>
+
+                    <!-- Horario -->
+                    <p class="flow-text text-darken-4" style="font-size: 0.88rem;">
+                        &ensp;Horario: <a class="light-green-text">{{horarioIni}} - {{horarioFin}}</a>
+                    </p>
+
+
+                </div>
+
+                <!-- Estado -->
+                <div class="col s2 m2 l12 offset-s1">
+                    <p class="flow-text text-darken-4">Estado</p>
+                    <p class="" id="estado-movil"></p>
+                </div>
+
+                <!-- Formas de pago -->
+                <div class="col s2 m2 l12 offset-s1"> <!--offset-s2-->
+                    <p class=" grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Formas de pago</p>
+                    <p class="medium-small flow-text grey-text" id="medios-pago-movil"></p>
+                </div>
+
+                <!-- Favoritos -->
+                <div class="col s1 m1 l12">
+                    <label>
+                        <p class="card-title grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Favoritos</p>
+                        <!--<input type="checkbox"><span class="lever"></span>-->
+                        <h6><i class="material-icons amber-text" style="margin-left: 80%">grade</i>
+                            <span class=" grey-text flow-text text-darken-4"style="margin-left: 100%;font-size:22px; line-height:25px;" id="favoritos-movil"></span>
+                        </h6>
+                    </label>
+                </div>
+
+                <!--<div class="col s3 offset-s2 offset-l10">
+                    <div class="switch" style="margin-left: 10px;">
+                        <label>
+                            <p class="card-title grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Favorito</p>
+                            <input type="checkbox"><span class="lever"></span>
+                        </label>
+                    </div>
+                </div>-->
+
+                <!-- Boton para Editar -->
+{#                <div class="col s4 offset-s8 right-align"> <!--offset-s4-->#}
+{#                    <a class="btn-floating activator waves-effect waves-light darken-2">#}
+{#                          <i class="material-icons">mode_edit</i>#}
+{#                      </a>#}
+{#                 </div>#}
+            </div>
+        </div>
+    </div>
+
+{#        Productos del vendedor                #}
+    <div id="profile-page-content" class="row">
+        <div id="profile-page-wall" class="col s12 m8">
+            <div class="col s12 z-depth-1">
+                <div class="tab-content col s12">
+                    <div class="container">
+                        <div class="section">
+                            <div class="row">
+                                <!-- Aca se definen los modales -->
+                                <!-- aca comienzan a mostrarse los productos -->
+                                <!--Este script es para ordenar el listado de productos -->
+                                            <script>
+                                            var productos ={{ listaDeProductos|safe }};
+                                            var largo = productos.length;
+                                            //crear todos los modales
+                                            for (var i = 0; i < largo; i++)  {
+                                                document.write( "<div id='modal"+(i + 1)+"' class='modal'>");
+                                                document.write("<div class='modal-content'>");
+                                                document.write("<img class='activator responsive-img center-block'  style='max-width: 30%; margin-top:20px; margin-bottom:20px;' src ='../static/media/"+productos[i][5]+"'>");
+                                                document.write("</div>");
+                                                document.write("<div class='modal-footer'>");
+                                                document.write("<a href='#!' class='modal-action modal-close waves-effect waves-green btn-flat'><i class='large material-icons'>close</i></a>");
+                                                document.write("</div></div>");
+                                            }
+                                            //crear modales para editar
+                                            for (var i = 0; i < largo; i++)  {
+                                                document.write( "<div id='modale"+(i + 1)+"' class='modal'>");
+                                                document.write("<div class='modal-content'>");
+                                                document.write("<form enctype='multipart/form-data' id='form"+i+"' class='col s12 m12' method='post' action='#' > {% csrf_token %}");
+                                                //guardar nombre original para busqueda en bdd
+                                                document.write("<div class='row'>");
+                                                document.write("<input type ='hidden' name = 'nombreOriginal' id='nombreOriginal' value = '" +productos[i][0] + "'>");
+                                                document.write("</div>");
+                                                //editar nombre
+                                                document.write("<div class='row'>");
+                                                document.write("<div class='input-field col s12 m12' >Editar nombre");
+                                                document.write("<div class='input-field inline '>");
+                                                document.write("<input placeholder='" +productos[i][0] + "' class='validate' type='text' name='nombre' id='nombre' />");
+                                                document.write("<label style='text-align: center' for='item'></label></div></div>");
+                                                document.write("</div>");
+                                                //editar precio
+                                                document.write("<div class='row'>");
+                                                document.write("<div class='input-field col s12 m12' >Editar precio");
+                                                document.write("<div class='input-field inline '>");
+                                                document.write("<input placeholder='" +productos[i][3] + "' class='validate' type='text' name='precio' id='precio' />");
+                                                document.write("<label style='text-align: center' for='precio'></label></div></div>");
+                                                document.write("</div>");
+                                                //editar stock
+                                                document.write("<div class='row'>");
+                                                document.write("<div class='input-field col s12 m12' >Editar stock");
+                                                document.write("<div class='input-field inline '>");
+                                                document.write("<input placeholder='" +productos[i][2] + "' class='validate' type='text' name='stock' id='stock' />");
+                                                document.write("<label style='text-align: center' for='precio'></label></div></div>");
+                                                document.write("</div>");
+                                                //editar descripcion
+                                                document.write("<div class='row'>");
+                                                document.write("<div class='input-field col s12 m12' >Editar descripcion");
+                                                document.write("<input placeholder='" +productos[i][2] + "'  class='validate' type='text' name='descripcion' id='descripcion'  />");
+                                                document.write("<label  for='icon_prefix2'></label></div>");
+                                                document.write("</div>");
+                                                //editar categoria
+                                                document.write("<div>Editar categoria:</div><br>");
+                                                document.write(" <div class='col s12 l6'> <input class='with-gap' name='categoria' type='radio' id='0' value='0' /> <label for='0'><img style='max-width: 50px;' src='../static/img/bread.png'></label> <input class='with-gap' name='categoria' type='radio' id='1' value='1' /> <label for='1'><img style='max-width: 50px;' src='../static/img/breakfast.png'></label> <input class='with-gap' name='categoria' type='radio' id='2' value='2' /> <label for='2'><img style='max-width: 50px;' src='../static/img/burger.png'></label> <input class='with-gap' name='categoria' type='radio' id='3' value='3' /> <label for='3'><img style='max-width: 50px;' src='../static/img/chicken.png'></label> <input class='with-gap' name='categoria' type='radio' id='4' value='4'/> <label for='4'><img style='max-width: 50px;' src='../static/img/chicken2.png'></label> </div> <div class='col s12 l6'> <input class='with-gap' name='categoria' type='radio' id='5' value='5' /> <label for='5'><img style='max-width: 50px;' src='../static/img/chocolate.png'></label> <input class='with-gap' name='categoria' type='radio' id='6' value='6' /> <label for='6'><img style='max-width: 50px;' src='../static/img/coke.png'></label> <input class='with-gap' name='categoria' type='radio' id='7' value='7'/> <label for='7'><img style='max-width: 50px;' src='../static/img/cupcake.png'></label> <input class='with-gap' name='categoria' type='radio' id='8' value='8'/> <label for='8'><img style='max-width: 50px;' src='../static/img/donut.png'></label> <input class='with-gap' name='categoria' type='radio' id='9' value='9'/> <label for='9'><img style='max-width: 50px;' src='../static/img/jelly.png'></label> </div> <div class='col s12 l6'> <input class='with-gap' name='categoria' type='radio' id='10' value='10'/> <label for='10'><img style='max-width: 50px;' src='../static/img/fish.png'></label> <input class='with-gap' name='categoria' type='radio' id='11' value='11'/> <label for='11'><img style='max-width: 50px;' src='../static/img/fries.png'></label> <input class='with-gap' name='categoria' type='radio' id='12' value='12'/> <label for='12'><img style='max-width: 50px;' src='../static/img/hot-dog.png'></label> <input class='with-gap' name='categoria' type='radio' id='13' value='13'/> <label for='13'><img style='max-width: 50px;' src='../static/img/icecream.png'></label> <input class='with-gap' name='categoria' type='radio' id='14' value='14' /> <label for='14'><img style='max-width: 50px;' src='../static/img/juice.png'></label> </div> <div class='col s12 l6'> <input class='with-gap' name='categoria' type='radio' id='15' value='15'/> <label for='15'><img style='max-width: 50px;' src='../static/img/lettuce.png'></label> <input class='with-gap' name='categoria' type='radio' id='16' value='16' /> <label for='16'><img style='max-width: 50px;' src='../static/img/pizza.png'></label> </div>");
+                                                //editar foto
+                                                document.write("<div id='file-upload' class='section'>  <div class='row section'> <div class='col s8 m4 l3'> <p>Editar imagen del</p> <p>producto:</p> <br></div> <div class='col s8 m8 l9'> <div class='dropify-wrapper touch-fallback'> <div class='dropify-message'> <div class='row hide-on-med-and-down'> <div class='col s9 m7 l7'> <i class='material-icons center-align'>mdi_file_cloud_upload</i> </div> </div> <div class='row show-on-medium-and-down hide-on-med-and-up'> <div class='col s6'> <i class='material-icons tiny show-on-medium-and-down center-align'>mdi_file_cloud_upload</i> </div> </div> <p>Arrastre y suelte un archivo aquí o haga click</p> <p class='dropify-error'>Sorry, this file is too large</p> </div> <input id='comida' type='file' class='' name='comida' > <button type='button' class='dropify-clear'>Remove</button> <div class='dropify-preview'><span class='dropify-render'></span> <div class='dropify-infos'> <div class='dropify-infos-inner'> <p class='dropify-filename'> <!--<span class='file-icon'></span>--> <span class='dropify-filename-inner'></span></p> </div> </div> </div> </div> </div> </div></div>");
+                                                document.write("<div class='modal-footer'>");
+
+                                                //guardar cambios
+                                                document.write("<div class='col s6 m5 l4'>");
+                                                document.write('<div class="row"> <button type="button" onclick ="guardarProducto(form'+i+');" class=" btn-large waves-effect button teal" >Guardar cambios</button> </div>');
+                                                document.write("</form></div>");
+
+                                                //eliminar producto
+                                                document.write("<div class='col s4 m6 l4 offset-s1'>");
+                                                document.write('<div class="row"> <button  type="button" onclick ="eliminarProducto('+"\'"+productos[i][0]+"\'"+');" class="btn-large waves-effect button teal" >Eliminar producto</button> </div>');
+                                                document.write("</div>");
+                                                //salir
+                                                document.write("<a href='#!' class='modal-action modal-close waves-effect waves-green btn-flat'><i class='large material-icons'>close</i></a>");
+                                                document.write("</div></div></div>");
+                                            }
+
+                                            //imprimir en pantalla todas las tarjetas de productos
+                                            for (var i = 0; i < largo; i++)  {
+                                                document.write(" <div class='col s6 m12 l4'>");
+                                                document.write("<div class='container'>");
+                                                document.write(" <div class='card z-depth-1'>");
+                                                document.write("<div class='teal lighten-2 card-image waves-effect waves-block waves-light'>");
+                                                document.write("<a href='#modale" + (i + 1) + "'>");
+                                                document.write("<i class='material-icons right grey-text text-lighten-2' style='position: absolute; bottom: 4.5em; right: 0.5em; padding: 0 0 !important;'>settings</i>");
+                                                document.write("</a>");
+                                                document.write("</form>");
+                                                document.write("<img class='activator responsive-img center-block'  style='max-width: 30%; margin-top:20px; margin-bottom:20px;height: 100px; width: 100px;' src ='../static/media/"+productos[i][5]+"'>");
+                                                document.write("</div>");
+                                                document.write(" <div class='card-content'>");
+                                                 document.write("<span class='card-title activator grey-text text-darken-4'> "+productos[i][0] +" <i class='material-icons right'>more_vert</i></span>");
+                                                document.write("<p><a class='teal-text'> $"+productos[i][3]+" </a></p>");
+                                                document.write("<p><a class='row col l5' id='Stock-"+productos[i][0]+"' class='teal-text'> Stock :"+productos[i][2]+" </a>");
+                                                document.write("<div class='row' ></div>");
+                                                document.write("<div class='col s3 m4' ></div>");
+                                                document.write('<button class=" btn btn-large waves-effect button teal" id="Button--'+productos[i][0]+'" type="button" onclick ="bajarStock('+"\'"+productos[i][0]+"\'"+' );"   >-</button> <button class="btn btn-large waves-effect button teal" id="Button-'+productos[i][0]+'" type="button" onclick ="subirStock('+"\'"+productos[i][0]+"\'"+' );"   >+</button></p>');
+                                                document.write("</div>");
+                                                document.write(" <div class='card-reveal'>");
+                                                document.write(" <span class='card-title grey-text text-darken-4'> "+productos[i][0] +" <i class='material-icons right'>close</i></span>");
+                                                document.write(" <ul>");
+                                                document.write(" <li>Precio: <a class='green-text light-green-text'> $"+productos[i][3]+" </a></li>");
+                                                document.write("<li>Categoria: "+productos[i][1]+" </li>");
+                                                document.write("<li>Stock: "+productos[i][2]+" </li>");
+                                                document.write("<li>Descripcion: "+productos[i][4]+" </li>");
+                                                document.write("<li> <p class='right-align'><a class='waves-effect waves-light' href='#modal"+(i+1)+"'>Ver imagen</a></p></li>");
+                                                document.write(" </ul></div></div></div></div>");
+                                            }
+                                            </script>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class='row'>
+                    <a class='col l5 offset-l4 btn btn-large waves-effect button teal' href="{% url 'gestionproductos' %}">Agregar Item</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    </main>
+
+<script>
+    function ProfileImg() {
+        var str = "../static/media/";
+        var ruta = str.concat("{{ avatar }}");
+        document.getElementById("img-perfil-desktop").src = ruta;
+        document.getElementById("img-perfil-movil").src = ruta;
+    }
+</script>
+
+<script>
+    function EstadoVendedor() {
+        var estado = "{{ activo }}";
+        if (estado == "True") {
+            document.getElementById("estado-desktop").classList.add("medium-small","flow-text","light-green-text");
+            document.getElementById("estado-desktop").innerHTML = "Disponible";
+
+            document.getElementById("estado-movil").classList.add("medium-small","flow-text","light-green-text");
+            document.getElementById("estado-movil").innerHTML = "Disponible";
+        } else {
+            document.getElementById("estado-desktop").classList.add("medium-small","flow-text","red-text");
+            document.getElementById("estado-desktop").innerHTML = "No Disponible";
+
+            document.getElementById("estado-movil").classList.add("medium-small","flow-text","red-text");
+            document.getElementById("estado-movil").innerHTML = "No Disponible";
+        }
+    }
+</script>
+
+<script>
+    function FormasDePago() {
+        var rawPagos = "{{ formasDePago|safe }}";
+        var pagos = rawPagos.split(", ");
+        var largo = pagos.length;
+        var texto = "<ul>";
+        for (var i = 0; i < largo; i++)  {
+            texto += "<li>" + pagos[i] + "</li>";
+        }
+        document.getElementById("medios-pago-desktop").innerHTML = texto;
+        document.getElementById("medios-pago-movil").innerHTML = texto;
+    }
+</script>
+
+<script>
+    function Favoritos() {
+        var numeroFav = "{{ favoritos }}";
+        document.getElementById("favoritos-desktop").innerHTML = numeroFav;
+        document.getElementById("favoritos-movil").innerHTML = numeroFav;
+    }
+</script>
+
+ <script>
+    window.onload = Favoritos();
+    window.onload = ProfileImg();
+    window.onload = EstadoVendedor();
+    window.onload = FormasDePago();
+</script>
+
+
+<script>
+    function eliminarProducto(i){
+        var datos ="eliminar=" + i;
+        $.ajax({
+           url:{% url 'borrarProducto' %},
+           type: "GET",
+           data: datos,
+           dataType: "json",
+
+           success: function(data) {
+              location.reload();
+           },
+           error:function(data) {
+               alert("error in getting from server")
+           },
+        });
+      }
+</script>
+<script>
+    function guardarProducto(i){
+        var formulario = new FormData($(i).get(0));
+         $.ajax({
+           url:{% url 'editarProducto' %},
+           type: "POST",
+           data: formulario,
+          cache: false,
+            processData: false,
+            contentType: false,
+            success: function(data) {
+              if (data.respuesta =="repetido"){
+                   alert("Nombre ya existe en la base de datos");
+              }
+              else{
+
+
+
+
+                   location.reload();
+              }
+           },
+           error:function(data) {
+               alert("error in getting from server");
+           },
+         });
+    }
+</script>
+<script>
+
+    function subirStock(id){
+         var datos ="op=suma&nombre=" + id;
+         $.ajax({
+           url:{% url 'getStock' %},
+           type: "GET",
+           data: datos,
+           dataType: "json",
+           success: function(data) {
+               var nuevoStock = parseInt(data.stock);
+               nuevoStock +=1;
+               document.getElementById("Stock-"+id).innerHTML = "Stock: "+nuevoStock;
+               document.getElementById("Button-"+id).setAttribute("onclick",'subirStock('+"\'"+id+"\'"+' );');
+           },
+           error:function(data) {
+               alert("error in getting from server");
+           },
+         });
+    }
+
+    function bajarStock(id){
+        //crea la transaccion en la bdd
+         var datosTransaccion="nombre=" + id + "&" + "idUsuario=" + "{{id}}";
+        $.ajax({
+           url:{% url 'createTransaction' %},
+           type: "GET",
+           data: datosTransaccion,
+           dataType: "json",
+           success: function(data) {
+              //alert("funciono");
+           },
+           error:function(data) {
+               alert("error in getting from server");
+           },
+         });
+
+         var datos ="op=resta&nombre=" + id;
+         $.ajax({
+           url:{% url 'getStock' %},
+           type: "GET",
+           data: datos,
+           dataType: "json",
+           success: function(data) {
+               //alert("tambien funciono")
+               var nuevoStock = parseInt(data.stock);
+               if (nuevoStock != 0){
+                nuevoStock -=1;
+               }
+               document.getElementById("Stock-"+id).innerHTML = "Stock: "+nuevoStock;
+               document.getElementById("Button--"+id).setAttribute("onclick",'bajarStock('+"\'"+id+"\'"+' );');
+           },
+           error:function(data) {
+               alert("error in getting from server");
+           },
+         });
+    }
+</script>
+
+{% endblock %}

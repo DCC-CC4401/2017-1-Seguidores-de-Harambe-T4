@@ -1,0 +1,137 @@
+{% extends 'main/baseVAmbulante.html' %}
+{% block content %}
+
+    <div class="section"></div>
+    <main>
+      <div class="section"></div>
+
+      <h4 class="teal-text" style="text-align: left; margin-left: 6%; ">Editar Perfil</h4>
+      <div class="section"></div>
+
+      <div class="container">
+          <div class="z-depth-1 grey lighten-4 row" style="margin-left: 5%; margin-right: 5%; padding: 32px 48px 0px 48px; border: 1px solid #EEE;">
+              <div class="row">
+                 <form class="col s12 m12"  enctype="multipart/form-data" action="{% url 'editarDatos' %}" method="post">
+
+                     <!-- Id -->
+                     <input type="hidden" name="id_vendedor" value="{{ id }}" id="id_vendedor">
+
+                     <!-- Tipo -->
+                     <input type="hidden" name="tipo" value="{{ tipo }}" id="tipo">
+
+                     <!-- Nombre -->
+                    <div class="row">
+                       <div class="input-field col s12 m12">
+                          <i class="material-icons prefix">account_circle</i>
+                          <input placeholder="Nombre" value="" id="nombre" name="nombre" type="text" class="active validate">
+                          <label for="nombre">Nombre</label>
+                       </div>
+                    </div>
+
+                     <!-- Formas de pago -->
+                    <div class="row">
+                       <div class="input-field col s12 m12">
+                           <div class="label">Formas de pago</div>
+                          <p>
+                             <input id="formaDePago0" name="formaDePago0" type="checkbox" class="filled-in">
+                             <label for="formaDePago0">Efectivo</label>
+                          </p>
+                          <p>
+                             <input id="formaDePago1" name="formaDePago1" type="checkbox" class="filled-in" >
+                             <label for="formaDePago1">Tarjeta de Crédito</label>
+                          </p>
+                          <p>
+                             <input id="formaDePago2" name="formaDePago2" type="checkbox" class="filled-in" >
+                             <label for="formaDePago2">Tarjeta de Débito</label>
+                          </p>
+                           <p>
+                             <input id="formaDePago3" name="formaDePago3" type="checkbox" class="filled-in" >
+                             <label for="formaDePago3">Tarjeta Junaeb</label>
+                          </p>
+                       </div>
+                    </div>
+
+                     <!-- Foto de perfil -->
+                    <div class="row">
+                       <div class="input-field col s12 m12">
+                           <div class="label">Foto</div>
+
+                           <!-- Imagen actual desktop -->
+                          <div class="row hide-on-small-and-down">
+                                <a class="card-profile-image-large">
+                                    <img style="margin-top: 5%; margin-left: 5%;" id="img-perfil-desktop" src="" alt="profile image" class="z-depth-2 responsive-img activator"  width="200" height="200">
+                                </a>
+                          </div>
+
+                           <!-- Imagen actual movil -->
+                           <div class="row show-on-small hide-on-med-and-up">
+                                <a class="card-profile-image-small">
+                                    <img id="img-perfil-movil" src="" alt="profile image" class="z-depth-2 responsive-img activator">
+                                </a>
+                           </div>
+
+                           <!-- Subir un archivo -->
+                           <div id="file-upload" class="section">
+                               <div class="label">Cambiar por:</div>
+                               <i class="material-icons prefix">perm_media</i>
+                               <input id="avatar" type="file" name="avatar">
+                           </div>
+                       </div>
+                    </div>
+
+                    <div class="section"></div>
+                     <div class='row'>{% csrf_token %}
+                         <button type='submit' name='btn_guardar' class='col l6 offset-l3 btn btn-large waves-effect teal'>Guardar</button>
+                     </div>
+                 </form>
+              </div>
+          </div>
+      </div>
+
+
+    <div class="section"></div>
+    <div class="section"></div>
+  </main>
+    
+<script>
+    function ProfileName() {
+        var nombre = "{{ nombre }}"
+        if (nombre != "") {
+            document.getElementById("nombre").value = nombre;
+        }
+    }
+</script>
+
+<script>
+    function ProfileImg() {
+        var str = "../static/media/";
+        var ruta = str.concat("{{ avatar }}");
+        document.getElementById("img-perfil-desktop").src = ruta;
+        document.getElementById("img-perfil-movil").src = ruta;
+    }
+</script>
+
+<script>
+    function ProfilePagos() {
+        var rawPagos = "{{ formasDePago|safe }}";
+        if (rawPagos.indexOf("0")  !== -1) {
+            document.getElementById("formaDePago0").checked = "True";
+        }
+        if (rawPagos.indexOf("1")  !== -1) {
+            document.getElementById("formaDePago1").checked = "True";
+        }
+        if (rawPagos.indexOf("2")  !== -1) {
+            document.getElementById("formaDePago2").checked = "True";
+        }
+        if (rawPagos.indexOf("3")  !== -1) {
+            document.getElementById("formaDePago3").checked = "True";
+        }
+    }
+</script>
+
+<script>
+    window.onload = ProfileImg();
+    window.onload = ProfilePagos();
+    window.onload = ProfileName();
+</script>
+{% endblock %}

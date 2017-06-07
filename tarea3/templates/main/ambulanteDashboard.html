@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="stylesheet" href="../static/style.css">
+
+    <!--Import jQuery before materialize.js-->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+{#    <script type="text/javascript" src="../static/fb.js"></script>#}
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
+    <script src="http://materializecss.com/templates/starter-template/js/init.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>
+
+    <nav class="top-nav">
+        <div class="nav-wrapper teal lighten-1">
+            <a href="#" class="brand-logo right"><img style="max-height: 65px!important;  padding: 8px 0!important;" class="circle" src="../static/img/logo.png"></a>
+          <div class="navbar-fixed">
+            <a href="#" data-activates="slide-out"
+               class="left button-collapse btn-floating btn-large waves-effect waves-light"><i
+                    class="material-icons">menu</i></a>
+            <a class="center page-title"></a>
+          </div>
+            <ul id="slide-out" class="side-nav fixed leftside-navigation ps-container ps-active-y">
+                <li>
+                    <div class="userView">
+                    <a href="{% url 'editarVendedor' %}"><i class="material-icons right grey-text text-lighten-2" style="position: absolute; bottom: -0.5em; right: 0.5em; padding: 0 0 !important;">settings</i></a>
+                  <div class="background" style="height:175px;">
+                    <img src="../static/img/background4.png">
+                  </div>
+                  <a href="#!user"><img style="margin-top: 16%;" class="circle" src="../static/img/AvatarPenguin.png"></a>
+                  <a href="#!name"><span style="margin-left: 5%;" class="white-text name">VENDEDOR ambulante</span></a>
+                </div>
+                </li>
+                <li><div class="section"></div></li>
+                <li><a href="{% url 'logout' %}"><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>
+
+                <!--<li><a href=""><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>-->
+                <!--<li><div class="divider"></div></li>
+                <li><a class="subheader">Activo</a></li>
+                <li>
+                    <div class="switch" style="margin-left: 80px;">
+                        <label>
+                            No<input type="checkbox"><span class="lever"></span>Si
+                        </label>
+                    </div>
+                </li>
+                <li><a class="subheader">Filtros</a></li>
+                <li>
+                    <div class="switch" style="margin-left: 10px;">
+                        <label>
+                            <input type="checkbox"><span class="lever"></span>Sólo mostrar favoritos
+                        </label>
+                    </div>
+                </li>
+                <li>
+                    <div class="switch" style="margin-left: 10px;">
+                        <label>
+                            <input type="checkbox"><span class="lever"></span>Snacks
+                        </label>
+                    </div>
+                </li>
+                <li>
+                    <div class="switch" style="margin-left: 10px;">
+                        <label>
+                            <input type="checkbox"><span class="lever"></span>Almuerzos
+                        </label>
+                    </div>
+                </li>-->
+            </ul>
+        </div>
+    </nav>
+
+    <style>
+        #canvas-container {
+       width: 100%;
+       text-align:center;
+    }
+
+    canvas {
+       display: inline;
+    }
+    </style>
+
+
+</head>
+<body>
+<main>
+
+<div class="section">
+          <div class="row">
+                  <h2 style="text-align: center;">Ventas de hoy</h2>
+          </div>
+</div>
+
+<div class="row">
+    <div class="row"></div>
+    <div id="canvas-container">
+        <canvas id="chartVentasHoy" width=600 height=400></canvas>
+    </div>
+</div>
+    <div class="row">
+        <div class="col s8 offset-s2">
+        <table align="center">
+                <thead>
+                  <tr>
+                      <th>Producto</th>
+                      <th>Cantidad vendida</th>
+                      <th>Precio</th>
+                      <th>Ganancia otorgada</th>
+                  </tr>
+                </thead>
+
+                <tbody id="cuerpoTabla">
+
+
+                </tbody>
+              </table>
+        </div>
+    </div>
+</div>
+
+
+<script>
+//variables
+
+var productosHoy = {{ productosHoy|safe }}
+var productos = {{ productos|safe }}//label
+//alert(productos);
+//alert(productosHoy);
+//alert(arreglo)
+var valores =[];
+for(var i = 0;i < productos.length; i++){
+    valores[i]=0;
+}
+//alert(productos);
+//hacer match entre comidas vendidas hoy  y todas las comidas
+for(var i=0;i<productosHoy.length;i++){
+    var nombre = productosHoy[i][0];
+    //alert(nombre);
+    var valor = productosHoy[i][1];
+    var index = productos.indexOf(nombre);
+    if(index!=-1){valores[index]=valor;}
+}
+
+//alert(valores);
+//alert(valores);
+
+
+//script del grafico
+    var ctx = document.getElementById('chartVentasHoy').getContext('2d');
+var myChart = new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: productos,
+    datasets: [{
+        label: 'Cantidad vendida',
+      data: valores,
+      backgroundColor: "rgba(38, 166, 154,1)"
+    }]
+  },
+  options:
+    {responsive: false,
+        legend: {
+            display: false
+        },
+
+        scales: {
+            yAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Cantidad vendida'
+                }
+            }],
+        },
+    }
+});
+
+
+
+// crear cuerpo de la tabla
+var preciosProductos = {{ productosPrecio|safe }};
+var gananciaTotal = 0;
+for(var i=0;i<productosHoy.length;i++){
+    var nombreProducto = productosHoy[i][0];
+    //alert(nombreProducto);
+    var cantidadProducto = productosHoy[i][1];
+    var precio = preciosProductos[productos.indexOf(nombreProducto)][1];
+    //alert(precio);
+    var ganancia = precio*cantidadProducto;
+    gananciaTotal += ganancia;
+    var tabla= '<tr>'+
+            '<td>' + nombreProducto + '</td>'+
+            '<td>' + cantidadProducto + '</td>'+
+            '<td>' + "$" + precio + '</td>'+
+            '<td>' + "$" + ganancia + '</td>'+
+            '</tr>';
+    document.getElementById("cuerpoTabla").innerHTML += tabla;
+}
+ var finTabla ='<tr>'+
+            '<td></td>'+
+            '<td></td>'+
+            '<td></td>'+
+            '<td></td>'+
+            '</tr>'+
+            '<tr>'+
+            '<td></td>'+
+            '<td></td>'+
+            '<td><b>Ganancia total:</b></td>'+
+            '<td><b>' + "$" + gananciaTotal + '</b></td>'+
+            '</tr>';
+ document.getElementById("cuerpoTabla").innerHTML += finTabla;
+
+</script>
+
+
+
+
+<div class="section">
+          <div class="row">
+                  <h2 style="text-align: center;">Ganancias de la semana</h2>
+          </div>
+</div>
+
+<div class="row">
+    <div class="row"></div>
+    <div id="canvas-container">
+        <canvas id="myChart" width=600 height=400></canvas>
+    </div>
+</div>
+
+
+<script>
+//variables
+
+var input = {{ ganancias|safe }}
+//alert(arreglo)
+
+var semana = ["","","","",""];
+
+$today = new Date();
+//alert($today);
+for(var i=4;i>=0;i--){
+    $yesterday = new Date($today);
+    $yesterday.setDate($today.getDate() - i);
+    var $dd = $yesterday.getDate();
+    var $mm = $yesterday.getMonth()+1; //January is 0!
+
+    var $yyyy = $yesterday.getFullYear();
+    if($dd<10){$dd='0'+dd} if($mm<10){$mm='0'+$mm} $yesterday = $yyyy + "-" + $mm + '-' + $dd;
+    semana[i]=String($yesterday);
+}
+semana = semana.reverse();
+//alert(semana);
+
+var valores = [0,0,0,0,0];
+//hacer match entre input y semana
+for(var i=0;i<input.length;i++){
+    var fecha = input[i][0];
+    var valor = input[i][1];
+    var index = semana.indexOf(fecha);
+    if(index!=-1){valores[index]=valor;}
+}
+//alert(valores);
+
+
+//script del grafico
+    var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+  type: 'bar',
+  data: {
+    labels: semana,
+    datasets: [{
+      label: 'Ganancia',
+      data: valores,
+      backgroundColor: "rgba(38, 166, 154,1)"
+    }]
+  },
+  options:
+    {responsive: false,
+        legend: {
+            display: false
+        },
+
+        scales: {
+            yAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Ganancias'
+                }
+            }],
+            xAxes: [{
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Fecha'
+                }
+            }]
+        },
+    }
+});
+</script>
+
+
+
+
+
+
+</main>
+</body>
+
+</html>

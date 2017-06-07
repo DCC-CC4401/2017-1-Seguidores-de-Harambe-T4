@@ -1,0 +1,302 @@
+{% extends 'main/baseAlumno.html' %}
+{% block content %}
+
+<script>
+ $(document).ready(function(){
+    $('.modal').modal();
+  });
+
+</script>
+    <main>
+{#    Perfil del vendedor           #}
+    <div class="container">
+        <div id="profile-page-header" class="card">
+
+            <!-- Fondo del vendedor -->
+            <div class="card-image waves-effect waves-block waves-light">
+                <img class="activator" src="../static/img/food-background3.png" alt="user background">
+            </div>
+
+            <!-- Imagen del perfil en pantallas grandes -->
+            <div class="row hide-on-small-and-down">
+                <a class="card-profile-image-large">
+                    <img style="margin-top: 20%;" id="img-perfil-desktop" src="" alt="profile image" class="circle z-depth-2 responsive-img activator">
+                </a>
+            </div>
+
+            <!-- Imagen del perfil en pantallas medianas/pequeñas -->
+            <div class="row show-on-small hide-on-med-and-up">
+                <a class="card-profile-image-small">
+                    <img id="img-perfil-movil" src="" alt="profile image" class="circle z-depth-2 responsive-img activator">
+                </a>
+            </div>
+
+         <!-- Info del vendedor desktop -->
+            <div class="card-content s12">
+                <div class="row">
+                    <div class="col s3 offset-s2 hide-on-med-and-down">
+
+                        <!-- Nombre -->
+                        <h4 class="card-title grey-text flow-text text-darken-4">{{nombre}}</h4>
+
+                        <!-- Tipo -->
+                        <p class="medium-small flow-text grey-text">&emsp;&emsp;&ensp;Vendedor Fijo</p>
+
+                        <!-- Horario -->
+                        <p class="flow-text text-darken-4" style="font-size: 0.88rem;">
+                            &ensp;Horario: <a class="light-green-text">{{horarioIni}} - {{horarioFin}}</a>
+                        </p>
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="col s3 l2 hide-on-med-and-down center-align">
+                        <h4 class="card-title flow-text text-darken-4">Estado</h4>
+                        <p class="" id="estado-desktop"></p>
+                    </div>
+
+                    <!-- Formas de pago -->
+                    <div class="col s3 l2 hide-on-med-and-down center-align">
+                        <h3 class=" grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Formas de pago</h3>
+                        <p class="medium-small flow-text grey-text" id="medios-pago-desktop"></p>
+                    </div>
+
+                    <!-- Favoritos -->
+                    <div class="col s3 l2 hide-on-med-and-down center-align">
+                        <div class="switch" style="margin-left: 10px;">
+                            <label>
+                                <h4 class="card-title grey-text flow-text text-darken-4">Favorito</h4>
+                                <h6><i class="material-icons amber-text" >grade</i></h6>
+                                <div id = "favorito-desktop">
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Info del vendedor movil -->
+              <div class = "row show-on-medium-and-down hide-on-med-and-up"></div>
+            <div class = "row show-on-medium-and-down hide-on-med-and-up"></div>
+            <div class="row show-on-medium-and-down hide-on-med-and-up">
+                <div class="col s2 m2 offset-s1">
+                        <h4 class="card-title grey-text flow-text text-darken-4">{{nombre}}</h4>
+                        <p class="medium-small flow-text grey-text"> Vendedor Fijo</p>
+{#                        <p class="flow-text text-darken-4" style="font-size: 0.88rem;">#}
+{#                            &ensp;Horario: <a class="light-green-text">12:30-14:15</a>#}
+{#                        </p>#}
+
+                    </div>
+                 <!-- Estado -->
+                <div class="col s2 m2 l12 offset-s1">
+                    <p class="flow-text text-darken-4">Estado</p>
+                    <p class="" id="estado-movil"></p>
+                </div>
+
+                <!-- Formas de pago -->
+                <div class="col s2 m2 l12 offset-s1"> <!--offset-s2-->
+                    <p class=" grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Formas de pago</p>
+                    <p class="medium-small flow-text grey-text" id="medios-pago-movil"></p>
+                </div>
+
+                <!-- Favorito -->
+                <div class="col s1 m1 l12"> <!--offset-s2-->
+                    <div class="switch" style="margin-left: 10px;">
+                        <label>
+                            <h4 class="card-title grey-text flow-text text-darken-4">Favorito</h4>
+                            <h6><i class="material-icons amber-text" style="margin-left: 150%">grade</i></h6>
+                            <div id = "favorito-movil">
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!--<div class="col s3 offset-s2 offset-l10">
+                    <div class="switch" style="margin-left: 10px;">
+                        <label>
+                            <p class="card-title grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Favorito</p>
+                            <input type="checkbox"><span class="lever"></span>
+                        </label>
+                    </div>
+                </div>-->
+            </div>
+        </div>
+    </div>
+
+{#        Productos del vendedor                #}
+    <div id="profile-page-content" class="row">
+        <div id="profile-page-wall" class="col s12 m8">
+            <div class="col s12 z-depth-1">
+                <div class="tab-content col s12">
+                    <div class="container">
+                        <div class="section">
+                            <div class="row">
+                                <!-- Aca se definen los modales -->
+                                <!-- aca comienzan a mostrarse los productos -->
+                                <!--Este script es para ordenar el listado de productos --> <!-- TODO agregar imagenes, crear dinamicamente los modales-->
+                                            <script>
+                                            var productos ={{ listaDeProductos|safe }};
+                                            var largo = productos.length;
+                                            //crear todos los modales
+                                            for (var i = 0; i < largo; i++)  {
+                                                document.write( "<div id='modal"+(i + 1)+"' class='modal'>");
+                                                document.write("<div class='modal-content'>");
+                                                document.write("<img class='activator responsive-img center-block'  style='max-width: 30%; margin-top:20px; margin-bottom:20px;' src ='../static/media/"+productos[i][5]+"'>");
+                                                document.write("</div>");
+                                                document.write("<div class='modal-footer'>");
+                                                document.write("<a href='#!' class='modal-action modal-close waves-effect waves-green btn-flat'><i class='large material-icons'>close</i></a>");
+                                                document.write("</div></div>");
+                                            }
+                                            //imprimir en pantalla todas las tarjetas de productos
+                                            for (var i = 0; i < largo; i++)  {
+                                                document.write(" <div class='col s6 m12 l4'>");
+                                                document.write("<div class='container'>");
+                                                document.write(" <div class='card z-depth-1'>");
+                                                document.write("<div class='teal lighten-2 card-image waves-effect waves-block waves-light'>");
+                                                document.write("<img class='activator responsive-img center-block'  style='max-width: 30%; margin-top:20px; margin-bottom:20px;height: 100px; width: 100px;' src ='../static/media/"+productos[i][5]+"'>");
+                                                document.write("</div>");
+                                                document.write(" <div class='card-content'>");
+                                                document.write("<span class='card-title activator grey-text text-darken-4'> "+productos[i][0] +" <i class='material-icons right'>more_vert</i></span>");
+                                                document.write("<p><a class='teal-text'> $"+productos[i][3]+" </a></p>");
+                                                document.write("<p><a class='row col l5' id='Stock-"+productos[i][0]+"' class='teal-text'> Stock :"+productos[i][2]+" </a>");
+                                                document.write("</div>");
+                                                document.write(" <div class='card-reveal'>");
+                                                document.write(" <span class='card-title grey-text text-darken-4'> "+productos[i][0] +" <i class='material-icons right'>close</i></span>");
+                                                document.write(" <ul>");
+                                                document.write(" <li>Precio: <a class='green-text light-green-text'> $"+productos[i][3]+" </a></li>");
+                                                document.write("<li>Categoria: "+productos[i][1]+" </li>");
+                                                document.write("<li>Stock: "+productos[i][2]+" </li>");
+                                                document.write("<li>Descripcion: "+productos[i][4]+" </li>");
+                                                document.write("<li> <p class='right-align'><a class='waves-effect waves-light' href='#modal"+(i+1)+"'>Ver imagen</a></p></li>");
+                                                document.write(" </ul></div></div></div></div>");
+                                            }
+                                            </script>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>    </main>
+
+<script>
+    function switchFavorito(){
+        var div = document.getElementById("favorito-desktop");
+        var input = document.createElement("input");
+        input.setAttribute("type" ,'checkbox' );
+        input.setAttribute("onchange" ,'handleChange(this);');
+        if ("{{favorito}}" == '1'){
+            input.setAttribute("checked",true);
+        }
+        div.appendChild(input);
+        var span = document.createElement("span");
+        span.setAttribute("class","lever");
+        div.appendChild(span);
+
+        var div2 = document.getElementById("favorito-movil");
+        var input2 = document.createElement("input");
+        input2.setAttribute("type" ,'checkbox' );
+        input2.setAttribute("onchange" ,'handleChange(this);');
+        if ("{{favorito}}" == '1'){
+            input2.setAttribute("checked",true);
+        }
+        div2.appendChild(input2);
+        var span2 = document.createElement("span");
+        span2.setAttribute("class","lever");
+        div2.appendChild(span2);
+    }
+</script>
+<script>
+    function handleChange(checkbox) {
+    if(checkbox.checked == true){
+         var datos ="favorito=" + "{{id}}"+"&agregar=si";
+         $.ajax({
+           url:{% url 'cambiarFavorito' %},
+           type: "GET",
+           data: datos,
+           dataType: "json",
+
+           success: function(data) {
+           },
+           error:function(data) {
+               alert("error in getting from server")
+           },
+        });
+    }else{
+        var datos ="favorito=" + "{{id}}"+"&agregar=no";
+         $.ajax({
+           url:{% url 'cambiarFavorito' %},
+           type: "GET",
+           data: datos,
+           dataType: "json",
+
+           success: function(data) {
+           },
+           error:function(data) {
+               alert("error in getting from server")
+           },
+        });
+   }
+}
+</script>
+
+<script>
+    function ProfileImg() {
+        var str = "../static/media/";
+        var ruta = str.concat("{{ avatar }}");
+        document.getElementById("img-perfil-desktop").src = ruta;
+        document.getElementById("img-perfil-movil").src = ruta;
+    }
+</script>
+
+<script>
+    function EstadoVendedor() {
+        var estado = "{{ activo }}";
+        if (estado == "True") {
+            document.getElementById("estado-desktop").classList.add("medium-small","flow-text","light-green-text");
+            document.getElementById("estado-desktop").innerHTML = "Disponible";
+
+            document.getElementById("estado-movil").classList.add("medium-small","flow-text","light-green-text");
+            document.getElementById("estado-movil").innerHTML = "Disponible";
+        } else {
+            document.getElementById("estado-desktop").classList.add("medium-small","flow-text","red-text");
+            document.getElementById("estado-desktop").innerHTML = "No Disponible";
+
+            document.getElementById("estado-movil").classList.add("medium-small","flow-text","red-text");
+            document.getElementById("estado-movil").innerHTML = "No Disponible";
+        }
+    }
+</script>
+
+<script>
+    function FormasDePago() {
+        var rawPagos = "{{ formasDePago|safe }}";
+        var pagos = rawPagos.split(", ");
+        var largo = pagos.length;
+        var texto = "<ul>";
+        for (var i = 0; i < largo; i++)  {
+            texto += "<li>" + pagos[i] + "</li>";
+        }
+        document.getElementById("medios-pago-desktop").innerHTML = texto;
+        document.getElementById("medios-pago-movil").innerHTML = texto;
+    }
+</script>
+    <script>
+    function ProfileImg() {
+        var str = "../static/media/";
+        var ruta = str.concat("{{ avatar }}");
+        document.getElementById("img-perfil-desktop").src = ruta;
+        document.getElementById("img-perfil-movil").src = ruta;
+    }
+</script>
+
+ <script>
+    window.onload = ProfileImg();
+    window.onload = EstadoVendedor();
+    window.onload = FormasDePago();
+    window.onload = switchFavorito();
+</script>
+{% endblock %}

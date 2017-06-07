@@ -1,0 +1,189 @@
+{% extends 'main/base.html' %}
+{% block content %}
+
+<script>
+$(document).ready(function() {
+    $('select').material_select();
+});
+</script>
+
+
+
+
+
+    <script type="text/javascript" src="../static/js/signupScript.js"></script>
+
+<div class="section"></div>
+  <main>
+      <div class="section"></div>
+
+      <h5 class="teal-text" style="text-align: center;">Crear nuevo usuario</h5>
+      <div class="section"></div>
+
+      <div class="container">
+        <div class="z-depth-1 grey lighten-4 row" style="margin-left: 5%; margin-right: 5%; padding: 32px 48px 0px 48px; border: 1px solid #EEE;">
+
+          <form class="col s12 m12" method="post" action="{% url 'registerAdmin' %}" enctype="multipart/form-data">
+            <div class='row'>
+              <div class='col s12 m12'>
+              </div>
+            </div>
+
+              <div class="input-field col s12 m12">
+                <select name="tipo" id="tipo" required>
+                  <option value="" disabled selected>Elige una opción</option>
+                  <option value="1">Alumno</option>
+                  <option value="2">Vendedor fijo</option>
+                  <option value="3">Vendedor Ambulante</option>
+                </select>
+                <label>Tipo de Usuario</label>
+              </div>
+
+            <div class='row'>
+              <div class='input-field col s12 m12'>
+                <input class='validate' type='text' name='nombre' id='nombre' required/>
+                <label style="text-align: center" for='nombre'>Ingresa tu nombre</label>
+              </div>
+            </div>
+
+            <div class='row'>
+              <div class='input-field col s12 m12'>
+                <input class='validate' type='email' name='email' id='email' required/>
+                <label style="text-align: center" for='email'>Ingresa tu e-mail</label>
+              </div>
+            </div>
+
+               <div id="file-upload" class="section">
+                  Sube un avatar:
+                  <input id="avatar" type="file" class="" name="avatar" required>
+              </div>
+
+            <div class="row">
+                  <div class="row">
+                    <div id="divHoraIni" class="input-field col s6">
+                      <!-- HTML con hora ini -->
+                    </div>
+                    <div id="divHoraFin" class="input-field col s6">
+                     <!-- HTML con hora fin -->
+                    </div>
+                  </div>
+              </div>
+
+
+            <div class='row'>
+              <div id="formasDePago" class='input-field col s12 m12'>
+                  <!-- HTML con las formas de pago-->
+            </div>
+
+            <div class='row'>
+              <div class='input-field col s12 m12'>
+                <input class='validate' type='password' name='password' id='password' required/>
+                <label style="text-align: center" for='password'>Ingresa la contraseña</label>
+              </div>
+            </div>
+
+            <div class='row'>
+              <div class='input-field col s12 m12'>
+                <input class='validate' type='password' name='password2' id='password2' required/>
+                <label style="text-align: center" for='password2'>Repite la contraseña</label>
+              </div>
+            </div>
+
+                <label class='red-text text-accent-2 center-align' >
+                     <h6 style="text-align: center;" id="emailError" class="card-title flow-text text-darken-4"></h6>
+                </label>
+                <div class='row'></div>
+                <label class='red-text text-accent-2 center-align' >
+                     <h6 style="text-align: center;" id="passwordError" class="card-title flow-text text-darken-4"></h6>
+                </label>
+
+
+                 <div class="col s10 offset-s1 center-align">{% csrf_token %}
+                        <button id="registerButton" class="btn waves-effect waves-light" type="submit" name="action">
+                        Crear
+                    </button>
+                </div>
+
+            </div>
+          </form>
+        </div>
+      </div>
+
+
+    <div class="section"></div>
+    <div class="section"></div>
+  </main>
+
+
+
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+
+
+    {% block javascript %}
+  <script>
+    $("#tipo").change(function () {
+      crearFormulario()
+
+    });
+
+
+
+
+    formdata = new FormData();
+    jQuery("#email").on("change", function() {
+        //verificar si mail ya existe
+        var email = document.getElementById("email").value;
+        if (formdata) {
+            formdata.append("email", email);
+
+            jQuery.ajax({
+                url: {% url 'verificarEmail' %},
+                type: "POST",
+                data: formdata,
+                processData: false,
+                contentType: false,
+                success:function(data){
+                    if(data.respuesta=="repetido"){
+                        document.getElementById("registerButton").disabled = true;
+                        document.getElementById("emailError").innerHTML = "Ese email no esta disponible";
+                    }
+                    else{
+                        document.getElementById("registerButton").disabled = false;
+                         document.getElementById("emailError").innerHTML = "";
+                    }
+
+                },
+                error:function(data) {
+               alert("error in getting from server");
+           }
+            });
+        }
+    });
+
+
+    jQuery("#password2").on("change", function() {
+        //verificar si son iguales
+        var password = document.getElementById("password").value;
+        var password2 = document.getElementById("password2").value;
+        if(password != password2){
+            document.getElementById("registerButton").disabled = true;
+            document.getElementById("passwordError").innerHTML = "Las contraseñas no son iguales"; }
+        else{
+         document.getElementById("registerButton").disabled = false;
+            document.getElementById("passwordError").innerHTML = ""; }
+
+    });
+
+
+
+
+
+  </script>
+
+
+
+{% endblock %}
+
+
+{% endblock %}

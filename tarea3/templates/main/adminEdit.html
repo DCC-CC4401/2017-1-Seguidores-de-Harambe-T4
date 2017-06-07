@@ -1,0 +1,302 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="stylesheet" href="../static/style.css">
+
+    <!--Import jQuery before materialize.js-->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
+    <script src="http://materializecss.com/templates/starter-template/js/init.js"></script>
+
+    <script>$(document).ready(function() {$('.modal').modal();})</script>
+
+
+
+    <nav class="top-nav">
+        <div class="nav-wrapper teal lighten-1">
+            <a href="#" class="brand-logo right"><img style="max-height: 65px!important;  padding: 8px 0!important;" class="circle" src="../static/img/logo.png"></a>
+          <div class="navbar-fixed">
+            <a href="#" data-activates="slide-out"
+               class="left button-collapse btn-floating btn-large waves-effect waves-light"><i
+                    class="material-icons">menu</i></a>
+            <a class="center page-title"></a>
+          </div>
+            <ul id="slide-out" class="side-nav fixed leftside-navigation ps-container ps-active-y">
+                <li>
+                    <div class="userView">
+                  <div class="background" style="height:175px;">
+                    <img src="../static/img/background4.png">
+                  </div>
+                  <a href="#!user"><img style="margin-top: 16%;" class="circle" src="../static/img/AvatarPenguin.png"></a>
+                  <a href="#!name"><span style="margin-left: 5%;" class="white-text name">{{ nombre }}</span></a>
+                </div>
+                </li>
+                <li><div class="section"></div></li>
+                <li><a href="{% url 'logout' %}"><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>
+            </ul>
+        </div>
+    </nav>
+
+</head>
+
+
+{% block content %}
+{% endblock %}
+
+
+
+
+
+<body>
+ <main>
+<div class="row">
+               <div>
+                  <h3 style="text-align: center;">Editar datos</h3>
+               </div>
+      </div>
+     <form id="editAdminForm" method="post" action="{% url 'loginAdmin' %}"onsubmit="guardarUsuario()" enctype="multipart/form-data">
+       <div class="row"></div>
+                <div class="row"></div>
+
+            <div class="row">
+               <div class="input-field col s6">
+
+                  <input placeholder="Username" value="{{ nombre }}" id="name" name="name" type="text" class="active validate" required>
+                  <label for="name">Nombre de usuario</label>
+               </div>
+               <div class="input-field col s6">
+                  <label for="password">Contraseña actual</label>
+                  <input id="password" name="password" type="text" value="{{ contraseña }}" placeholder="Password" class="validate" required>
+               </div>
+            </div>
+             <div class="row">
+                <div class="col s6">
+                     <label for="userID">ID del usuario</label>
+                     <input placeholder="Comments (Disabled)" value="{{ id }}" name="userID" id="userID" type="text" disabled>
+                </div>
+             </div>
+
+            <div class="row">
+               <div class="col s6 input-field">
+                  <input placeholder="Email" name="email" id="email" value="{{ email }}" type="email" class="validate">
+                  <label for="email">Email</label>
+               </div>
+            </div>
+
+            <div class="col s6 offset-s1">
+              <img id="avatarActual" src="" alt="" height="100" width="100" class="circle responsive-img"> <!-- notice the "circle" class -->
+            </div>
+
+
+             <div class="row">
+                <div class="col s6">
+               <label id="imagenActual">Imagen actual</label>
+               <div class="file-field input-field">
+                  <div class="btn">
+                     <span>Cambiar</span>
+                     <input id="image" name="image" type="file">
+                  </div>
+                  <div class="file-path-wrapper">
+                     <input id="fileName" name="fileName" class="file" type="text" value="" placeholder="Upload file">
+                  </div>
+               </div>
+             </div>
+             </div>
+
+             <div class="row"></div>
+             <div class='row'></div>
+
+                <label class='red-text text-accent-2 center-align' >
+                     <h6 style="text-align: center;" id="emailError" class="card-title flow-text text-darken-4"></h6>
+                </label>
+                <div class='row'></div>
+
+                <div class="row">
+                    <div class='col s8'>
+                        <div class='col s8'>
+                        <button type="submit" form="editAdminForm" id="saveButton" class=" btn-large waves-effect button teal">{% csrf_token %}
+                            Guardar
+                        <i class="material-icons right">send</i>
+                    </button>
+                    </div>
+                    </div>
+                    <button type="button" onclick ="eliminarUsuario()" class="btn-large waves-effect button teal">
+                        Borrar cuenta<i class="material-icons right">assignment_late</i>
+                    </button>
+                </div>
+
+ </form>
+     </div>
+ </main>
+
+
+
+{% block javascript %}
+  <script>
+
+
+  $(document).ready(function() {
+    $('select').material_select();
+});
+
+  //hitler did nothing wrong
+//rellenar campos
+
+window.onload = function() {
+  document.getElementById("fileName").value = "{{ avatar }}".split("/")[1];
+  document.getElementById("avatarActual").src = "../static/media/"+"{{ avatar }}";
+};
+
+
+
+    formdata = new FormData();
+    jQuery("#image").on("change", function() {
+        var file = this.files[0];
+        if (formdata) {
+            formdata.append("image", file);
+            jQuery.ajax({
+                url: {% url 'agregarAvatar' %},
+                type: "POST",
+                data: formdata,
+                processData: false,
+                contentType: false,
+                success:function(){
+                    //alert("funciono!!");
+                    document.getElementById("fileName").value = document.getElementById("image").files[0].name;
+                    document.getElementById("avatarActual").src = "../static/media/avatars/"+document.getElementById("image").files[0].name;
+                    document.getElementById("imagenActual").innerHTML = "Nueva imagen";
+
+                },
+                error:function(data) {
+               alert("error in getting from server");
+           }
+            });
+        }
+    });
+
+
+    formdata = new FormData();
+    jQuery("#fileName").on("change", function() {
+        var file = this.files[0];
+        if (formdata) {
+            formdata.append("image", file);
+            jQuery.ajax({
+                url: {% url 'agregarAvatar' %},
+                type: "POST",
+                data: formdata,
+                processData: false,
+                contentType: false,
+                success:function(){
+                    alert("funciono!!");
+                },
+                error:function(data) {
+               alert("error in getting from server");
+           }
+            });
+        }
+    });
+
+
+function guardarUsuario(){
+        var nombre = "name="+document.getElementById("name").value;
+        var contraseña = "password="+document.getElementById("password").value;
+        var userID = "userID="+document.getElementById("userID").value;
+        var email = "email="+document.getElementById("email").value;
+        var formulario = nombre +"&"+contraseña + "&" +userID+"&"+email;
+
+        if(typeof document.getElementById("image").files[0] != 'undefined'){
+            var avatar = "avatar="+"avatars/"+document.getElementById("image").files[0].name;
+            //alert(avatar);
+            formulario+="&"+avatar;}
+
+         $.ajax({
+           url:{% url 'editarUsuario' %},
+           type: "get",
+           data: formulario,
+           dataType: "json",
+
+           success: function(data) {
+                alert("funciono");
+
+           },
+           error:function(data) {
+               alert("error in getting from server");
+           },
+         });
+    }
+
+
+ function eliminarUsuario(){
+
+        var datos ="eliminar=" + document.getElementById("userID").value;
+        //alert(datos);
+        $.ajax({
+           url:{% url 'borrarUsuario' %},
+           type: "GET",
+           data: datos,
+           dataType: "json",
+
+           success: function(data) {
+               alert("adios vaquero");
+               window.location.replace("{% url 'logout' %}");
+           },
+           error:function(data) {
+               alert("error in getting from server")
+           },
+        });
+      }
+
+
+
+   formdata = new FormData();
+    jQuery("#email").on("change", function() {
+        //verificar si mail ya existe
+        var email = document.getElementById("email").value;
+        if (formdata) {
+            formdata.append("email", email);
+
+            jQuery.ajax({
+                url: {% url 'verificarEmail' %},
+                type: "POST",
+                data: formdata,
+                processData: false,
+                contentType: false,
+                success:function(data){
+                    if(data.respuesta=="repetido"){
+                        document.getElementById("saveButton").disabled = true;
+                        document.getElementById("emailError").innerHTML = "Ese email no esta disponible";
+                    }
+                    else{
+                        document.getElementById("saveButton").disabled = false;
+                         document.getElementById("emailError").innerHTML = "";
+                    }
+
+                },
+                error:function(data) {
+               alert("error in getting from server");
+           }
+            });
+        }
+    });
+  </script>
+{% endblock %}
+
+
+
+
+
+</body>
+
+</html>

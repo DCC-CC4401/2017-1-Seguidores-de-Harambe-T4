@@ -1,0 +1,155 @@
+{% extends path %}
+{% block content %}
+
+<main>
+<div class="section"></div>
+
+      <h4 class="teal-text" style="text-align: center;">Agregar Item</h4>
+      <div class="section"></div>
+
+      <div class="container">
+        <div class="z-depth-1 grey lighten-4 row" style="margin-left: 5%; margin-right: 5%; padding: 32px 48px 0px 48px; border: 1px solid #EEE;">
+
+          <form enctype="multipart/form-data" class="col s12 m12" method="post" action="{% url 'productoReq' %}" > {% csrf_token %}
+            <div class='row'>
+              <div class='col s12 m12'>
+              </div>
+            </div>
+
+            <div class='row'>
+               <h4>{{respuesta}}</h4>
+              <div class='input-field col s12 m12' >
+                  &ensp;Nombre del producto:
+                 <div class="input-field inline ">
+                <input placeholder="Pizza" class='validate' type='text' name='nombre' id='nombre' />
+                <label style="text-align: center" for='item'></label>
+                 </div>
+              </div>
+            </div>
+
+            <div class='row'>
+              <div class='input-field col s12 m12'>
+                  &ensp;Precio del producto:
+                  <div class="input-field inline">
+                <input placeholder="1300" class='validate' type='text' name='precio' id='precio' />
+                <label style="text-align: center" for='precio'></label>
+                  </div>
+              </div>
+            </div>
+            <div class='row'>
+              <div class='input-field col s12 m12'>
+                  &ensp;Stock del producto:
+                  <div class="input-field inline">
+                <input placeholder="42" class='validate' type='text' name='stock' id='stock' />
+                <label style="text-align: center" for='stock'></label>
+                  </div>
+              </div>
+            </div>
+            <div class="row">
+                  <div class="row">
+                    <div class="input-field col s12 m12" >
+                      <i class="material-icons prefix">&emsp;mode_edit</i>
+                      <input class='validate' type='text' name='descripcion' id='descripcion' />
+                      <label  for="icon_prefix2">&emsp;Descripción</label>
+                    </div>
+                  </div>
+            </div>
+              <div>
+                  Selecciona una imagen previa:
+              </div>
+
+                <div class="col s12 l6">
+                  <input class="with-gap" name="categoria" type="radio" id="0" value="0" />
+                  <label for="0"><img style="max-width: 50px;" src="../static/img/bread.png"></label>
+                  <input class="with-gap" name="categoria" type="radio" id="1" value="1" />
+                  <label for="1"><img style="max-width: 50px;" src="../static/img/breakfast.png"></label>
+                  <input class="with-gap" name="categoria" type="radio" id="2" value="2" />
+                  <label for="2"><img style="max-width: 50px;" src="../static/img/burger.png"></label>
+                  <input class="with-gap" name="categoria" type="radio" id="3" value="3" />
+                  <label for="3"><img style="max-width: 50px;" src="../static/img/chicken.png"></label>
+                  <input class="with-gap" name="categoria" type="radio" id="4" value="4"/>
+                  <label for="4"><img style="max-width: 50px;" src="../static/img/chicken2.png"></label>
+                </div>
+                <div class="col s12 l6">
+                  <input class="with-gap" name="categoria" type="radio" id="5" value="5" />
+                  <label for="5"><img style="max-width: 50px;" src="../static/img/chocolate.png"></label>
+                  <input class="with-gap" name="categoria" type="radio" id="6" value="6" />
+                  <label for="6"><img style="max-width: 50px;" src="../static/img/coke.png"></label>
+                  <input class="with-gap" name="categoria" type="radio" id="7" value="7"/>
+                  <label for="7"><img style="max-width: 50px;" src="../static/img/cupcake.png"></label>
+                  <input class="with-gap" name="categoria" type="radio" id="8" value="8"/>
+                  <label for="8"><img style="max-width: 50px;" src="../static/img/donut.png"></label>
+                  <input class="with-gap" name="categoria" type="radio" id="9" value="9"/>
+                  <label for="9"><img style="max-width: 50px;" src="../static/img/jelly.png"></label>
+                </div>
+                <div class="col s12 l6">
+                  <input class="with-gap" name="categoria" type="radio" id="10" value="10"/>
+                  <label for="10"><img style="max-width: 50px;" src="../static/img/fish.png"></label>
+                  <input class="with-gap" name="categoria" type="radio" id="11" value="11"/>
+                  <label for="11"><img style="max-width: 50px;" src="../static/img/fries.png"></label>
+                  <input class="with-gap" name="categoria" type="radio" id="12" value="12"/>
+                  <label for="12"><img style="max-width: 50px;" src="../static/img/hot-dog.png"></label>
+                  <input class="with-gap" name="categoria" type="radio" id="13" value="13"/>
+                  <label for="13"><img style="max-width: 50px;" src="../static/img/icecream.png"></label>
+                  <input class="with-gap" name="categoria" type="radio" id="14" value="14" />
+                  <label for="14"><img style="max-width: 50px;" src="../static/img/juice.png"></label>
+                </div>
+                <div class="col s12 l6">
+                  <input class="with-gap" name="categoria" type="radio" id="15" value="15"/>
+                  <label for="15"><img style="max-width: 50px;" src="../static/img/lettuce.png"></label>
+                  <input class="with-gap" name="categoria" type="radio" id="16" value="16" />
+                  <label for="16"><img style="max-width: 50px;" src="../static/img/pizza.png"></label>
+                </div>
+
+            <div id="file-upload" class="section">
+             <!--Default version-->
+            <div class="row section">
+              <div class="col s8 m4 l3">
+                  <p>&emsp;&emsp;Imagen del</p>
+                  <p>&emsp;&emsp;&ensp;producto:</p>
+              </div>
+              <div class="col s8 m8 l9">
+                  <div class="dropify-wrapper touch-fallback">
+                      <div class="dropify-message">
+                          <div class="row hide-on-med-and-down">
+                              <div class="col s9 m7 l7">
+                                  <i class="material-icons center-align">mdi_file_cloud_upload</i>
+                              </div>
+                          </div>
+                          <div class="row show-on-medium-and-down hide-on-med-and-up">
+                              <div class="col s6">
+                                  <i class="material-icons tiny show-on-medium-and-down center-align">mdi_file_cloud_upload</i>
+                              </div>
+                          </div>
+                          <p>Arrastre y suelte un archivo aquí o haga click</p>
+                          <p class="dropify-error">Sorry, this file is too large</p>
+                      </div>
+                  <input id="comida" type="file" class="" name="comida" required>
+                      <button type="button" class="dropify-clear">Remove</button>
+                      <div class="dropify-preview"><span class="dropify-render"></span>
+                          <div class="dropify-infos">
+                              <div class="dropify-infos-inner">
+                                  <p class="dropify-filename">
+
+                                      <!--<span class="file-icon"></span>-->
+                                      <span class="dropify-filename-inner"></span></p>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+            </div>
+            <div class='row'>
+                    <button type="submit" class='col l5 offset-l4 btn btn-large waves-effect button teal' >&emsp; &emsp;Agregar<i class="material-icons right">send</i></button>
+            </div>
+            </form>
+          </div>
+
+
+        </div>
+      </div>
+
+
+
+</main>
+{% endblock %}

@@ -1,0 +1,489 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="stylesheet" href="../static/style.css">
+
+    <!--Import jQuery before materialize.js-->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
+    <script src="http://materializecss.com/templates/starter-template/js/init.js"></script>
+    <script type="text/javascript" src="../static/js/adminScript.js"></script>
+
+    <script>$(document).ready(function() {$('.modal').modal();})</script>
+
+
+
+    <nav class="top-nav">
+        <div class="nav-wrapper teal lighten-1">
+            <a href="#" class="brand-logo right"><img style="max-height: 65px!important;  padding: 8px 0!important;" class="circle" src="../static/img/logo.png"></a>
+          <div class="navbar-fixed">
+            <a href="#" data-activates="slide-out"
+               class="left button-collapse btn-floating btn-large waves-effect waves-light"><i
+                    class="material-icons">menu</i></a>
+            <a class="center page-title"></a>
+          </div>
+            <ul id="slide-out" class="side-nav fixed leftside-navigation ps-container ps-active-y">
+                <li>
+                    <div class="userView">
+
+                  <div class="background" style="height:175px;">
+                    <img src="../static/img/background4.png">
+                  </div>
+                  <a href="#!user"><img style="margin-top: 16%;" class="circle" src="../static/img/AvatarPenguin.png"></a>
+                  <a href="#!name"><span style="margin-left: 5%;" class="white-text name">{{ nombre }}</span></a>
+                </div>
+                </li>
+                <li><div class="section"></div></li>
+                <li><a href="{% url 'logout' %}"><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>
+                <li><a href="javascript:;" onclick="document.getElementById('adminForm').submit();"><i class="material-icons">settings</i>Editar datos</a></li>
+                <li><a href="#">Datos generales</a></li>
+                <li><a href="#"><i class="material-icons">perm_identity</i>Numero de usuarios: {{ numeroUsuarios }}</a></li>
+                <li><a href="#"><i class="material-icons">shopping_cart</i>Numero de productos: {{ numeroDeComidas }}</a></li>
+            </ul>
+        </div>
+    </nav>
+
+</head>
+
+<body>
+
+
+
+{% block content %}
+{% endblock %}
+
+
+ <main>
+     <form id="adminForm" method="post" action="{% url 'adminEdit' %}">{% csrf_token %}
+                    <input value="{{ nombre }}" name="adminName" id="adminName" type="text" style="display:none;">
+                    <input value="{{ contraseña }}" name="adminPassword" id="adminPassword" type="text" style="display:none;">
+                    <input value="{{ id }}" name="adminId" id="adminId" type="text" style="display:none;">
+                    <input value="{{ email }}" name="adminEmail" id="adminEmail" type="text" style="display:none;">
+                    <input value="{{ avatar }}" name="adminAvatar" id="adminAvatar" type="text" style="display:none;">
+
+</form>
+
+      <div class="section">
+          <div class="row">
+                  <h2 style="text-align: center;">Administración</h2>
+          </div>
+      </div>
+      <div class="row">
+               <div>
+                  <h5 style="text-align: center;">Usuarios en el sistema</h5>
+               </div>
+      </div>
+      <div class="row">
+              <div class="col s10 offset-s1">
+
+                <table class="bordered highlight centered">
+                    <thead>
+                      <tr>
+                          <th>id</th>
+                          <th>Nombre</th>
+                          <th>email</th>
+                          <th>tipo</th>
+                          <th style="display:none;">avatar</th>
+                          <th style="display:none;">activo</th>
+                          <th style="display:none;">formas de pago</th>
+                          <th style="display:none;">hora ini</th>
+                          <th style="display:none;">hora fin</th>
+                          <th></th>
+                      </tr>
+                    </thead>
+                    <tbody id="insertTabla">
+                    <script>
+                        window.onload=crearTabla({{ lista|safe }});
+                    </script>
+                    </tbody>
+                </table>
+                  <div class="row"></div>
+                  <div class="row"></div>
+
+                  <div class="col s10 offset-s1 center-align">
+                      <form action="{% url 'signupAdmin' %}">
+                        <button class="btn waves-effect waves-light" type="submit" name="action">
+                        Agregar usuario
+                        <i class="material-icons right">send</i>
+                    </button>
+                      </form>
+                </div>
+
+                    <!--<a class='center-align btn-large waves-effect teal' href="">Agregar usuario</a>-->
+                </div>
+              </div>
+          </div>
+      </div>
+
+
+
+<!-- Modal Trigger -->
+     <div class="container">
+	<div id="modal" class="modal col s8 ">
+        <nav class="nav-extended teal lighten-1">
+            <div class="nav-wrapper teal lighten-1">
+              <p id="titulo" class="brand-logo center">Logo</p>
+            </div><div class="row"></div>
+            <div class="row"></div>
+            <div class="row"></div>
+            <div class="row"></div>
+        </nav>
+       <div class="row"></div>
+                <div class="row"></div>
+       <div class="row ">
+         <form id="formularioUsuarios" class="col s10 offset-s1" enctype="multipart/form-data" method='post' action='#' >
+            <div class="row">
+               <div class="input-field col s6">
+
+                  <input placeholder="Username" value="" id="name" type="text" class="active validate" required>
+                  <label for="name">Nombre de usuario</label>
+               </div>
+               <div class="input-field col s6">
+                  <label for="password">Contraseña actual</label>
+                  <input id="password" type="text" value="" placeholder="Password" class="validate" required>
+               </div>
+            </div>
+             <div class="row">
+                 <div class="col s4">
+                   <label id="selectLabel">Tipo de usuario</label>
+                   <select id="type">
+                       <option id="selectDefault" value="" disabled selected>Seleccione el tipo</option>
+                       <option value="1">Alumno</option>
+                       <option value="2">Vendedor fijo</option>
+                       <option value="3">Vendedor Ambulante</option>
+                   </select>
+                 </div>
+             <div class="col s8">
+                 <label for="userID">ID del usuario</label>
+                 <input placeholder="Comments (Disabled)" value="" id="userID" type="text" disabled>
+
+             </div>
+
+            </div>
+            <div class="row">
+               <div class="input-field col s12">
+                  <input placeholder="Email" id="email" value="" type="email" class="validate">
+                  <label for="email">Email</label>
+               </div>
+            </div>
+            <div class="col s2">
+              <img id="avatarActual" src="" alt="" class="circle responsive-img"> <!-- notice the "circle" class -->
+            </div>
+            <div class="col s10">
+            </div>
+
+
+             <div class="row">
+               <label id="imagenActual">Imagen actual</label>
+               <div class="file-field input-field">
+                  <div class="btn">
+                     <span>Cambiar</span>
+                     <input id="image" type="file">
+                  </div>
+                  <div class="file-path-wrapper">
+                     <input id="fileName" class="file" type="text" value="" placeholder="Upload file">
+                  </div>
+               </div>
+             </div>
+
+
+
+
+             <div id="divHoraIni" class="input-field ">
+                      <!-- HTML con hora ini -->
+             </div>
+             <div id="divHoraFin" class="input-field">
+                     <!-- HTML con hora fin -->
+             </div>
+
+
+                 <div id="formasDePago2" class='input-field col s12'>
+                      <!-- HTML con las formas de pago-->
+                 </div>
+             <div class="row"></div>
+             <div class='row'></div>
+
+                <label class='red-text text-accent-2 center-align' >
+                     <h6 style="text-align: center;" id="emailError" class="card-title flow-text text-darken-4"></h6>
+                </label>
+                <div class='row'></div>
+
+                <div class="row">
+                    <div class='col s6'>
+                        <div class='col s6 '>
+                        <button type="button" id="saveButton" onclick ="guardarUsuario();" class=" btn-large waves-effect button teal">
+                            Guardar
+                        <i class="material-icons right">send</i>
+                    </button>
+                    </div>
+                    </div>
+
+                    <button type="button" onclick = "eliminarUsuario()" class="btn-large waves-effect button teal">
+                        Eliminar usuario<i class="material-icons right">assignment_late</i>
+                    </button>
+                </div>
+         </form>
+
+
+      </div>
+    </div>
+     </div>
+ </main>
+
+
+{% block javascript %}
+  <script>
+
+
+  $(document).ready(function() {
+    $('select').material_select();
+});
+
+  //hitler did nothing wrong
+
+      $("#type").change(function () {
+         //alert(tipoAnterior);
+          var tipo = document.getElementById('type').value;
+          //alert(tipo);
+          var array = [];
+          if (document.getElementById('forma0')!=null) {
+              if (document.getElementById('forma0').checked) {
+                  array.push(document.getElementById('forma0').value);
+              }
+              if (document.getElementById('forma1').checked) {
+                  array.push(document.getElementById('forma1').value);
+              }
+              if (document.getElementById('forma2').checked) {
+                  array.push(document.getElementById('forma2').value);
+              }
+              if (document.getElementById('forma3').checked) {
+                  array.push(document.getElementById('forma3').value);
+              }
+          }
+
+
+          document.getElementById('formasDePago2').innerHTML = "";
+          document.getElementById('divHoraIni').innerHTML = "";
+          document.getElementById('divHoraFin').innerHTML = "";
+
+          if (tipo == 2 || tipo == 3) {
+              //formas de pago
+              var HTMLformasDePago = '<label for="formasDePago2">Seleccione sus formas de pago:</label>' +
+                  '<div class="row"></div>' +
+                  '<div class="row"></div>' +
+                  '<p>' +
+                  '<input type="checkbox" id="forma0" value="0"/>' +
+                  '<label for="forma0">Efectivo</label>' +
+                  '</p>' +
+                  '<p>' +
+                  '<input type="checkbox" id="forma1" value="1"/>' +
+                  '<label for="forma1">Tarjeta de Crédito</label>' +
+                  '</p>' +
+                  '<p>' +
+                  '<input type="checkbox" id="forma2" value="2"/>' +
+                  '<label for="forma2">Tarjeta de Débito</label>' +
+                  '</p>' +
+                  '<p>' +
+                  '<input type="checkbox" id="forma3" value="3"/>' +
+                  '<label for="forma3">Tarjeta Junaeb</label>' +
+                  '</p>';
+              document.getElementById('formasDePago2').innerHTML = HTMLformasDePago;
+          }
+
+
+          if (tipo == 2) {
+              var HTMLhoraIni = '<i class="material-icons prefix">alarm</i>' +
+                  '<input placeholder="Time begin" value="" name="horaIni" id="horaIni" type="text" class="active validate">';
+
+              var HTMLhoraFin = '<i class="material-icons prefix">alarm</i>' +
+                  '<input placeholder="Time end" value="" name="horaFin" id="horaFin" type="text" class="active validate">';
+
+              document.getElementById('divHoraIni').innerHTML = HTMLhoraIni;
+              document.getElementById('divHoraFin').innerHTML = HTMLhoraFin;
+          }
+
+          if (document.getElementById('forma0')!=null) {
+              for (var i = 0; i < array.length; i++) {
+                  var forma = "forma" + array[i];
+                  document.getElementById(forma).checked = true;
+              }
+      }
+
+    });
+
+    formdata = new FormData();
+    jQuery("#image").on("change", function() {
+        var file = this.files[0];
+        if (formdata) {
+            formdata.append("image", file);
+            jQuery.ajax({
+                url: {% url 'agregarAvatar' %},
+                type: "POST",
+                data: formdata,
+                processData: false,
+                contentType: false,
+                success:function(){
+                    //alert("funciono!!");
+                    document.getElementById("fileName").value = document.getElementById("image").files[0].name;
+                    document.getElementById("avatarActual").src = "../static/media/avatars/"+document.getElementById("image").files[0].name;
+                    document.getElementById("imagenActual").innerHTML = "Nueva imagen";
+
+                },
+                error:function(data) {
+               alert("error in getting from server");
+           }
+            });
+        }
+    });
+
+
+    formdata = new FormData();
+    jQuery("#fileName").on("change", function() {
+        var file = this.files[0];
+        if (formdata) {
+            formdata.append("image", file);
+            jQuery.ajax({
+                url: {% url 'agregarAvatar' %},
+                type: "POST",
+                data: formdata,
+                processData: false,
+                contentType: false,
+                success:function(){
+                    alert("funciono!!");
+                },
+                error:function(data) {
+               alert("error in getting from server");
+           }
+            });
+        }
+    });
+
+
+function guardarUsuario(){
+        var nombre = "name="+document.getElementById("name").value;
+        //alert(nombre);
+        var contraseña = "password="+document.getElementById("password").value;
+        var userID = "userID="+document.getElementById("userID").value;
+        var tipo = "type="+document.getElementById("type").value;
+        var email = "email="+document.getElementById("email").value;
+        var formulario = nombre +"&"+contraseña + "&" +userID+"&"+tipo+"&"+email;
+
+        if(typeof document.getElementById("image").files[0] != 'undefined'){
+            var avatar = "avatar="+"avatars/"+document.getElementById("image").files[0].name;
+            //alert(avatar);
+            formulario+="&"+avatar;}
+        if(document.getElementById("type").value==2){
+            var horaIni = "horaIni="+document.getElementById("horaIni").value;
+            var horaFin = "horaFin="+document.getElementById("horaFin").value;
+            formulario+="&"+horaIni+"&"+horaFin;
+        }
+        if(document.getElementById("type").value==2 || document.getElementById("type").value==3){
+            if(document.getElementById("forma0").checked){
+                var forma0 = "forma0="+document.getElementById("forma0").value;
+                formulario+="&"+forma0;}
+            if(document.getElementById("forma1").checked){
+                var forma1 = "forma1="+document.getElementById("forma1").value;
+                formulario+="&"+forma1;}
+            if(document.getElementById("forma2").checked){
+                var forma2 = "forma2="+document.getElementById("forma2").value;
+                formulario+="&"+forma2;}
+            if(document.getElementById("forma3").checked){
+                var forma3 = "forma3="+document.getElementById("forma3").value;
+                formulario+="&"+forma3;}
+
+        }
+
+         $.ajax({
+           url:{% url 'editarUsuario' %},
+           type: "get",
+           data: formulario,
+           dataType: "json",
+
+           success: function(data) {
+              if (data.respuesta =="repetido"){
+                   alert("email ya existe en la base de datos");
+              }
+              else{
+                   location.reload();
+              }
+           },
+           error:function(data) {
+               alert("error in getting from server");
+           },
+         });
+    }
+
+
+ function eliminarUsuario(){
+
+        var datos ="eliminar=" + document.getElementById("userID").value;
+        //alert(datos);
+        $.ajax({
+           url:{% url 'borrarUsuario' %},
+           type: "GET",
+           data: datos,
+           dataType: "json",
+
+           success: function(data) {
+              location.reload();
+           },
+           error:function(data) {
+               alert("error in getting from server")
+           },
+        });
+      }
+
+
+
+   formdata2 = new FormData();
+    jQuery("#email").on("change", function() {
+        //verificar si mail ya existe
+        var email = document.getElementById("email").value;
+        if (formdata2) {
+            formdata2.append("email", email);
+
+            jQuery.ajax({
+                url: {% url 'verificarEmail' %},
+                type: "POST",
+                data: formdata2,
+                processData: false,
+                contentType: false,
+                success:function(data){
+                    if(data.respuesta=="repetido"){
+                        document.getElementById("saveButton").disabled = true;
+                        document.getElementById("emailError").innerHTML = "Ese email no esta disponible";
+                    }
+                    else{
+                        document.getElementById("saveButton").disabled = false;
+                         document.getElementById("emailError").innerHTML = "";
+                    }
+
+                },
+                error:function(data) {
+               alert("error in getting from server");
+           }
+            });
+        }
+    });
+  </script>
+{% endblock %}
+
+
+
+
+
+</body>
+
+</html>

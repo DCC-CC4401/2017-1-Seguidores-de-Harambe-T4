@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="stylesheet" href="../static/style.css">
+
+    <!--Import jQuery before materialize.js-->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="../static/fb.js"></script>
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
+    <script src="http://materializecss.com/templates/starter-template/js/init.js"></script>
+
+    <nav class="top-nav">
+        <div class="nav-wrapper teal lighten-1">
+            <a href="#" class="brand-logo right"><img style="max-height: 65px!important;  padding: 8px 0!important;" class="circle" src="../static/img/logo.png"></a>
+          <div class="navbar-fixed">
+            <a href="#" data-activates="slide-out"
+               class="left button-collapse btn-floating btn-large waves-effect waves-light"><i
+                    class="material-icons">menu</i></a>
+            <a class="center page-title"></a>
+          </div>
+            <ul id="slide-out" class="side-nav fixed leftside-navigation ps-container ps-active-y">
+                <li>
+                    <div class="userView">
+                        <a href="{% url 'editarPerfilAlumno' %}"><i class="material-icons right grey-text text-lighten-2" style="position: absolute; bottom: -0.5em; right: 0.5em; padding: 0 0 !important;">settings</i> </a>
+                  <div class="background" style="height:175px;">
+                    <img src="../static/img/background4.png">
+                  </div>
+                  <a href="#!user"><img style="margin-top: 16%;" class="circle" src="../static/media/{{avatarSesion}}"></a>
+                  <a href="#!name"><span style="margin-left: 5%;" class="white-text name">{{ nombresesion }}</span></a>
+                  <li><a href="{% url 'inicioAlumno' %}"><i class="material-icons">home</i>Inicio</a></li>
+                  <li><a href="{% url 'logout' %}"><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>
+                </div>
+                </li>
+        </div>
+    </nav>
+
+</head>
+
+{% block content %}
+    <main>
+    <div class="container">
+        <div class='row'></div>
+        <div class='row'>
+            <form method="post" action="{% url 'vistaVendedorPorAlumno' %}" id="form-vendedor-1"> {% csrf_token %}
+                <script>
+                var vendedor = {{ vendedores|safe }}
+                var vendedor1 = vendedor[0];
+                document.write("<input type='hidden' name='id' id='id' value ='"+ vendedor1 +"' >" )
+            </script>
+            </form>
+        </div>
+        <div class='row'>
+            <form method="post" action="{% url 'vistaVendedorPorAlumno' %}" id="form-vendedor-2"> {% csrf_token %}
+                <script>
+                    var vendedor = {{ vendedores|safe }}
+                    var vendedor2 = vendedor[1];
+                    document.write("<input type='hidden' name='id' id='id' value ='"+ vendedor2 +"' >" );
+                </script>
+            </form>
+        </div>
+    </div>
+
+
+    <div class='row'>
+    <div class = "col s12 m12 l12">
+    <img class='activator responsive-img center-block' src="../static/media/mapa.png" alt="Planets" usemap="#vendedoresMap">
+        <map name="vendedoresMap">
+          <area shape="circle" coords="555,233,25" id="vendedor1" onclick="vendedor1();">
+          <area shape="circle" coords="501,337,25" id="vendedor2" onclick="vendedor2();">
+        </map>
+     </div>
+     </div>
+
+
+    <script>
+        function vendedor1() {
+            document.getElementById("form-vendedor-1").submit();
+        }
+    </script>
+
+    <script>
+        function vendedor2() {
+            document.getElementById("form-vendedor-2").submit();
+        }
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('map').imageMapResize();
+        });
+    </script>
+    <script type="text/javascript" src="../static/js/imageMapResizer.min.js"></script>
+
+
+    </main>
+
+
+
+
+{% endblock %}
