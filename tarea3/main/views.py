@@ -22,14 +22,19 @@ from django.views.decorators.csrf import csrf_exempt
 from multiselectfield import MultiSelectField
 from django.core.files.storage import default_storage
 # Create your views here.
+
+#Vista inicial
+# actualiza el estado de los vendedores fijos, carga la lista de vendedores desde la base de datos
+#retorna a la vista de usuario sin login, enviando como parametro la lista de vendedores
 def index(request):
+    # obtener lista de vendedores
     vendedores = []
-    # lista de vendedores
     for p in Usuario.objects.raw('SELECT * FROM usuario'):
         if p.tipo == 2 or p.tipo == 3:
             vendedores.append(p.id)
     vendedoresJson = simplejson.dumps(vendedores)
-    #actualizar vendedores fijos
+
+    #actualizar estado de vendedores fijos
     for p in Usuario.objects.raw('SELECT * FROM usuario'):
         if p.tipo == 2:
             hi = p.horarioIni
@@ -64,15 +69,10 @@ def index(request):
             else:
                 Usuario.objects.filter(nombre=p.nombre).update(activo=0)
 
-
-
-
-
-
-
     vendedoresJson = simplejson.dumps(vendedores)
-
     return render(request, 'main/baseAlumno-sinLogin.html', {"vendedores": vendedoresJson})
+
+
 
 def login(request):
     return render(request, 'main/login.html', {})
@@ -82,8 +82,6 @@ def fijoDashboard(request):
     print(request.POST)
     id = request.POST.get("fijoId")
     #id = str(id)
-
-
     #transacciones hechas por hoy
     transaccionesDiarias=Transacciones.objects.filter(idVendedor=id).values('fecha').annotate(conteo=Count('fecha'))
     temp_transaccionesDiarias = list(transaccionesDiarias)
@@ -268,7 +266,6 @@ def adminPOST(id,avatar,email,nombre,contraseña,request):
     # limpiar argumentos de salida segun tipo de vista
     argumentos = {"nombre":nombre,"id":id,"avatar":avatar,"email":email,"lista":listaDeUsuarios,"numeroUsuarios":numeroUsuarios,"numeroDeComidas":numeroDeComidas,"contraseña":contraseña}
     return render(request, 'main/baseAdmin.html', argumentos)
-
 
 def obtenerFavoritos(idVendedor):
     favoritos = 0
@@ -464,6 +461,7 @@ def register(request):
     usuarioNuevo.save()
     return loginReq(request)
 
+#vista que procesa el formulario para agregar productos
 def productoReq(request):
     horarioIni = 0
     horarioFin = 0
@@ -516,6 +514,9 @@ def productoReq(request):
             nombre = p.nombre
     return render(request, url, {"email": email, "tipo": tipo, "id": id, "nombre": nombre, "horarioIni": horarioIni, "horarioFin" : horarioFin, "avatar" : avatar, "listaDeProductos" : listaDeProductos})
 
+
+#vista de vendedor para alumnos logeados
+#recibe los datos del vendedor por medio de POST y los envia a la template respectiva
 def vistaVendedorPorAlumno(request):
     if request.method == 'POST':
         id = int(request.POST.get("id"))
@@ -555,6 +556,8 @@ def vistaVendedorPorAlumno(request):
     listaDeProductos = simplejson.dumps(listaDeProductos, ensure_ascii=False).encode('utf8')
     return render(request, url, {"nombre": nombre, "nombresesion":request.session['nombre'], "tipo": tipo, "id": id, "avatar" : avatar, "listaDeProductos" :listaDeProductos,"avatarSesion": avatarSesion,"favorito": favorito, "formasDePago": formasDePago, "horarioIni": horarioIni, "horarioFin" : horarioFin, })
 
+#vista de vendedor para usuarios sin logearse
+#recibe los datos del vendedor por medio de POST y los envia a la template respectiva
 def vistaVendedorPorAlumnoSinLogin(request):
     if request.method == 'POST':
         id = int(request.POST.get("id"))
@@ -620,9 +623,6 @@ def editarVendedor(request):
 
 @csrf_exempt
 def editarDatos(request):
-
-
-
     id_vendedor = request.POST.get("id_vendedor")
     usuario = Usuario.objects.filter(id=id_vendedor)
 
@@ -749,11 +749,12 @@ def redirigirEditar(id_vendedor,request):
         print("chao")
         return render(request, url, argumentos)
 
-
+#vista de inicio para alumnos que iniciaron sesion
+#carga la lista de vendedores para mostrar
 def inicioAlumno(request):
     id = request.session['id']
+    #crear lista de vendedores a mostrar
     vendedores =[]
-    # si son vendedores, crear lista de productos
     for p in Usuario.objects.raw('SELECT * FROM usuario'):
         if p.id == id:
             avatar = p.avatar
@@ -762,6 +763,8 @@ def inicioAlumno(request):
     vendedoresJson = simplejson.dumps(vendedores)
     return render(request, 'main/baseAlumno.html',{"id": id,"vendedores": vendedoresJson,"avatarSesion": avatar, "nombresesion": request.session['nombre']})
 
+#vista que elimina un producto por medio de ajax
+#recibe el nombre del producto por medio de GET
 @csrf_exempt
 def borrarProducto(request):
     if request.method == 'GET':
@@ -771,6 +774,9 @@ def borrarProducto(request):
             data = {"eliminar" : comida}
             return JsonResponse(data)
 
+
+#vista que modifica un producto por medio de ajax
+#recibe los parametros del producto por medio de POST
 @csrf_exempt
 def editarProducto(request):
     if request.method == 'POST':
@@ -810,6 +816,9 @@ def editarProducto(request):
             data = {"respuesta" : nombreOriginal}
             return JsonResponse(data)
 
+#vista para usar con ajax
+#recibe el id del vendedor y si es que se debe agregar a favorito o eliminar por medio de GET
+#modifica la tabla favorito para el usuario que tenga iniciada sesion
 def cambiarFavorito(request):
     if request.method == "GET":
         if request.is_ajax():
@@ -826,8 +835,6 @@ def cambiarFavorito(request):
                 respuesta = {"respuesta": "no"}
             return JsonResponse(respuesta)
 
-    #return render_to_response('main/baseAdmin.html', {'form':form,'test':test}, context_instance=RequestContext(request))
-
 
 def cambiarEstado(request):
     if request.method == 'GET':
@@ -841,7 +848,8 @@ def cambiarEstado(request):
             data = {"estado": estado}
             return JsonResponse(data)
 
-
+#vista que carga la pagina para editar datos de alumno
+#envia toda la informacion del usuario y los favoritos respectivos
 def editarPerfilAlumno(request):
     avatar = request.session['avatar']
     id = request.session['id']
@@ -856,7 +864,9 @@ def editarPerfilAlumno(request):
             nombres.append(nombre)
     return render(request,'main/editar-perfil-alumno.html',{"id": id, "avatarSesion": avatar,"nombre": nombre,"favoritos": favoritos, "nombres": nombres, "nombresesion":request.session['nombre']})
 
-
+#vista que procesa el perfil de alumno por ajax
+#recibe por POST los parametros a modificar
+#modifica tanto la tabla de usuarios como la de favoritos
 def procesarPerfilAlumno(request):
     if request.method == "POST":
         nombreOriginal = request.session['nombre']
@@ -1080,6 +1090,9 @@ def verificarEmail(request):
             data = {"respuesta": "disponible"}
             return JsonResponse(data)
 
+#funcion a utilizar con ajax
+#recibe el nombre del producto y una variable que puede ser suma o resta por medio de GET
+#actualiza el stock dependiendo de la variable y retorna el stock actualizado
 def getStock(request):
     if request.method == "GET":
         stock = request.GET.get("nombre")
