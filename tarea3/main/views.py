@@ -466,6 +466,7 @@ def productoReq(request):
     horarioIni = 0
     horarioFin = 0
     avatar = ""
+    #verificar que se hayan enviado los datos por POST
     if request.method == "POST":
         if request.session.has_key('id'):
             id = request.session['id']
