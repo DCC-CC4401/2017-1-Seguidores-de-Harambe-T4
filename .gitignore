@@ -141,3 +141,9 @@ compiled/
 
 # Bak files
 *.bak
+
+# SQLite
+*.sqlite3
+
+# Migrations directories
+migrations/
