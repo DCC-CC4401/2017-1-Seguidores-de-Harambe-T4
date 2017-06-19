@@ -21,6 +21,7 @@ from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
 from multiselectfield import MultiSelectField
 from django.core.files.storage import default_storage
+
 # Create your views here.
 
 #Vista inicial
