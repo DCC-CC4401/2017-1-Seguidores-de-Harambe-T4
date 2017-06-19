@@ -31,6 +31,8 @@ class Vendedor(Usuario):
         db_table = 'vendedor'
 
 
+
+
 class vendedorFijo(Vendedor):
     horarioIni = models.CharField(max_length=200,blank=True,null=True)
     horarioFin = models.CharField(max_length=200,blank=True,null=True)
