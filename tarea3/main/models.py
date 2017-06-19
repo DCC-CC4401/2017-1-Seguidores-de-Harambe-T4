@@ -2,27 +2,16 @@ from django.db import models
 from multiselectfield import MultiSelectField
 from django.utils import timezone
 from django.utils.formats import get_format
+from django.contrib.auth.models import User
 
 # Create your models here
 
 class Usuario(models.Model):
     id = models.AutoField(primary_key=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=200)
     email = models.CharField(max_length=200)
-    tipos = ((0, 'admin'), (1, 'alumno'), (2, 'fijo'), (3, 'ambulante'))
-    tipo = models.IntegerField(choices=tipos)
     avatar = models.ImageField(upload_to = 'avatars')
-    contraseña = models.CharField(max_length=200)
-    activo = models.BooleanField(default=False,blank=True)
-    litaFormasDePago = (
-        (0, 'Efectivo'),
-        (1, 'Tarjeta de Crédito'),
-        (2, 'Tarjeta de Débito'),
-        (3, 'Tarjeta Junaeb'),
-    )
-    formasDePago = MultiSelectField(choices=litaFormasDePago,null=True,blank=True)
-    horarioIni = models.CharField(max_length=200,blank=True,null=True)
-    horarioFin = models.CharField(max_length=200,blank=True,null=True)
 
     def __str__(self):
         return self.nombre
@@ -30,11 +19,43 @@ class Usuario(models.Model):
     class Meta:
         db_table = 'usuario'
 
+class Vendedor(Usuario):
+    litaFormasDePago = (
+        (0, 'Efectivo'),
+        (1, 'Tarjeta de Crédito'),
+        (2, 'Tarjeta de Débito'),
+        (3, 'Tarjeta Junaeb'),
+    )
+    formasDePago = MultiSelectField(choices=litaFormasDePago, null=True, blank=True)
+    class Meta:
+        db_table = 'vendedor'
 
 
+class vendedorFijo(Vendedor):
+    horarioIni = models.CharField(max_length=200,blank=True,null=True)
+    horarioFin = models.CharField(max_length=200,blank=True,null=True)
+    class Meta:
+        db_table = 'vendedorFijo'
+
+class vendedorAmbulante(Vendedor):
+    activo = models.BooleanField(default=False, blank=True)
+    class Meta:
+        db_table = 'vendedorAmbulante'
+
+class alumno(Usuario):
+    def __str__(self):
+        return self.nombre
+    class Meta:
+        db_table = 'alumno'
+
+class Admin(Usuario):
+    def __str__(self):
+        return self.nombre
+    class Meta:
+        db_table = 'admin'
 
 class Comida(models.Model):
-    idVendedor = models.IntegerField(default=0);
+    idVendedor =models.ForeignKey(Usuario, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=200,primary_key=True)
     listaCategorias = (
         (0, 'Cerdo'),
@@ -69,9 +90,8 @@ class Comida(models.Model):
 
 
 class Favoritos(models.Model):
-    id = models.AutoField(primary_key=True)
-    idAlumno = models.IntegerField()
-    idVendedor = models.IntegerField()
+    idAlumno = models.ForeignKey(alumno, on_delete=models.CASCADE)
+    idVendedor = models.ForeignKey(Vendedor, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.idAlumno
@@ -94,7 +114,7 @@ class Transacciones(models.Model):
     my_formats = get_format('DATETIME_INPUT_FORMATS')
     idTransaccion = models.AutoField(primary_key=True)
     nombreComida = models.CharField(max_length=200,blank=True,null=True)
-    idVendedor = models.IntegerField()
+    idVendedor =models.ForeignKey(Vendedor, on_delete=models.CASCADE)
     precio = models.IntegerField()
     fechaAhora = str(timezone.now()).split(' ', 1)[0]
     fecha = models.CharField(max_length=200,default=fechaAhora)
