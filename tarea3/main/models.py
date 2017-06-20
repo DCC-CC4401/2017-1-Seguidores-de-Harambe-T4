@@ -12,12 +12,24 @@ class Usuario(models.Model):
     nombre = models.CharField(max_length=200)
     email = models.CharField(max_length=200)
     avatar = models.ImageField(upload_to = 'avatars')
+  #  tipos = ((0, 'admin'), (1, 'alumno'), (2, 'fijo'), (3, 'ambulante'))
+    tipo = models.IntegerField(editable=False)
+
+    def __init__(self, *args, **kwargs):
+        super(Usuario, self).__init__(*args, **kwargs)
+        if not self.pk and not self.tipo:
+            self.tipo = self.DEFAULT_TYPE
 
     def __str__(self):
         return self.nombre
 
     class Meta:
         db_table = 'usuario'
+
+
+
+
+
 
 class Vendedor(Usuario):
     litaFormasDePago = (
@@ -34,23 +46,28 @@ class Vendedor(Usuario):
 
 
 class vendedorFijo(Vendedor):
+    DEFAULT_TYPE = 2
     horarioIni = models.CharField(max_length=200,blank=True,null=True)
     horarioFin = models.CharField(max_length=200,blank=True,null=True)
+
     class Meta:
         db_table = 'vendedorFijo'
 
 class vendedorAmbulante(Vendedor):
     activo = models.BooleanField(default=False, blank=True)
+    DEFAULT_TYPE = 3
     class Meta:
         db_table = 'vendedorAmbulante'
 
 class alumno(Usuario):
+    DEFAULT_TYPE = 1
     def __str__(self):
         return self.nombre
     class Meta:
         db_table = 'alumno'
 
 class Admin(Usuario):
+    DEFAULT_TYPE = 0
     def __str__(self):
         return self.nombre
     class Meta:
