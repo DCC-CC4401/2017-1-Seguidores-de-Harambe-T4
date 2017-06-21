@@ -45,11 +45,11 @@
 </head>
 
 {% block content %}
-    <main>
+    <!--<main>
     <div class="container">
         <div class='row'></div>
         <div class='row'>
-            <form method="post" action="{% url 'vistaVendedorPorAlumnoSinLogin' %}" id="form-vendedor-1"> {% csrf_token %}
+            <form method="post" action="" id="form-vendedor-1"> {% csrf_token %}
                 <script>
                 var vendedor = {{ vendedores|safe }}
                 var vendedor1 = vendedor[0];
@@ -58,7 +58,7 @@
             </form>
         </div>
         <div class='row'>
-            <form method="post" action="{% url 'vistaVendedorPorAlumnoSinLogin' %}" id="form-vendedor-2"> {% csrf_token %}
+            <form method="post" action="" id="form-vendedor-2"> {% csrf_token %}
                 <script>
                     var vendedor = {{ vendedores|safe }}
                     var vendedor2 = vendedor[1];
@@ -100,5 +100,5 @@
     <script type="text/javascript" src="../static/js/imageMapResizer.min.js"></script>
 
 
-    </main>
+    </main>-->
 {% endblock %}
