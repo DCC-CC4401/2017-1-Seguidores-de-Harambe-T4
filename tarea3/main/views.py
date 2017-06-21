@@ -4,6 +4,7 @@ from django.views.generic import TemplateView
 from django.views import View
 from django.utils import timezone
 from .forms import LoginForm
+from django.contrib.auth import authenticate
 from .forms import GestionProductosForm
 from .forms import editarProductosForm
 from .models import Usuario
@@ -15,6 +16,8 @@ from django.db.models import Count
 from django.db.models import Sum
 from django.shortcuts import render_to_response
 from django.http import HttpResponse
+from django.contrib.auth.models import User
+
 import simplejson
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import JsonResponse
@@ -82,6 +85,23 @@ class login(View):
     def get(self,request):
         return render(request, self.template_name, {"formLoggin" : LoginForm()})
 
+    def post(self,request):
+        login = LoginForm(request.POST)
+        email = request.POST['email']
+        password = request.POST['password']
+        if login.is_valid():
+            try:
+                user = User.objects.get(email=email)
+                username = User.objects.get(email=email).username
+            except User.DoesNotExist:
+                return render(request, 'main/login.html', {"error": "Usuario o contraseña invalidos"})
+            userAuth = authenticate(username=username, password=password)
+            if userAuth is None:
+                return render(request, 'main/login.html', {"error": "Usuario o contraseña invalidos"})
+            nombre = Usuario.objects.get(nombre=username)
+            tipo = nombre.tipo
+            print(tipo)
+            return render(request, self.template_name, {"formLoggin": LoginForm()})
 
 
 def signup(request):

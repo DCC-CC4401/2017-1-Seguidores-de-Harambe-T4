@@ -7,6 +7,11 @@ class LoginForm(forms.Form):
    email = forms.CharField(max_length = 100)
    password = forms.CharField(widget = forms.PasswordInput())
 
+   def get_email(self):
+       return self.email
+   def get_password(self):
+       return self.password
+
 class GestionProductosForm(forms.Form):
     idVendedor = 0
     nombre = forms.CharField(max_length=200)
