@@ -51,7 +51,11 @@
             <div id="file-upload" class="section">
             {{ UserInfo.avatar}}
             <div class='row'>
-                    <button type="submit" class='col l5 offset-l4 btn btn-large waves-effect button teal' >&emsp; &emsp;Guardar cambios<i class="material-icons right">send</i></button>
+                    {% if request.session.tipo == 1 %}
+                        <button type="button" onclick="handleForm();" class='col l5 offset-l4 btn btn-large waves-effect button teal' >&emsp; &emsp;Guardar cambios<i class="material-icons right">send</i></button>
+                    {% else %}
+                        <button type="submit" class='col l5 offset-l4 btn btn-large waves-effect button teal' >&emsp; &emsp;Guardar cambios<i class="material-icons right">send</i></button>
+                    {% endif %}
             </div>
             </div>
             </form>
@@ -64,6 +68,7 @@
 
 
 </main>
+    {% if request.session.tipo == 1 %}
     <script>
     function agregarInputs() {
         var favoritos ={{ favoritos|safe }};
@@ -102,7 +107,7 @@
                     input.setAttribute("checked",true);
                     input.setAttribute("id","switch" + i);
                     input.setAttribute("nombre","switch" + i);
-                    input.setAttribute("value",i)
+                    input.setAttribute("value",i);
                     label.appendChild(input);
 
                     var span = document.createElement("span");
@@ -110,6 +115,9 @@
                     label.appendChild(span);
         }
     }
+    </script>
+    <script>
+    window.onload = agregarInputs();
     </script>
 
 
@@ -128,29 +136,26 @@
             }
             formulario.append("switchs",favoritos.length);
              $.ajax({
-               url:'#', //procesarPerfilAlumno
+               url:'{% url 'editarUsuario' %}', //procesarPerfilAlumno
                type: "POST",
                data: formulario,
                cache: false,
                 processData: false,
                 contentType: false,
                 success: function(data) {
-                  if (data.respuesta =="repetido"){
+                   location.reload()
+                 /* if (data.respuesta =="repetido"){
                        alert("Nombre ya existe en la base de datos");
                   }
                   else{
                      location.reload();
                      window.location='#'}; //inicioALumno
 
-                  }
+                  }*/
                },
-               error:function(data) {
-                   alert("error in getting from server");
-               },
+
          });
         }
     </script>
-    <script>
-    //window.onload = agregarInputs();
-    </script>
+ {% endif %}
 {% endblock %}

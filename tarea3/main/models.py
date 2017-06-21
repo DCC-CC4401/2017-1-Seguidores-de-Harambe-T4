@@ -26,11 +26,6 @@ class Usuario(models.Model):
     class Meta:
         db_table = 'usuario'
 
-
-
-
-
-
 class Vendedor(Usuario):
     litaFormasDePago = (
         (0, 'Efectivo'),
@@ -41,9 +36,6 @@ class Vendedor(Usuario):
     formasDePago = MultiSelectField(choices=litaFormasDePago, null=True, blank=True)
     class Meta:
         db_table = 'vendedor'
-
-
-
 
 class vendedorFijo(Vendedor):
     DEFAULT_TYPE = 2

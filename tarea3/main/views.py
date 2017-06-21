@@ -55,6 +55,8 @@ class login(View):
             tipo = usuario.tipo
 
             #en caso de que se autentique, guardar sesion y enviar a la pagina
+            request.session['id'] = int(usuario.id)
+            print (request.session['id'])
             request.session['user'] = str(usuario.user)
             request.session['nombre'] = str(usuario.nombre)
             request.session['avatar'] = str(usuario.avatar)
@@ -80,6 +82,8 @@ class editarUsuario(View):
         usuario = Usuario.objects.get(nombre=request.session['nombre'])
         if request.session['tipo'] == 1:
             UserForm = editarPerfilUsuario(instance=usuario)
+            favoritos = obtenerFavoritos(request)
+            return render(request, 'main/editar-perfil.html', {'UserInfo': UserForm,'favoritos': favoritos[0] ,'nombres':favoritos[1]})
 
         elif request.session['tipo'] == 2:
             UserForm = editarPerfilVendedorFijo(instance=usuario)
@@ -94,7 +98,7 @@ class editarUsuario(View):
         nombreOriginal = request.session['nombre']
         nuevoNombre = request.POST.get("nombre")
         nuevaImagen = request.FILES.get("avatar")
-
+        print(request.POST)
         #cambiar nombre
         if nuevoNombre != "" and nuevoNombre != nombreOriginal:
             if Usuario.objects.filter(nombre=nuevoNombre).exists():
@@ -112,6 +116,12 @@ class editarUsuario(View):
             Usuario.objects.filter(nombre=request.session['nombre']).update(avatar='/avatars/' + filename)
             request.session['avatar'] = str(Usuario.objects.get(nombre=request.session['nombre']).avatar)
 
+        #eliminar favoritos en caso de ser alumno
+        if request.session['tipo'] == 1:
+            count = int(request.POST.get("switchs")) - 1
+            while(count >= 0):
+                Favoritos.objects.filter(idAlumno_id=request.session['id'],idVendedor_id=request.POST.get("switch" + str(count))).delete()
+                count -= 1
         return self.get(request)
 
 def inicio(request):
@@ -121,6 +131,19 @@ def logOut(request):
     logout(request)
     return index(request)
 
+def obtenerFavoritos(request):
+    id = request.session['id']
+    print (id)
+    nombre = request.session['nombre']
+    favoritos =[]
+    nombres = []
+    for fav in Favoritos.objects.raw("SELECT * FROM Favoritos"):
+        if id == fav.idAlumno_id:
+            favoritos.append(fav.idVendedor_id)
+            vendedor = Usuario.objects.filter(id =fav.idVendedor_id).get()
+            nombre = vendedor.nombre
+            nombres.append(nombre)
+    return [favoritos,nombres]
 
 
 #vista que carga la pagina para editar datos de alumno
