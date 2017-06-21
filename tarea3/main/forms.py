@@ -43,7 +43,17 @@ class GestionProductosForm(forms.Form):
 class editarProductosForm(forms.Form):
     foto = forms.FileField()
 
-class editarPerfilAlumno(ModelForm):
+class editarPerfilUsuario(ModelForm):
     class Meta:
         model = Usuario
         fields = ['user','nombre','email','avatar']
+
+class editarPerfilVendedorFijo(editarPerfilUsuario):
+    class Meta:
+        model = vendedorFijo
+        fields = ['id', 'user', 'nombre', 'email', 'avatar', 'horarioIni', 'horarioFin']
+
+class editarPerfilVendedorAmbulante(editarPerfilUsuario):
+    class Meta:
+        model = vendedorAmbulante
+        fields = ['id', 'user', 'nombre', 'email', 'avatar', 'activo']
