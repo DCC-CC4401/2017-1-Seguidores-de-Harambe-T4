@@ -92,32 +92,128 @@ class login(View):
         email = request.POST['email']
         password = request.POST['password']
         if login.is_valid():
+
+            #autenticar el usuario
             try:
                 user = User.objects.get(email=email)
                 username = User.objects.get(email=email).username
             except User.DoesNotExist:
                 return render(request, self.template_name, {"error": "Usuario o contraseña invalidos","formLoggin" : LoginForm()})
             userAuth = authenticate(username=username, password=password)
-            print(userAuth)
             if userAuth is None:
                 return render(request, self.template_name, {"error": "Usuario o contraseña invalidos", "formLoggin": LoginForm()})
-            nombre = Usuario.objects.get(nombre=username)
-            tipo = nombre.tipo
-            print (nombre)
+            usuario = Usuario.objects.get(user=user)
+            tipo = usuario.tipo
+
+            #en caso de que se autentique, guardar sesion y enviar a la pagina
+            request.session['user'] = str(usuario.user)
+            request.session['nombre'] = str(usuario.nombre)
+            request.session['avatar'] = str(usuario.avatar)
+            request.session['tipo'] = int(usuario.tipo)
             if tipo == 0:
-                adminForm = LoginUsuario(instance=nombre)
+                adminForm = LoginUsuario(instance=usuario)
                 return render(request, 'main/dummy.html', {"formLogin": adminForm})
             if tipo == 1:
-                alumnoForm = LoginUsuario(instance=nombre)
-                return render(request, 'main/baseAlumno.html', {"formLogin": alumnoForm})
+                alumnoForm = LoginUsuario(instance=usuario)
+                return render(request, 'main/baseUsuario.html', {"formLogin": alumnoForm})
             if tipo == 2:
-                vfijo = LoginVendedorFijo(instance=nombre)
+                vfijo = LoginVendedorFijo(instance=usuario)
                 return render(request, 'main/dummy.html', {"formLogin": vfijo})
             else:
-                vambulante = LoginVendedorAmbulante(instance=nombre)
+                vambulante = LoginVendedorAmbulante(instance=usuario)
                 return render(request, 'main/dummy.html', {"formLogin": vambulante})
 
             return render(request, self.template_name, {"formLoggin": LoginForm()})
+
+class editarUsuario(View):
+
+
+    #acceder a pagina de edicion
+    def get(self,request):
+        usuario = Usuario.objects.get(nombre=request.session['nombre'])
+        if request.session['tipo'] == 1:
+            UserForm = editarPerfilAlumno(instance=usuario)
+        return render(request,'main/editar-perfil.html', {'UserInfo': UserForm})
+
+    #cuando se editan los datos
+    def post(self,request):
+        nombreOriginal = request.session['nombre']
+        nuevoNombre = request.POST.get("nombre")
+        nuevaImagen = request.FILES.get("avatar")
+
+        #cambiar nombre
+        if nuevoNombre != "" and nuevoNombre != nombreOriginal:
+            if Usuario.objects.filter(nombre=nuevoNombre).exists():
+                data = {"respuesta": "repetido"}
+                return JsonResponse(data)
+            Usuario.objects.filter(nombre=nombreOriginal).update(nombre=nuevoNombre)
+            request.session['nombre'] = nuevoNombre
+
+        #cambiar imagen
+        if nuevaImagen != None:
+            filename = nombreOriginal + ".jpg"
+            with default_storage.open('../media/avatars/' + filename, 'wb+') as destination:
+                for chunk in nuevaImagen.chunks():
+                    destination.write(chunk)
+            Usuario.objects.filter(nombre=request.session['nombre']).update(avatar='/avatars/' + filename)
+            request.session['avatar'] = str(Usuario.objects.get(nombre=request.session['nombre']).avatar)
+
+        return self.get(request)
+
+#vista que carga la pagina para editar datos de alumno
+#envia toda la informacion del usuario y los favoritos respectivos
+# def editarPerfilAlumno(request):
+#     avatar = request.session['avatar']
+#     id = request.session['id']
+#     nombre =request.session['nombre']
+#     favoritos =[]
+#     nombres = []
+#     for fav in Favoritos.objects.raw("SELECT * FROM Favoritos"):
+#         if id == fav.idAlumno:
+#             favoritos.append(fav.idVendedor)
+#             vendedor = Usuario.objects.filter(id =fav.idVendedor).get()
+#             nombre = vendedor.nombre
+#             nombres.append(nombre)
+#     return render(request,'main/editar-perfil-alumno.html',{"id": id, "avatarSesion": avatar,"nombre": nombre,"favoritos": favoritos, "nombres": nombres, "nombresesion":request.session['nombre']})
+#
+#
+# #vista que procesa el perfil de alumno por ajax
+# #recibe por POST los parametros a modificar
+# #modifica tanto la tabla de usuarios como la de favoritos
+# def procesarPerfilAlumno(request):
+#     if request.method == "POST":
+#         nombreOriginal = request.session['nombre']
+#         nuevoNombre = request.POST.get("nombre")
+#         count = request.POST.get("switchs")
+#         aEliminar= []
+#         nuevaImagen = request.FILES.get("comida")
+#         for i in range(int(count)):
+#             fav = request.POST.get("switch"+str(i))
+#             if fav != "":
+#                 aEliminar.append(fav)
+#         print(request.POST)
+#         print(request.FILES)
+#         print(aEliminar)
+#
+#         if nuevoNombre != "":
+#             if Usuario.objects.filter(nombre=nuevoNombre).exists():
+#                 data = {"respuesta": "repetido"}
+#                 return JsonResponse(data)
+#             Usuario.objects.filter(nombre=nombreOriginal).update(nombre=nuevoNombre)
+#
+#         for i in aEliminar:
+#             for fav in Favoritos.objects.raw("SELECT * FROM Favoritos"):
+#                 if request.session['id'] == fav.idAlumno:
+#                     if int(i) == fav.idVendedor:
+#                         Favoritos.objects.filter(idAlumno=request.session['id']).filter(idVendedor=int(i)).delete()
+#         if nuevaImagen != None:
+#             filename = nombreOriginal + ".jpg"
+#             with default_storage.open('../media/avatars/' + filename, 'wb+') as destination:
+#                 for chunk in nuevaImagen.chunks():
+#                     destination.write(chunk)
+#             Usuario.objects.filter(id=request.session['id']).update(avatar='/avatars/' + filename)
+#
+#         return JsonResponse({"ejemplo": "correcto"})
 
 
 def signup(request):
@@ -248,7 +344,7 @@ def loginReq(request):
         return render(request, 'main/login.html', {"error" : "Usuario o contraseña invalidos"})
 
 
-#
+
 # def fijoDashboard(request):
 #     print(request.POST)
 #     id = request.POST.get("fijoId")
@@ -895,59 +991,6 @@ def loginReq(request):
 #             data = {"estado": estado}
 #             return JsonResponse(data)
 #
-# #vista que carga la pagina para editar datos de alumno
-# #envia toda la informacion del usuario y los favoritos respectivos
-# def editarPerfilAlumno(request):
-#     avatar = request.session['avatar']
-#     id = request.session['id']
-#     nombre =request.session['nombre']
-#     favoritos =[]
-#     nombres = []
-#     for fav in Favoritos.objects.raw("SELECT * FROM Favoritos"):
-#         if id == fav.idAlumno:
-#             favoritos.append(fav.idVendedor)
-#             vendedor = Usuario.objects.filter(id =fav.idVendedor).get()
-#             nombre = vendedor.nombre
-#             nombres.append(nombre)
-#     return render(request,'main/editar-perfil-alumno.html',{"id": id, "avatarSesion": avatar,"nombre": nombre,"favoritos": favoritos, "nombres": nombres, "nombresesion":request.session['nombre']})
-#
-# #vista que procesa el perfil de alumno por ajax
-# #recibe por POST los parametros a modificar
-# #modifica tanto la tabla de usuarios como la de favoritos
-# def procesarPerfilAlumno(request):
-#     if request.method == "POST":
-#         nombreOriginal = request.session['nombre']
-#         nuevoNombre = request.POST.get("nombre")
-#         count = request.POST.get("switchs")
-#         aEliminar= []
-#         nuevaImagen = request.FILES.get("comida")
-#         for i in range(int(count)):
-#             fav = request.POST.get("switch"+str(i))
-#             if fav != "":
-#                 aEliminar.append(fav)
-#         print(request.POST)
-#         print(request.FILES)
-#         print(aEliminar)
-#
-#         if nuevoNombre != "":
-#             if Usuario.objects.filter(nombre=nuevoNombre).exists():
-#                 data = {"respuesta": "repetido"}
-#                 return JsonResponse(data)
-#             Usuario.objects.filter(nombre=nombreOriginal).update(nombre=nuevoNombre)
-#
-#         for i in aEliminar:
-#             for fav in Favoritos.objects.raw("SELECT * FROM Favoritos"):
-#                 if request.session['id'] == fav.idAlumno:
-#                     if int(i) == fav.idVendedor:
-#                         Favoritos.objects.filter(idAlumno=request.session['id']).filter(idVendedor=int(i)).delete()
-#         if nuevaImagen != None:
-#             filename = nombreOriginal + ".jpg"
-#             with default_storage.open('../media/avatars/' + filename, 'wb+') as destination:
-#                 for chunk in nuevaImagen.chunks():
-#                     destination.write(chunk)
-#             Usuario.objects.filter(id=request.session['id']).update(avatar='/avatars/' + filename)
-#
-#         return JsonResponse({"ejemplo": "correcto"})
 #
 #
 # @csrf_exempt

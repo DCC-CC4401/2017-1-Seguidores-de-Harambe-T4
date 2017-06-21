@@ -11,7 +11,7 @@ class LoginForm(forms.Form):
 class LoginUsuario(ModelForm):
     class Meta:
         model = Usuario
-        fields = ['id','user','nombre','email','avatar']
+        fields = ['id','user','nombre','email','avatar','tipo']
 
 class LoginVendedor(LoginUsuario):
     class Meta:
@@ -42,3 +42,8 @@ class GestionProductosForm(forms.Form):
 
 class editarProductosForm(forms.Form):
     foto = forms.FileField()
+
+class editarPerfilAlumno(ModelForm):
+    class Meta:
+        model = Usuario
+        fields = ['user','nombre','email','avatar']

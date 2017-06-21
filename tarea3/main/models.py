@@ -13,7 +13,7 @@ class Usuario(models.Model):
     email = models.CharField(max_length=200)
     avatar = models.ImageField(upload_to = 'avatars')
   #  tipos = ((0, 'admin'), (1, 'alumno'), (2, 'fijo'), (3, 'ambulante'))
-    tipo = models.IntegerField(editable=False)
+    tipo = models.IntegerField()
 
     def __init__(self, *args, **kwargs):
         super(Usuario, self).__init__(*args, **kwargs)
