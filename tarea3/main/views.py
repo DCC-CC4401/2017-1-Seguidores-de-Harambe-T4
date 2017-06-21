@@ -119,6 +119,31 @@ class login(View):
 
             return render(request, self.template_name, {"formLoggin": LoginForm()})
 
+@csrf_exempt
+def editarVendedor(request):
+    if request.session.has_key('id'):
+        id = request.session['id']
+        nombre = request.session['nombre']
+        formasDePago = request.session['formasDePago']
+        avatar = request.session['avatar']
+        tipo = request.session['tipo']
+        activo = request.session['activo']
+        listaDeProductos = request.session['listaDeProductos']
+        favoritos = request.session['favoritos']
+        if (tipo == 2):
+            horarioIni = request.session['horarioIni']
+            horarioFin = request.session['horarioFin']
+            argumentos = {"nombre": nombre, "tipo": tipo, "id": id, "horarioIni": horarioIni, "horarioFin": horarioFin,
+                          "avatar": avatar, "listaDeProductos": listaDeProductos, "activo": activo, "formasDePago": formasDePago, "favoritos": favoritos}
+            url = 'main/editar-vendedor-fijo.html'
+        elif (tipo == 3):
+            argumentos = {"nombre": nombre, "tipo": tipo, "id": id, "avatar": avatar, "listaDeProductos": listaDeProductos,
+                  "activo": activo, "formasDePago": formasDePago, "favoritos": favoritos}
+            url = 'main/editar-vendedor-ambulante.html'
+        return render(request, url, argumentos)
+    else:
+        return render(request, 'main/base.html', {})
+
 
 def signup(request):
     return render(request, 'main/signup.html', {})
