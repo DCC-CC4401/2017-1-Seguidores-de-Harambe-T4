@@ -4,6 +4,8 @@ from django.views.generic import TemplateView
 from django.views import View
 from django.utils import timezone
 from .forms import LoginForm
+from .forms import *
+from .forms import *
 from django.contrib.auth import authenticate
 from .forms import GestionProductosForm
 from .forms import editarProductosForm
@@ -94,13 +96,27 @@ class login(View):
                 user = User.objects.get(email=email)
                 username = User.objects.get(email=email).username
             except User.DoesNotExist:
-                return render(request, 'main/login.html', {"error": "Usuario o contraseña invalidos"})
+                return render(request, self.template_name, {"error": "Usuario o contraseña invalidos","formLoggin" : LoginForm()})
             userAuth = authenticate(username=username, password=password)
             if userAuth is None:
-                return render(request, 'main/login.html', {"error": "Usuario o contraseña invalidos"})
+                render(request, self.template_name, {"error": "Usuario o contraseña invalidos", "formLoggin": LoginForm()})
             nombre = Usuario.objects.get(nombre=username)
             tipo = nombre.tipo
-            print(tipo)
+
+            if tipo == 0:
+
+                adminForm = LoginUsuario(instance=nombre)
+                return render(request, 'main/dummy.html', {"formLogin": adminForm})
+            if tipo == 1:
+                alumnoForm = LoginUsuario(Usuario.objects.get(user=user))
+                return render(request, 'main/dummy.html', {"formLogin": alumnoForm()})
+            if tipo == 2:
+                vfijo = LoginVendedorFijo(Usuario.objects.get(user=user))
+                return render(request, 'main/dummy.html', {"formLogin": vfijo()})
+            else:
+                vambulante = LoginVendedorAmbulante(Usuario.objects.get(username=user))
+                return render(request, 'main/dummy.html', {"formLogin": vambulante()})
+
             return render(request, self.template_name, {"formLoggin": LoginForm()})
 
 
