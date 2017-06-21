@@ -98,24 +98,24 @@ class login(View):
             except User.DoesNotExist:
                 return render(request, self.template_name, {"error": "Usuario o contraseña invalidos","formLoggin" : LoginForm()})
             userAuth = authenticate(username=username, password=password)
+            print(userAuth)
             if userAuth is None:
-                render(request, self.template_name, {"error": "Usuario o contraseña invalidos", "formLoggin": LoginForm()})
+                return render(request, self.template_name, {"error": "Usuario o contraseña invalidos", "formLoggin": LoginForm()})
             nombre = Usuario.objects.get(nombre=username)
             tipo = nombre.tipo
-
+            print (nombre)
             if tipo == 0:
-
                 adminForm = LoginUsuario(instance=nombre)
                 return render(request, 'main/dummy.html', {"formLogin": adminForm})
             if tipo == 1:
-                alumnoForm = LoginUsuario(Usuario.objects.get(user=user))
-                return render(request, 'main/dummy.html', {"formLogin": alumnoForm()})
+                alumnoForm = LoginUsuario(instance=nombre)
+                return render(request, 'main/baseAlumno.html', {"formLogin": alumnoForm})
             if tipo == 2:
-                vfijo = LoginVendedorFijo(Usuario.objects.get(user=user))
-                return render(request, 'main/dummy.html', {"formLogin": vfijo()})
+                vfijo = LoginVendedorFijo(instance=nombre)
+                return render(request, 'main/dummy.html', {"formLogin": vfijo})
             else:
-                vambulante = LoginVendedorAmbulante(Usuario.objects.get(username=user))
-                return render(request, 'main/dummy.html', {"formLogin": vambulante()})
+                vambulante = LoginVendedorAmbulante(instance=nombre)
+                return render(request, 'main/dummy.html', {"formLogin": vambulante})
 
             return render(request, self.template_name, {"formLoggin": LoginForm()})
 
