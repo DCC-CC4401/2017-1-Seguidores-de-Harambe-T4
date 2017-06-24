@@ -129,7 +129,28 @@ class editarUsuario(View):
             while(count >= 0):
                 Favoritos.objects.filter(idAlumno_id=request.session['id'],idVendedor_id=request.POST.get("switch" + str(count))).delete()
                 count -= 1
-        return self.get(request)
+        # cambiar formas de pago
+        if request.session['tipo'] == 2 or request.session['tipo'] == 3:
+            formasDePago = ""
+            alternativas = {0: "Efectivo", 1: "Tarjeta de Crédito", 2: "Tarjeta de Débito", 3: "Tarjeta Junaeb"}
+            for x in range(0,4):
+                if request.POST.get("formaDePago"+str(x)) == 'on':
+                    formasDePago += str(x)+','
+            if (formasDePago != ""):
+                Vendedor.objects.filter(nombre=request.session['nombre']).update(formasDePago=formasDePago[:-1])
+                request.session['formasDePago'] = formasDePago
+        # cambiar horario fijo
+        if request.session['tipo'] == 2:
+            horaInicial = request.POST.get("horarioIni")
+            horaFinal = request.POST.get("horarioFin")
+            print(horaInicial, horaFinal)
+            if horaInicial != '':
+                vendedorFijo.objects.filter(nombre=request.session['nombre']).update(horarioIni=horaInicial)
+                request.session['horarioIni'] = horaInicial
+            if horaFinal != '':
+                vendedorFijo.objects.filter(nombre=request.session['nombre']).update(horarioFin=horaFinal)
+                request.session['horarioFin'] = horaFinal
+        return inicio(request)
 
 def inicio(request):
     return render(request, 'main/baseUsuario.html', {})
