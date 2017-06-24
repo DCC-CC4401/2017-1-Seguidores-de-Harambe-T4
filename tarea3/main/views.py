@@ -200,6 +200,19 @@ def esActivo(idVendedor):
         usuario = vendedorAmbulante.objects.get(vendedor_ptr_id=idVendedor)
         return  bool(usuario.activo)
 
+def cambiarEstado(request):
+    if request.method == 'GET':
+        if request.is_ajax():
+            print("sucess")
+            estado = request.GET.get('estado')
+            id_vendedor = request.GET.get('id')
+            if estado == "true":
+                vendedorAmbulante.objects.filter(vendedor_ptr_id=id_vendedor).update(activo=True)
+            else:
+                vendedorAmbulante.objects.filter(vendedor_ptr_id=id_vendedor).update(activo=False)
+            data = {"estado": estado}
+            return JsonResponse(data)
+
 #vista que carga la pagina para editar datos de alumno
 #envia toda la informacion del usuario y los favoritos respectivos
 # def editarPerfilAlumno(request):
