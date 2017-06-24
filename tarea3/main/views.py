@@ -158,12 +158,10 @@ def obtenerFavoritos(request):
     return [favoritos,nombres]
 
 def obtenerProductos(id):
-    vendedor = Usuario.objects.get(id=id)
-    tipo = vendedor.tipo
     listaDeProductos = []
-    if tipo == 2 or tipo == 3:
-        i = 0
-        for producto in Comida.objects.raw('SELECT * FROM comida WHERE idVendedor_id = "' + str(id) +'"'):
+    i = 0
+    try:
+        for producto in Comida.objects.filter(idVendedor_id = id).get():
             listaDeProductos.append([])
             listaDeProductos[i].append(producto.nombre)
             categoria = str(producto.categorias)
@@ -173,8 +171,9 @@ def obtenerProductos(id):
             listaDeProductos[i].append(producto.descripcion)
             listaDeProductos[i].append(str(producto.imagen))
             i += 1
-
-    listaDeProductos = simplejson.dumps(listaDeProductos,ensure_ascii=False).encode('utf8')
+        listaDeProductos = simplejson.dumps(listaDeProductos, ensure_ascii=False).encode('utf8')
+    except:
+        listaDeProductos = []
     return listaDeProductos
 
 def obtenerFavoritosVendedor(idVendedor):
