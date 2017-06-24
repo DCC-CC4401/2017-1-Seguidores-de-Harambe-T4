@@ -13,7 +13,7 @@ class Usuario(models.Model):
     email = models.CharField(max_length=200)
     avatar = models.ImageField(upload_to = 'avatars')
   #  tipos = ((0, 'admin'), (1, 'alumno'), (2, 'fijo'), (3, 'ambulante'))
-    tipo = models.IntegerField(editable=False)
+    tipo = models.IntegerField()
 
     def __init__(self, *args, **kwargs):
         super(Usuario, self).__init__(*args, **kwargs)
@@ -26,11 +26,6 @@ class Usuario(models.Model):
     class Meta:
         db_table = 'usuario'
 
-
-
-
-
-
 class Vendedor(Usuario):
     litaFormasDePago = (
         (0, 'Efectivo'),
@@ -41,9 +36,6 @@ class Vendedor(Usuario):
     formasDePago = MultiSelectField(choices=litaFormasDePago, null=True, blank=True)
     class Meta:
         db_table = 'vendedor'
-
-
-
 
 class vendedorFijo(Vendedor):
     DEFAULT_TYPE = 2

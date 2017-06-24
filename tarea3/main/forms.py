@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from .models import Usuario, Comida
+from .models import *
 from django import forms
 
 class LoginForm(forms.Form):
@@ -11,25 +11,24 @@ class LoginForm(forms.Form):
 class LoginUsuario(ModelForm):
     class Meta:
         model = Usuario
-        fields = ['nombre','email','avatar']
+        fields = ['id','user','nombre','email','avatar','tipo']
 
 class LoginVendedor(LoginUsuario):
-
-    listaFormasDePago = (
-        (0, 'Efectivo'),
-        (1, 'Tarjeta de Crédito'),
-        (2, 'Tarjeta de Débito'),
-        (3, 'Tarjeta Junaeb'),
-    )
-    formasDePago = forms.MultipleChoiceField(choices=listaFormasDePago)
+    class Meta:
+        model = Vendedor
+        fields = ['id', 'user', 'nombre', 'email', 'avatar']
 
 
 class LoginVendedorFijo(LoginVendedor):
-    horarioIni = forms.CharField(max_length=200)
-    horarioFin = forms.CharField(max_length=200)
+    class Meta:
+        model = vendedorFijo
+        fields = ['id', 'user', 'nombre', 'email', 'avatar','horarioIni','horarioFin']
 
 class LoginVendedorAmbulante(LoginVendedor):
-    activo = forms.BooleanField()
+    class Meta:
+        model = vendedorAmbulante
+        fields = ['id', 'user', 'nombre', 'email', 'avatar','activo']
+
 
 
 class GestionProductosForm(forms.Form):
@@ -43,3 +42,18 @@ class GestionProductosForm(forms.Form):
 
 class editarProductosForm(forms.Form):
     foto = forms.FileField()
+
+class editarPerfilUsuario(ModelForm):
+    class Meta:
+        model = Usuario
+        fields = ['user','nombre','email','avatar']
+
+class editarPerfilVendedorFijo(editarPerfilUsuario):
+    class Meta:
+        model = vendedorFijo
+        fields = ['id', 'user', 'nombre', 'email', 'avatar', 'horarioIni', 'horarioFin']
+
+class editarPerfilVendedorAmbulante(editarPerfilUsuario):
+    class Meta:
+        model = vendedorAmbulante
+        fields = ['id', 'user', 'nombre', 'email', 'avatar', 'activo']

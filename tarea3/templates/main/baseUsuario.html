@@ -30,13 +30,13 @@
             <ul id="slide-out" class="side-nav fixed leftside-navigation ps-container ps-active-y">
                 <li>
                     <div class="userView">
-                        <a href="{% url 'editarPerfilAlumno' %}"><i class="material-icons right grey-text text-lighten-2" style="position: absolute; bottom: -0.5em; right: 0.5em; padding: 0 0 !important;">settings</i> </a>
+                        <a href="{% url 'editarUsuario' %}"><i class="material-icons right grey-text text-lighten-2" style="position: absolute; bottom: -0.5em; right: 0.5em; padding: 0 0 !important;">settings</i> </a>
                   <div class="background" style="height:175px;">
                     <img src="../static/img/background4.png">
                   </div>
-                  <a href="#!user"><img style="margin-top: 16%;" class="circle" src="../static/media/{{avatarSesion}}"></a>
-                  <a href="#!name"><span style="margin-left: 5%;" class="white-text name">{{ nombresesion }}</span></a>
-                  <li><a href="{% url 'inicioAlumno' %}"><i class="material-icons">home</i>Inicio</a></li>
+                  <a href="#!user"><img style="margin-top: 16%;" class="circle" src="../static/media/{{ request.session.avatar}}"></a>
+                  <a href="#!name"><span style="margin-left: 5%;" class="white-text name">{{ request.session.nombre}} </span></a>
+                  <li><a href="{% url 'inicio' %}"><i class="material-icons">home</i>Inicio</a></li>
                   <li><a href="{% url 'logout' %}"><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>
                 </div>
                 </li>
@@ -47,27 +47,6 @@
 
 {% block content %}
     <main>
-    <div class="container">
-        <div class='row'></div>
-        <div class='row'>
-            <form method="post" action="{% url 'vistaVendedorPorAlumno' %}" id="form-vendedor-1"> {% csrf_token %}
-                <script>
-                var vendedor = {{ vendedores|safe }}
-                var vendedor1 = vendedor[0];
-                document.write("<input type='hidden' name='id' id='id' value ='"+ vendedor1 +"' >" )
-            </script>
-            </form>
-        </div>
-        <div class='row'>
-            <form method="post" action="{% url 'vistaVendedorPorAlumno' %}" id="form-vendedor-2"> {% csrf_token %}
-                <script>
-                    var vendedor = {{ vendedores|safe }}
-                    var vendedor2 = vendedor[1];
-                    document.write("<input type='hidden' name='id' id='id' value ='"+ vendedor2 +"' >" );
-                </script>
-            </form>
-        </div>
-    </div>
 
 
     <div class='row'>
@@ -79,26 +58,6 @@
         </map>
      </div>
      </div>
-
-
-    <script>
-        function vendedor1() {
-            document.getElementById("form-vendedor-1").submit();
-        }
-    </script>
-
-    <script>
-        function vendedor2() {
-            document.getElementById("form-vendedor-2").submit();
-        }
-    </script>
-
-    <script>
-        $(document).ready(function() {
-            $('map').imageMapResize();
-        });
-    </script>
-    <script type="text/javascript" src="../static/js/imageMapResizer.min.js"></script>
 
 
     </main>
