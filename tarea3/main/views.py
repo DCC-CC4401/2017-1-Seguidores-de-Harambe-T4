@@ -213,6 +213,76 @@ def cambiarEstado(request):
             data = {"estado": estado}
             return JsonResponse(data)
 
+
+class signup(View):
+    form_class = LoginForm
+    template_name = 'main/signup.html'
+
+    def get(self, request):
+        return render(request, self.template_name, {"formLoggin": LoginForm()})
+
+    @csrf_exempt
+    def post(self, request):
+        print(request.POST)
+        tipo = int(request.POST.get("tipo"))
+        nombre = request.POST.get("nombre")
+        email = request.POST.get("email")
+        avatar = request.FILES.get("avatar")
+        contraseña = request.POST.get("password")
+        djangoUser = User(username=nombre, password=contraseña, email=email)
+        djangoUser.save()
+
+        if (tipo == 0):
+            adminNuevo = Admin(nombre=nombre, user=djangoUser, email=email, avatar=avatar, tipo=tipo)
+            adminNuevo.save()
+
+        elif (tipo == 1):
+            alumnoNuevo = alumno(nombre=nombre, user=djangoUser, email=email, avatar=avatar, tipo=tipo)
+            alumnoNuevo.save()
+
+        elif (tipo == 2 or tipo == 3):
+            horaInicial = request.POST.get("horaIni")
+            horaFinal = request.POST.get("horaFin")
+            formasDePago = []
+            if not (request.POST.get("formaDePago0") is None):
+                formasDePago.append(request.POST.get("formaDePago0"))
+            if not (request.POST.get("formaDePago1") is None):
+                formasDePago.append(request.POST.get("formaDePago1"))
+            if not (request.POST.get("formaDePago2") is None):
+                formasDePago.append(request.POST.get("formaDePago2"))
+            if not (request.POST.get("formaDePago3") is None):
+                formasDePago.append(request.POST.get("formaDePago3"))
+                if (tipo == 2):
+                    longitud = float(request.POST.get("longitud"))
+                    latitud = float(request.POST.get("latitud"))
+                    nuevoVendedorFijo = vendedorFijo(nombre=nombre, user=djangoUser, email=email, avatar=avatar,
+                                                     tipo=tipo,
+                                                     longitud=longitud, latitud=latitud, horarioIni=horaInicial,
+                                                     horarioFin=horaFinal)
+                    nuevoVendedorFijo.save()
+                else:
+                    nuevoVendedorAmbulante = vendedorAmbulante(nombre=nombre, user=djangoUser, email=email,
+                                                               avatar=avatar, tipo=tipo)
+                    nuevoVendedorAmbulante.save()
+        return render(request, 'main/login.html')
+
+    # verificarEmail request -> JsonResponse
+    # Funcion auxiliar que verifica si un mail esta disponible o no dinamicamente, recibiendo un request de ajax
+
+
+@csrf_exempt
+def verificarEmail(request):
+    if request.is_ajax() or request.method == 'POST':
+        email = request.POST.get("email")
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            data = {"respuesta": "disponible"}
+            return JsonResponse(data)
+        data = {"respuesta": "repetido"}
+        return JsonResponse(data)
+
+
 #vista que carga la pagina para editar datos de alumno
 #envia toda la informacion del usuario y los favoritos respectivos
 # def editarPerfilAlumno(request):
@@ -269,8 +339,8 @@ def cambiarEstado(request):
 #         return JsonResponse({"ejemplo": "correcto"})
 
 
-def signup(request):
-    return render(request, 'main/signup.html', {})
+#def signup(request):
+#    return render(request, 'main/signup.html', {})
 
 def loginReq(request):
     #inicaliar variables

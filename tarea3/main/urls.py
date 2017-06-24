@@ -3,11 +3,12 @@ from main import views
 urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^login/$', views.login.as_view(),name='login'),
-    url(r'^signup/$', views.signup,name='signup'),
+    url(r'^signup/$', views.signup.as_view(),name='signup'),
     url(r'^editarUsuario/$', views.editarUsuario.as_view(), name='editarUsuario'),
     url(r'^loginReq/',views.loginReq, name = 'loginReq'),
     url(r'^logout/', views.logOut, name='logout'),
     url(r'^inicio/', views.inicio, name='inicio'),
+    url(r'^verificarEmail/$', views.verificarEmail, name='verificarEmail'),
     # url(r'^gestionproductos/$', views.gestionproductos,name='gestionproductos'),
     # url(r'^vendedorprofilepage/$', views.vendedorprofilepage,name='vendedorprofilepage'),
     # url(r'^formView/', views.formView, name='formView'),
