@@ -25,6 +25,7 @@ from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
 from multiselectfield import MultiSelectField
 from django.core.files.storage import default_storage
+from datetime import time
 
 #Vista inicial
 def index(request):
@@ -68,10 +69,21 @@ class login(View):
                 alumnoForm = LoginUsuario(instance=usuario)
                 return render(request, 'main/baseUsuario.html', {"formLogin": alumnoForm})
             if tipo == 2:
+                usuario = vendedorFijo.objects.get(vendedor_ptr_id=request.session['id'])
+                request.session['horarioIni'] = str(usuario.horarioIni)
+                request.session['horarioFin'] = str(usuario.horarioFin)
                 vfijo = LoginVendedorFijo(instance=usuario)
+                usuario = Vendedor.objects.get(usuario_ptr_id=request.session['id'])
+                request.session['formasDePago'] = usuario.formasDePago
+                request.session['favoritos'] = obtenerFavoritosVendedor(request.session['id'])
+                request.session['activo'] = esActivo(request.session['id'])
                 return render(request, 'main/baseUsuario.html', {"formLogin": vfijo})
             else:
+                request.session['activo'] = esActivo(request.session['id'])
+                usuario = Vendedor.objects.get(usuario_ptr_id = request.session['id'])
+                request.session['formasDePago'] = usuario.formasDePago
                 vambulante = LoginVendedorAmbulante(instance=usuario)
+                request.session['favoritos'] = obtenerFavoritosVendedor(request.session['id'])
                 return render(request, 'main/baseUsuario.html', {"formLogin": vambulante})
 
             return render(request, self.template_name, {"formLoggin": LoginForm()})
@@ -145,6 +157,49 @@ def obtenerFavoritos(request):
             nombres.append(nombre)
     return [favoritos,nombres]
 
+def obtenerProductos(id):
+    vendedor = Usuario.objects.get(id=id)
+    tipo = vendedor.tipo
+    listaDeProductos = []
+    if tipo == 2 or tipo == 3:
+        i = 0
+        for producto in Comida.objects.raw('SELECT * FROM comida WHERE idVendedor_id = "' + str(id) +'"'):
+            listaDeProductos.append([])
+            listaDeProductos[i].append(producto.nombre)
+            categoria = str(producto.categorias)
+            listaDeProductos[i].append(categoria)
+            listaDeProductos[i].append(producto.stock)
+            listaDeProductos[i].append(producto.precio)
+            listaDeProductos[i].append(producto.descripcion)
+            listaDeProductos[i].append(str(producto.imagen))
+            i += 1
+
+    listaDeProductos = simplejson.dumps(listaDeProductos,ensure_ascii=False).encode('utf8')
+    return listaDeProductos
+
+def obtenerFavoritosVendedor(idVendedor):
+    favoritos = 0
+    for fila in Favoritos.objects.raw('SELECT * FROM favoritos WHERE idVendedor_id = "' + str(idVendedor) + '"'):
+        favoritos += 1
+    return favoritos
+
+def esActivo(idVendedor):
+    tipo = int(Usuario.objects.get(id=idVendedor).tipo)
+    print(tipo)
+    if tipo == 2:
+        usuario = vendedorFijo.objects.get(vendedor_ptr_id=idVendedor)
+        horarioIni = usuario.horarioIni
+        horarioIni = time(int(horarioIni[:2]),int(horarioIni[3:5]))
+        horarioFin = usuario.horarioFin
+        horarioFin = time(int(horarioFin[:2]), int(horarioFin[3:5]))
+
+        if horarioIni <= time(datetime.datetime.now().hour,datetime.datetime.now().minute) <= horarioFin:
+            return True
+        else:
+            return False
+    elif tipo == 3:
+        usuario = vendedorAmbulante.objects.get(vendedor_ptr_id=idVendedor)
+        return  bool(usuario.activo)
 
 #vista que carga la pagina para editar datos de alumno
 #envia toda la informacion del usuario y los favoritos respectivos
@@ -519,11 +574,7 @@ def loginReq(request):
 #     argumentos = {"nombre":nombre,"id":id,"avatar":avatar,"email":email,"lista":listaDeUsuarios,"numeroUsuarios":numeroUsuarios,"numeroDeComidas":numeroDeComidas,"contraseña":contraseña}
 #     return render(request, 'main/baseAdmin.html', argumentos)
 #
-# def obtenerFavoritos(idVendedor):
-#     favoritos = 0
-#     for fila in Favoritos.objects.raw('SELECT * FROM favoritos WHERE idVendedor = "' + str(idVendedor) + '"'):
-#         favoritos += 1
-#     return favoritos
+
 #
 #
 #

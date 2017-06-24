@@ -46,7 +46,7 @@ class vendedorFijo(Vendedor):
         db_table = 'vendedorFijo'
 
 class vendedorAmbulante(Vendedor):
-    activo = models.BooleanField(default=False, blank=True)
+    activo = models.BooleanField()
     DEFAULT_TYPE = 3
     class Meta:
         db_table = 'vendedorAmbulante'
