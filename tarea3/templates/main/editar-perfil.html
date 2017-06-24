@@ -17,16 +17,14 @@
             </div>
             <div class='row'>
               <div class='input-field col s12 m12' >
-                  <h6>Editar nombre:</h6>
-                <label style="text-align: center;" for='nombre'></label>
                 {{ UserInfo.nombre}}
+                  <label for="id_nombre">Editar nombre</label>
               </div>
             </div>
 
-              {% if request.session.tipo == 1 %}
+              {% if request.session.tipo == 1 %} <!-- alumno -->
               <div class ="row col s12 m12">
                <h6>Editar favoritos:</h6>
-               <label style="text-align: center;" for='nombre'></label>
                </div>
                 <div class ="row col s12 m12"> </div>
                   <div class ="row col s12 m12"> </div>
@@ -35,18 +33,38 @@
               </div>
               {% endif %}
 
-            {% if request.session.tipo == 2 %}
+            {% if request.session.tipo >= 2 %} <!-- vendedores -->
               <div class ="row col s12 m12">
-               <h6>Editar favoritos:</h6>
-               <label style="text-align: center;" for='nombre'></label>
-               </div>
-                <div class ="row col s12 m12"> </div>
-                  <div class ="row col s12 m12"> </div>
-                  <br>
-              <div id='favoritos'>
-              </div>
-              {% endif %}
+                  <div class="input-field col s12 m12">
+                      <div class="label">Formas de pago</div>
+                      {% for value, text in UserInfo.formasDePago.field.choices %}
+                      <p>
+                          <input id="formaDePago{{ forloop.counter0 }}" name="formaDePago{{ forloop.counter0 }}" type="checkbox">
+                          <label for="formaDePago{{ forloop.counter0 }}">{{ text }}</label>
+                      </p>
 
+                      {% endfor %}
+                  </div>
+              </div>
+            {% endif %}
+
+              {% if request.session.tipo == 2 %} <!-- fijo -->
+              <div class='row'> </div>
+              <div class='row'> </div>
+              <div class="row col s12 m12">
+                        <div class="label" style="margin-left: 1%;">Horas de Atención</div>
+                       <div class="input-field col s6 m6">
+                           {{ UserInfo.horarioIni}}
+                           <label for="id_horarioIni">Hora de Inicio</label>
+                       </div>
+                       <div class="input-field col s6 m6">
+                           {{ UserInfo.horarioFin}}
+                           <label for="id_horarioFin">Hora de Término</label>
+                       </div>
+                    </div>
+            {% endif %}
+
+              <div class='row'> </div>
 
             <div id="file-upload" class="section">
             {{ UserInfo.avatar}}
@@ -72,7 +90,7 @@
     <script>
     function agregarInputs() {
         var favoritos ={{ favoritos|safe }};
-        var nombres = {{ nombres|safe }}
+        var nombres = {{ nombres|safe }};
         for (var i = 0; i <= favoritos.length - 1; i++) {
             //crear columnas
             var div = document.getElementById("favoritos");
@@ -158,4 +176,28 @@
         }
     </script>
  {% endif %}
+
+            {% if request.session.tipo >= 2 %} <!-- vendedores -->
+              <script>
+                  function ProfilePagos() {
+                      var rawPagos = "{{ pagosActuales }}";
+                      if (rawPagos.indexOf("Efectivo")  !== -1) {
+                          document.getElementById("formaDePago0").checked = "True";
+                      }
+                      if (rawPagos.indexOf("Tarjeta de Crédito")  !== -1) {
+                          document.getElementById("formaDePago1").checked = "True";
+                      }
+                      if (rawPagos.indexOf("Tarjeta de Débito")  !== -1) {
+                          document.getElementById("formaDePago2").checked = "True";
+                      }
+                      if (rawPagos.indexOf("Tarjeta Junaeb")  !== -1) {
+                          document.getElementById("formaDePago3").checked = "True";
+                      }
+                  }
+              </script>
+                <script>
+                  window.onload = ProfilePagos();
+              </script>
+            {% endif %}
+
 {% endblock %}

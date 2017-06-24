@@ -69,6 +69,7 @@ class login(View):
                 return render(request, 'main/baseUsuario.html', {"formLogin": alumnoForm})
             if tipo == 2:
                 vfijo = LoginVendedorFijo(instance=usuario)
+                print(vendedorFijo.objects.get(email=email).formasDePago)
                 return render(request, 'main/baseUsuario.html', {"formLogin": vfijo})
             else:
                 vambulante = LoginVendedorAmbulante(instance=usuario)
@@ -80,16 +81,22 @@ class editarUsuario(View):
     #acceder a pagina de edicion
     def get(self,request):
         usuario = Usuario.objects.get(nombre=request.session['nombre'])
+        UserForm = editarPerfilUsuario(instance=usuario)
         if request.session['tipo'] == 1:
             UserForm = editarPerfilUsuario(instance=usuario)
             favoritos = obtenerFavoritos(request)
             return render(request, 'main/editar-perfil.html', {'UserInfo': UserForm,'favoritos': favoritos[0] ,'nombres':favoritos[1]})
 
         elif request.session['tipo'] == 2:
+            usuario = vendedorFijo.objects.get(nombre=request.session['nombre'])
             UserForm = editarPerfilVendedorFijo(instance=usuario)
+            return render(request, 'main/editar-perfil.html', {'UserInfo': UserForm, 'pagosActuales': usuario.formasDePago})
 
         elif request.session['tipo'] == 3:
+            usuario = vendedorAmbulante.objects.get(nombre=request.session['nombre'])
             UserForm = editarPerfilVendedorAmbulante(instance=usuario)
+            return render(request, 'main/editar-perfil.html',
+                          {'UserInfo': UserForm, 'pagosActuales': usuario.formasDePago})
 
         return render(request,'main/editar-perfil.html', {'UserInfo': UserForm})
 

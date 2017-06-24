@@ -51,9 +51,9 @@ class editarPerfilUsuario(ModelForm):
 class editarPerfilVendedorFijo(editarPerfilUsuario):
     class Meta:
         model = vendedorFijo
-        fields = ['id', 'user', 'nombre', 'email', 'avatar', 'horarioIni', 'horarioFin']
+        fields = ['id', 'user', 'nombre', 'email', 'avatar', 'horarioIni', 'horarioFin', 'formasDePago']
 
 class editarPerfilVendedorAmbulante(editarPerfilUsuario):
     class Meta:
         model = vendedorAmbulante
-        fields = ['id', 'user', 'nombre', 'email', 'avatar', 'activo']
+        fields = ['id', 'user', 'nombre', 'email', 'avatar', 'activo', 'formasDePago']
