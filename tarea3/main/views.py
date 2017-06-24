@@ -149,12 +149,12 @@ def obtenerFavoritos(request):
     nombre = request.session['nombre']
     favoritos =[]
     nombres = []
-    for fav in Favoritos.objects.raw("SELECT * FROM Favoritos"):
-        if id == fav.idAlumno_id:
-            favoritos.append(fav.idVendedor_id)
-            vendedor = Usuario.objects.filter(id =fav.idVendedor_id).get()
-            nombre = vendedor.nombre
-            nombres.append(nombre)
+    vendedores = Favoritos.objects.filter(idAlumno_id=id)
+    for fav in vendedores:
+        favoritos.append(fav.idVendedor_id)
+        usuario = Usuario.objects.filter(id = fav.idVendedor_id)
+        nombre = usuario.get().nombre
+        nombres.append(nombre)
     return [favoritos,nombres]
 
 def obtenerProductos(id):
@@ -179,13 +179,12 @@ def obtenerProductos(id):
 
 def obtenerFavoritosVendedor(idVendedor):
     favoritos = 0
-    for fila in Favoritos.objects.raw('SELECT * FROM favoritos WHERE idVendedor_id = "' + str(idVendedor) + '"'):
-        favoritos += 1
+    favoritos = Favoritos.objects.filter(idVendedor_id = idVendedor)
+    favoritos = favoritos.count()
     return favoritos
 
 def esActivo(idVendedor):
     tipo = int(Usuario.objects.get(id=idVendedor).tipo)
-    print(tipo)
     if tipo == 2:
         usuario = vendedorFijo.objects.get(vendedor_ptr_id=idVendedor)
         horarioIni = usuario.horarioIni
