@@ -7,7 +7,7 @@
     <script>
       function initMap() {
         var infoWindow;
-        var beau850 = {lat: -33.457785, lng: -70.663808};
+        var beau850 = {lat: -33.457785, lng: -70.663950};
         var map = new google.maps.Map(document.getElementById('map'), {
           zoom: 19,
           center: beau850
@@ -36,36 +36,48 @@
           maxWidth: 400
         });
 
-
-        var marker = new google.maps.Marker({
-          position: beau850,
-          map: map
-        });
-
-        var marker2 = new google.maps.Marker({
-          position: {lat: -33.457885, lng: -70.663808},
-          map: map
-        });
-
-        var marker3 = new google.maps.Marker({
-          position: {lat: -33.458085, lng: -70.663808},
-          map: map,
-          icon: '../static/img/star.png'
-        });
-
-        var marker4 = new google.maps.Marker({
-          position: {lat: -33.458158, lng: -70.663678},
-          map: map
-        });
-
-        var marker5 = new google.maps.Marker({
-          position: {lat: -33.457658, lng: -70.663778},
-          map: map
-        });
-
-        marker3.addListener('click', function() {
-            infoVendedor.open(map, marker3);
-          });
+        var v = "{{vendedores}}"; //nombre, avatar, lat, longitud
+        var arreglo_v = v.split(";");
+        var markers = [];
+        for (i = 0; i<arreglo_v.length; i++) {
+            var vendedor = arreglo_v[i].split(",");
+            var nuevo = new google.maps.Marker({
+                position: {lat: parseFloat(vendedor[2]), lng: parseFloat(vendedor[3])},
+                map: map
+            })
+            alert(vendedor[2]);
+            alert(vendedor[3]);
+            markers.push(nuevo);
+        }
+//        new google.maps.Marker({
+//                position: {lat: parseFloat(arreglo_v[0].split(",")[2]), lng: parseFloat(vendedor[3])},
+//                map: map
+//            });
+//
+//        new google.maps.Marker({
+//          position: {lat: -33.457885, lng: -70.663808},
+//          map: map
+//        });
+//
+//        new google.maps.Marker({
+//          position: {lat: -33.458085, lng: -70.663808},
+//          map: map,
+//          icon: '../static/img/star.png'
+//        });
+//
+//        new google.maps.Marker({
+//          position: {lat: -33.458158, lng: -70.663678},
+//          map: map
+//        });
+//
+//        new google.maps.Marker({
+//          position: {lat: -33.457658, lng: -70.663778},
+//          map: map
+//        });
+//
+//        marker3.addListener('click', function() {
+//            infoVendedor.open(map, marker3);
+//          });
 
         // posicion actual
         if (navigator.geolocation) {

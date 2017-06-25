@@ -29,18 +29,24 @@ from datetime import time
 
 #Vista inicial
 def index(request):
-    vendedores = list(Vendedor.objects.all())
-    lista_vend = []
-    for vendedor in vendedores:
-        # print(Vendedor.objects.get(nombre=vendedor).tipo, Vendedor.objects.get(nombre=vendedor).id)
-        id = Vendedor.objects.get(nombre=vendedor).id
-        print(vendedor, tieneStock(id))
-        # lista_vend.append()
-    # print(vendedores[0])
-    return render(request, 'main/index.html',{})
+    vendedores = stringVendedoresActivosConStock()
+    return render(request, 'main/index.html',{'vendedores':vendedores})
 
-def listaVendedoresActivosConStock():
+def stringVendedoresActivosConStock():
+    string_vend = ""
     vendedores = list(Vendedor.objects.all())
+    for vendedor in vendedores:
+        id = Vendedor.objects.get(nombre=vendedor).id
+        if esActivo(id) and tieneStock(id):
+            v = Vendedor.objects.get(nombre=vendedor)
+            nombre = v.nombre
+            latitud = v.latitud
+            longitud = v.longitud
+            avatar = v.avatar
+            string_vend+= nombre + "," + str(avatar) + "," + str(latitud) + "," + str(longitud) + ";"
+    if string_vend != "":
+        string_vend = string_vend[:-1]
+    return string_vend
 
 def tieneStock(id_vendedor):
     comidas = list(Comida.objects.filter(idVendedor=id_vendedor))
