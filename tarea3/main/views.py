@@ -61,33 +61,9 @@ class login(View):
             request.session['user'] = str(usuario.user)
             request.session['nombre'] = str(usuario.nombre)
             request.session['avatar'] = str(usuario.avatar)
-            request.session['tipo'] = int(usuario.tipo)
-            if tipo == 0:
-                adminForm = LoginUsuario(instance=usuario)
-                return render(request, 'main/dummy.html', {"formLogin": adminForm})
-            if tipo == 1:
-                alumnoForm = LoginUsuario(instance=usuario)
-                return render(request, 'main/baseUsuario.html', {"formLogin": alumnoForm})
-            if tipo == 2:
-                usuario = vendedorFijo.objects.get(vendedor_ptr_id=request.session['id'])
-                request.session['horarioIni'] = str(usuario.horarioIni)
-                request.session['horarioFin'] = str(usuario.horarioFin)
-                vfijo = LoginVendedorFijo(instance=usuario)
-                usuario = Vendedor.objects.get(usuario_ptr_id=request.session['id'])
-                request.session['formasDePago'] = usuario.formasDePago
-                request.session['favoritos'] = obtenerFavoritosVendedor(request.session['id'])
-                request.session['activo'] = esActivo(request.session['id'])
-                return render(request, 'main/baseUsuario.html', {"formLogin": vfijo})
-            else:
-                request.session['activo'] = esActivo(request.session['id'])
-                usuario = Vendedor.objects.get(usuario_ptr_id = request.session['id'])
-                request.session['formasDePago'] = usuario.formasDePago
-                vambulante = LoginVendedorAmbulante(instance=usuario)
-                request.session['favoritos'] = obtenerFavoritosVendedor(request.session['id'])
-                return render(request, 'main/baseUsuario.html', {"formLogin": vambulante})
-
-            return render(request, self.template_name, {"formLoggin": LoginForm()})
-
+            request.session['email'] = email
+            request.session['tipo'] = tipo
+            return inicio(request)
 class editarUsuario(View):
     #acceder a pagina de edicion
     def get(self,request):
@@ -134,10 +110,95 @@ class editarUsuario(View):
             while(count >= 0):
                 Favoritos.objects.filter(idAlumno_id=request.session['id'],idVendedor_id=request.POST.get("switch" + str(count))).delete()
                 count -= 1
-        return self.get(request)
+        return inicio(request)
+
+class agregarproductos(View):
+    def get(self,request):
+        return render(request, 'main/gestionar-productos.html', {'productoForm': editarProductosForm(),'contexto' : 'Agregar Producto','boton': 'Agregar Producto'})
+
+    def post(self,request):
+        print(request.POST)
+        print(request.FILES)
+        id_vendedor = request.session['id']
+        nombre = request.POST['nombre']
+        descripcion = request.POST['nombre']
+        precio = request.POST['precio']
+        stock = request.POST['stock']
+        imagen = request.FILES['imagen']
+        categorias = []
+        for i in range(0,17):
+            try:
+                categoria =request.POST['categoria'+str(i)]
+                categorias.append(str(i))
+            except:
+                pass
+        producto = Comida(idVendedor_id = id_vendedor, categorias = categorias, nombre = nombre, descripcion = descripcion, precio = precio, stock = stock, imagen = imagen)
+        producto.save()
+        return inicio(request)
+
+class editarproductos(View):
+    def get(self,request):
+        nombre = request.GET['nombre']
+        id = request.session['id']
+        producto = Comida.objects.get(nombre=nombre)
+        form = editarProductosForm(instance=producto)
+        return render(request, 'main/gestionar-productos.html', {'productoForm': form ,'contexto' : 'Editar Producto','boton': 'Guardar Cambios'})
+
+    def post(self,request):
+        nombreOriginal = request.GET['nombre']
+        id = request.session['id']
+        nombre = request.POST['nombre']
+        descripcion = request.POST['descripcion']
+        precio = request.POST['precio']
+        stock = request.POST['stock']
+        try:
+            imagen = request.FILES['imagen']
+        except:
+            imagen = Comida.objects.get(nombre=nombreOriginal).imagen
+        categorias = []
+        for i in range(0,17):
+            try:
+                categoria =request.POST['categoria'+str(i)]
+                categorias.append(str(i))
+            except:
+                pass
+        try:
+            Comida.objects.filter(nombre=nombreOriginal).update(nombre=nombre,descripcion=descripcion,precio=precio,stock=stock,imagen=imagen,categorias=categorias)
+        except:
+            return self.get(request)
+
+        return inicio(request)
 
 def inicio(request):
-    return render(request, 'main/baseUsuario.html', {})
+    tipo = request.session['tipo']
+    user = User.objects.get(email=request.session['email'])
+    usuario = Usuario.objects.get(user=user)
+    if tipo == 0:
+        adminForm = LoginUsuario(instance=usuario)
+        return render(request, 'main/dummy.html', {"formLogin": adminForm})
+    if tipo == 1:
+        alumnoForm = LoginUsuario(instance=usuario)
+        return render(request, 'main/baseUsuario.html', {"formLogin": alumnoForm})
+    if tipo == 2:
+        usuario = vendedorFijo.objects.get(vendedor_ptr_id=request.session['id'])
+        request.session['horarioIni'] = str(usuario.horarioIni)
+        request.session['horarioFin'] = str(usuario.horarioFin)
+        vfijo = LoginVendedorFijo(instance=usuario)
+        usuario = Vendedor.objects.get(usuario_ptr_id=request.session['id'])
+        request.session['formasDePago'] = usuario.formasDePago
+        request.session['favoritos'] = obtenerFavoritosVendedor(request.session['id'])
+        request.session['activo'] = esActivo(request.session['id'])
+        productos = obtenerProductos(request.session['id'])
+        return render(request, 'main/baseUsuario.html', {"formLogin": vfijo, 'listaDeProductos': productos})
+    else:
+        request.session['activo'] = esActivo(request.session['id'])
+        usuario = Vendedor.objects.get(usuario_ptr_id=request.session['id'])
+        request.session['formasDePago'] = usuario.formasDePago
+        vambulante = LoginVendedorAmbulante(instance=usuario)
+        request.session['favoritos'] = obtenerFavoritosVendedor(request.session['id'])
+        productos = obtenerProductos(request.session['id'])
+        return render(request, 'main/baseUsuario.html', {"formLogin": vambulante, 'listaDeProductos': productos})
+
 
 def logOut(request):
     logout(request)
@@ -160,20 +221,18 @@ def obtenerFavoritos(request):
 def obtenerProductos(id):
     listaDeProductos = []
     i = 0
-    try:
-        for producto in Comida.objects.filter(idVendedor_id = id).get():
-            listaDeProductos.append([])
-            listaDeProductos[i].append(producto.nombre)
-            categoria = str(producto.categorias)
-            listaDeProductos[i].append(categoria)
-            listaDeProductos[i].append(producto.stock)
-            listaDeProductos[i].append(producto.precio)
-            listaDeProductos[i].append(producto.descripcion)
-            listaDeProductos[i].append(str(producto.imagen))
-            i += 1
-        listaDeProductos = simplejson.dumps(listaDeProductos, ensure_ascii=False).encode('utf8')
-    except:
-        listaDeProductos = []
+    for producto in Comida.objects.filter(idVendedor_id = int(id)):
+        listaDeProductos.append([])
+        listaDeProductos[i].append(producto.nombre)
+        categoria = str(producto.categorias)
+        listaDeProductos[i].append(categoria)
+        listaDeProductos[i].append(producto.stock)
+        listaDeProductos[i].append(producto.precio)
+        listaDeProductos[i].append(producto.descripcion)
+        listaDeProductos[i].append(str(producto.imagen))
+        i += 1
+    listaDeProductos = simplejson.dumps(listaDeProductos, ensure_ascii=False).encode('utf8')
+
     return listaDeProductos
 
 def obtenerFavoritosVendedor(idVendedor):
@@ -207,10 +266,13 @@ def cambiarEstado(request):
             id_vendedor = request.GET.get('id')
             if estado == "true":
                 vendedorAmbulante.objects.filter(vendedor_ptr_id=id_vendedor).update(activo=True)
+                request.session['activo'] = True
             else:
                 vendedorAmbulante.objects.filter(vendedor_ptr_id=id_vendedor).update(activo=False)
+                request.session['activo'] = False
             data = {"estado": estado}
             return JsonResponse(data)
+
 
 
 class signup(View):
@@ -222,7 +284,6 @@ class signup(View):
 
     @csrf_exempt
     def post(self, request):
-        print(request.POST)
         tipo = int(request.POST.get("tipo"))
         nombre = request.POST.get("nombre")
         email = request.POST.get("email")
@@ -670,7 +731,7 @@ def loginReq(request):
 #             path = "main/baseVAmbulante.html"
 #         if tipo == 2:
 #             path = "main/baseVFijo.html"
-#     return render(request, 'main/agregar-productos.html', {"path" : path})
+#     return render(request, 'main/gestionar-productos.html', {"path" : path})
 #
 # def vendedorprofilepage(request):
 #     return render(request, 'main/vendedor-profile-page.html', {})
@@ -745,7 +806,7 @@ def loginReq(request):
 #                 producto.categorias = request.POST.get("categoria")
 #                 producto.save()
 #             else:
-#                 return render(request, 'main/agregar-productos.html', {"path" : path, "respuesta": "¡Ingrese todos los datos!"})
+#                 return render(request, 'main/gestionar-productos.html', {"path" : path, "respuesta": "¡Ingrese todos los datos!"})
 #
 #     # obtener alimentos en caso de que sea vendedor fijo o ambulante
 #     i = 0

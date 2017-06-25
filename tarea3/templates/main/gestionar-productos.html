@@ -1,0 +1,92 @@
+{% extends 'main/baseUsuario.html' %}
+{% block content %}
+
+<main>
+<div class="section"></div>
+
+      <h4 class="teal-text" style="text-align: center;">{{ contexto }}</h4>
+      <div class="section"></div>
+
+      <div class="container">
+        <div class="z-depth-1 grey lighten-4 row" style="margin-left: 5%; margin-right: 5%; padding: 32px 48px 0px 48px; border: 1px solid #EEE;">
+
+          <form enctype="multipart/form-data" class="col s12 m12" method="post" action="#" > {% csrf_token %}
+            <div class='row'>
+              <div class='col s12 m12'>
+              </div>
+            </div>
+
+            <div class='row'>
+               <h4>{{respuesta}}</h4>
+              <div class='input-field col s12 m12' >
+                  &ensp;Nombre del producto:
+                 <div class="input-field inline ">
+               {{ productoForm.nombre }}
+                <label style="text-align: center" for='item'></label>
+                 </div>
+              </div>
+            </div>
+
+            <div class='row'>
+              <div class='input-field col s12 m12'>
+                  &ensp;Precio del producto:
+                  <div class="input-field inline">
+                {{ productoForm.precio }}
+                <label style="text-align: center" for='precio'></label>
+                  </div>
+              </div>
+            </div>
+            <div class='row'>
+              <div class='input-field col s12 m12'>
+                  &ensp;Stock del producto:
+                  <div class="input-field inline">
+                {{ productoForm.stock }}
+                <label style="text-align: center" for='stock'></label>
+                  </div>
+              </div>
+            </div>
+            <div class="row">
+                  <div class="row">
+                    <div class="input-field col s12 m12" >
+                      <i class="material-icons prefix">&emsp;mode_edit</i>
+                      {{ productoForm.descripcion }}
+                      <label  for="icon_prefix2">&emsp;Descripción</label>
+                    </div>
+                  </div>
+            </div>
+              <div>
+                  Selecciona una categoria:
+              </div>
+              {% for value, text in productoForm.categorias.field.choices %}
+                      <p>
+                          <input id="categoria{{ forloop.counter0 }}" name="categoria{{ forloop.counter0 }}" type="checkbox">
+                          <label for="categoria{{ forloop.counter0 }}">{{ text }}</label>
+                      </p>
+
+                {% endfor %}
+
+            <div id="file-upload" class="section">
+             <!--Default version-->
+            <div class="row section">
+              <div class="col s12 m12 l12">
+                  <p>&emsp;&emsp;Imagen del</p>
+                  <p>&emsp;&emsp;&ensp;producto:</p>
+                  {{ productoForm.imagen }}
+
+              </div>
+
+            </div>
+            <div class='row'>
+                    <button type="submit" class='col l5 offset-l4 btn btn-large waves-effect button teal' >&emsp;{{ boton }}<i class="material-icons right">send</i></button>
+            </div>
+            </form>
+          </div>
+
+
+        </div>
+      </div>
+
+
+
+</main>
+{% endblock %}

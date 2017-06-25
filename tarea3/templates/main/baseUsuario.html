@@ -202,6 +202,65 @@
             </div>
         </div>
     </div>
+
+    {% if request.session.tipo == 2 or request.session.tipo == 3  %}
+      <div id="profile-page-content" class="row">
+        <div id="profile-page-wall" class="col s12 m8">
+            <div class="col s12 z-depth-1">
+                <div class="tab-content col s12">
+                    <div class="container">
+                        <div class="section">
+                            <div class="row">
+                                <!-- Aca se definen los modales -->
+                                <!-- aca comienzan a mostrarse los productos -->
+                                <!--Este script es para ordenar el listado de productos -->
+                                        <script>
+                                            var productos ={{ listaDeProductos|safe }};
+                                            var largo = productos.length;
+                                            //imprimir en pantalla todas las tarjetas de productos
+                                            for (var i = 0; i < largo; i++)  {
+                                                document.write(" <div class='col s6 m12 l4'>");
+                                                document.write("<div class='container'>");
+                                                document.write(" <div class='card z-depth-1'>");
+                                                document.write("<div class='teal lighten-2 card-image waves-effect waves-block waves-light'>");
+                                                document.write("<form method='GET' action='{% url 'editarproductos' %}'>")
+                                                document.write("<input type='hidden' name ='nombre' id='nombre' value='"+productos[i][0]+"'>");
+                                                document.write("<button style='position: absolute; bottom: 4.5em; right: 0.5em; padding: 0 0 !important;' class='btn-floating btn-large '' type='submit'>");
+                                                document.write("<i class='large material-icons'>mode_edit</i>");
+                                                document.write("</button></form>")
+                                                document.write("<img class='activator responsive-img center-block'  style='max-width: 30%; margin-top:20px; margin-bottom:20px;height: 100px; width: 100px;' src ='../static/media/"+productos[i][5]+"'>");
+                                                document.write("</div>");
+                                                document.write(" <div class='card-content'>");
+                                                document.write("<span class='card-title activator grey-text text-darken-4'> "+productos[i][0] +" <i class='material-icons right'>more_vert</i></span>");
+                                                document.write("<p><a class='teal-text'> $"+productos[i][3]+" </a></p>");
+                                                document.write("<p><a class='row col l5' id='Stock-"+productos[i][0]+"' class='teal-text'> Stock :"+productos[i][2]+" </a>");
+                                                document.write("<div class='row' ></div>");
+                                                document.write("<div class='col s3 m4' ></div>");
+                                                document.write('<button class=" btn btn-large waves-effect button teal" id="Button--'+productos[i][0]+'" type="button" onclick ="bajarStock('+"\'"+productos[i][0]+"\'"+' );"   >-</button> <button class="btn btn-large waves-effect button teal" id="Button-'+productos[i][0]+'" type="button" onclick ="subirStock('+"\'"+productos[i][0]+"\'"+' );"   >+</button></p>');
+                                                document.write("</div>");
+                                                document.write(" <div class='card-reveal'>");
+                                                document.write(" <span class='card-title grey-text text-darken-4'> "+productos[i][0] +" <i class='material-icons right'>close</i></span>");
+                                                document.write(" <ul>");
+                                                document.write(" <li>Precio: <a class='green-text light-green-text'> $"+productos[i][3]+" </a></li>");
+                                                document.write("<li>Categoria: "+productos[i][1]+" </li>");
+                                                document.write("<li>Stock: "+productos[i][2]+" </li>");
+                                                document.write("<li>Descripcion: "+productos[i][4]+" </li>");
+                                                document.write(" </ul></div></div></div></div>");
+                                            }
+
+                                            </script>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class='row'>
+                    <a class='col l5 offset-l4 btn btn-large waves-effect button teal' href="{% url 'agregarproductos' %}">Agregar Item</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 <script>
     function ProfileImg() {
         var str = "../static/media/";
