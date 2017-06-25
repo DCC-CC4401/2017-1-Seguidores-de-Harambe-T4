@@ -301,6 +301,70 @@
         document.getElementById("favoritos-movil").innerHTML = numeroFav;
     }
 
+
+    function subirStock(id){
+         var datos ="op=suma&nombre=" + id;
+         $.ajax({
+           url:{% url 'getStock' %},
+           type: "GET",
+           data: datos,
+           dataType: "json",
+           success: function(data) {
+               var nuevoStock = parseInt(data.stock);
+               nuevoStock +=1;
+               document.getElementById("Stock-"+id).innerHTML = "Stock: "+nuevoStock;
+               document.getElementById("Button-"+id).setAttribute("onclick",'subirStock('+"\'"+id+"\'"+' );');
+           },
+           error:function(data) {
+               alert("error in getting from server");
+           },
+         });
+    }
+
+    function bajarStock(id){
+        //crea la transaccion en la bdd
+       /*  var datosTransaccion="nombre=" + id + "&" + "idUsuario=" + "{{request.session.id}}";
+        $.ajax({
+           url: '#',
+           type: "GET",
+           data: datosTransaccion,
+           dataType: "json",
+           success: function(data) {
+              //alert("funciono");
+           },
+           error:function(data) {
+               alert("error in getting from server");
+           },
+         });*/
+
+
+
+        //restar en la bdd
+        var datos ="op=resta&nombre=" + id;
+         $.ajax({
+           url:{% url 'getStock' %},
+           type: "GET",
+           data: datos,
+           dataType: "json",
+           success: function(data) {
+               //alert("tambien funciono");
+               var nuevoStock = parseInt(data.stock);
+               if (nuevoStock != 0){
+                nuevoStock -=1;
+               }
+
+               document.getElementById("Stock-"+id).innerHTML = "Stock: "+nuevoStock;
+               document.getElementById("Button--"+id).setAttribute("onclick",'bajarStock('+"\'"+id+"\'"+' );');
+           },
+           error:function(data) {
+               alert("error in getting from server");
+           },
+         });
+    }
+
+
+
+
 window.onload = Favoritos();
 window.onload = FormasDePago();
 window.onload = ProfileImg();

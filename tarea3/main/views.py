@@ -64,6 +64,7 @@ class login(View):
             request.session['email'] = email
             request.session['tipo'] = tipo
             return inicio(request)
+
 class editarUsuario(View):
     #acceder a pagina de edicion
     def get(self,request):
@@ -175,7 +176,6 @@ def borrarProducto(request):
     Comida.objects.filter(nombre= nombre).delete()
     return inicio(request)
 
-
 def inicio(request):
     tipo = request.session['tipo']
     user = User.objects.get(email=request.session['email'])
@@ -205,7 +205,6 @@ def inicio(request):
         request.session['favoritos'] = obtenerFavoritosVendedor(request.session['id'])
         productos = obtenerProductos(request.session['id'])
         return render(request, 'main/baseUsuario.html', {"formLogin": vambulante, 'listaDeProductos': productos})
-
 
 def logOut(request):
     logout(request)
@@ -280,8 +279,6 @@ def cambiarEstado(request):
             data = {"estado": estado}
             return JsonResponse(data)
 
-
-
 class signup(View):
     form_class = LoginForm
     template_name = 'main/signup.html'
@@ -336,7 +333,6 @@ class signup(View):
     # verificarEmail request -> JsonResponse
     # Funcion auxiliar que verifica si un mail esta disponible o no dinamicamente, recibiendo un request de ajax
 
-
 @csrf_exempt
 def verificarEmail(request):
     if request.is_ajax() or request.method == 'POST':
@@ -348,6 +344,30 @@ def verificarEmail(request):
             return JsonResponse(data)
         data = {"respuesta": "repetido"}
         return JsonResponse(data)
+
+#funcion a utilizar con ajax
+#recibe el nombre del producto y una variable que puede ser suma o resta por medio de GET
+#actualiza el stock dependiendo de la variable y retorna el stock actualizado
+def getStock(request):
+    if request.method == "GET":
+        stock = request.GET.get("nombre")
+        for producto in Comida.objects.raw("SELECT * FROM Comida"):
+            if producto.nombre == request.GET.get("nombre"):
+                stock =  producto.stock
+        if request.GET.get("op") == "suma":
+            nuevoStock = stock + 1
+            Comida.objects.filter(nombre=request.GET.get("nombre")).update(stock=nuevoStock)
+        if request.GET.get("op") == "resta":
+            nuevoStock = stock - 1
+            if stock == 0:
+                return JsonResponse({"stock": stock})
+            Comida.objects.filter(nombre=request.GET.get("nombre")).update(stock=nuevoStock)
+    return JsonResponse({"stock": stock})
+
+
+
+
+
 
 
 #vista que carga la pagina para editar datos de alumno
@@ -1361,24 +1381,7 @@ def loginReq(request):
 #             data = {"respuesta": "disponible"}
 #             return JsonResponse(data)
 #
-# #funcion a utilizar con ajax
-# #recibe el nombre del producto y una variable que puede ser suma o resta por medio de GET
-# #actualiza el stock dependiendo de la variable y retorna el stock actualizado
-# def getStock(request):
-#     if request.method == "GET":
-#         stock = request.GET.get("nombre")
-#         for producto in Comida.objects.raw("SELECT * FROM Comida"):
-#             if producto.nombre == request.GET.get("nombre"):
-#                 stock =  producto.stock
-#         if request.GET.get("op") == "suma":
-#             nuevoStock = stock + 1
-#             Comida.objects.filter(nombre=request.GET.get("nombre")).update(stock=nuevoStock)
-#         if request.GET.get("op") == "resta":
-#             nuevoStock = stock - 1
-#             if stock == 0:
-#                 return JsonResponse({"stock": stock})
-#             Comida.objects.filter(nombre=request.GET.get("nombre")).update(stock=nuevoStock)
-#     return JsonResponse({"stock": stock})
+
 #
 # def createTransaction(request):
 #     print("GET:")
