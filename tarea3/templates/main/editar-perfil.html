@@ -90,7 +90,7 @@
     <script>
     function agregarInputs() {
         var favoritos ={{ favoritos|safe }};
-        var nombres = {{ nombres|safe }};
+        var nombres = {{ nombres|safe }}
         for (var i = 0; i <= favoritos.length - 1; i++) {
             //crear columnas
             var div = document.getElementById("favoritos");

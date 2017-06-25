@@ -27,13 +27,21 @@ class Usuario(models.Model):
         db_table = 'usuario'
 
 class Vendedor(Usuario):
-    litaFormasDePago = (
+    listaFormasDePago = (
         (0, 'Efectivo'),
         (1, 'Tarjeta de Crédito'),
         (2, 'Tarjeta de Débito'),
         (3, 'Tarjeta Junaeb'),
     )
-    formasDePago = MultiSelectField(choices=litaFormasDePago, null=True, blank=True)
+    formasDePago = MultiSelectField(choices=listaFormasDePago, null=True, blank=True)
+    longitud = models.DecimalField(max_digits=8, decimal_places=6, default=-33.457879)
+    latitud = models.DecimalField(max_digits=8, decimal_places=6, default=-70.663949)
+
+    def __init__(self, *args, **kwargs):
+        super(Usuario, self).__init__(*args, **kwargs)
+        if not self.pk and not self.tipo:
+            self.tipo = self.DEFAULT_TYPE
+
     class Meta:
         db_table = 'vendedor'
 
@@ -46,7 +54,7 @@ class vendedorFijo(Vendedor):
         db_table = 'vendedorFijo'
 
 class vendedorAmbulante(Vendedor):
-    activo = models.BooleanField(default=False, blank=True)
+    activo = models.BooleanField()
     DEFAULT_TYPE = 3
     class Meta:
         db_table = 'vendedorAmbulante'

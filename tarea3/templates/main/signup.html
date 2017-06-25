@@ -7,6 +7,8 @@ $(document).ready(function() {
 });
 </script>
 
+<script type="text/javascript" async defer
+                                      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBRnEtvKRqCOKhKVkr9wZ6Z1E4_O_-mHSk"></script>
 
 
 
@@ -23,7 +25,7 @@ $(document).ready(function() {
       <div class="container">
         <div class="z-depth-1 grey lighten-4 row" style="margin-left: 5%; margin-right: 5%; padding: 32px 48px 0px 48px; border: 1px solid #EEE;">
 
-          <form class="col s12 m12" method="post" action="{% url 'register' %}" enctype="multipart/form-data">
+          <form class="col s12 m12" method="post" action="{% url 'signup' %}" enctype="multipart/form-data">
             <div class='row'>
               <div class='col s12 m12'>
               </div>
@@ -100,11 +102,19 @@ $(document).ready(function() {
 
 
 
+                <div class='row'>
+                    <div id="divMapa"></div>
+                    <input type="hidden" name='longitud' id='longitud' value="-70.663987"/>
+                    <input type="hidden" name='latitud' id='latitud' value="-33.457765"/>
+                </div>
+                <div class='row'></div>
+                <div class='row'></div>
                  <div class="col s10 offset-s1 center-align">{% csrf_token %}
                         <button id="registerButton" class="btn waves-effect waves-light" type="submit" name="action">
                         Registrarse
                     </button>
                 </div>
+
 
 
 
@@ -126,8 +136,85 @@ $(document).ready(function() {
 
     {% block javascript %}
   <script>
+
+       function initMap() {
+            var myLatlng = {lat: -33.45776570690642, lng: -70.66398739814758};
+            var minZoomLevel = 18;
+            var maxZoomLevel = 20;
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: minZoomLevel,
+                center:myLatlng
+            });
+
+            var marker = new google.maps.Marker({
+                position: myLatlng,
+                map: map,
+                title: 'Click to zoom'
+            });
+
+           google.maps.event.addListener(map, 'click', function(event) {
+               placeMarker(event.latLng);
+           });
+
+           function placeMarker(position, map) {
+               marker.setPosition(position);
+               document.getElementById(longitud).value = position.lng().toFixed(6);
+               document.getElementById(latitud).value = position.lat().toFixed(6);
+           }
+
+           // Limit the zoom level
+           google.maps.event.addListener(map, 'zoom_changed', function() {
+               if (map.getZoom() < minZoomLevel) map.setZoom(minZoomLevel);
+               if (map.getZoom() > maxZoomLevel) map.setZoom(maxZoomLevel);
+           });
+
+
+           // Bounds for UK
+           var strictBounds = new google.maps.LatLngBounds(
+               new google.maps.LatLng(-33.457472561591494, -70.66717386245728),
+               new google.maps.LatLng(-33.45648570633862, -70.65766274929047)
+           );
+
+           // Listen for the dragend event
+           google.maps.event.addListener(map, 'dragend', function() {
+               if (strictBounds.contains(map.getCenter())) return;
+
+               // We're out of bounds - Move the map back within the bounds
+               var c = map.getCenter(),
+                   x = c.lng(),
+                   y = c.lat(),
+                   maxX = strictBounds.getNorthEast().lng(),
+                   maxY = strictBounds.getNorthEast().lat(),
+                   minX = strictBounds.getSouthWest().lng(),
+                   minY = strictBounds.getSouthWest().lat();
+
+               if (x < minX) x = minX;
+               if (x > maxX) x = maxX;
+               if (y < minY) y = minY;
+               if (y > maxY) y = maxY;
+
+               map.setCenter(new google.maps.LatLng(y, x));
+           });
+
+       }
+
+       function setMap(){
+           var tipo = document.getElementById('tipo').value;
+           if (tipo == 2) {
+               document.getElementById('divMapa').innerHTML = '<h5 style="text-align: center;"  class="card-title flow-text text-darken-2">Elige tu ubicación</h5>'+
+                                            '<div class="col s10 center-align">'+
+                                            '<div id="map" style="width:900px;height:400px;"></div>'+
+                                            '</div>';
+               initMap();
+           } else {
+               document.getElementById('divMapa').innerHTML = '';
+           }
+       }
+
+
     $("#tipo").change(function () {
-      crearFormulario()
+      crearFormulario();
+      setMap();
 
     });
 

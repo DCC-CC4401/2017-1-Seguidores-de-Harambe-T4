@@ -25,6 +25,7 @@ from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
 from multiselectfield import MultiSelectField
 from django.core.files.storage import default_storage
+from datetime import time
 
 #Vista inicial
 def index(request):
@@ -68,11 +69,21 @@ class login(View):
                 alumnoForm = LoginUsuario(instance=usuario)
                 return render(request, 'main/baseUsuario.html', {"formLogin": alumnoForm})
             if tipo == 2:
+                usuario = vendedorFijo.objects.get(vendedor_ptr_id=request.session['id'])
+                request.session['horarioIni'] = str(usuario.horarioIni)
+                request.session['horarioFin'] = str(usuario.horarioFin)
                 vfijo = LoginVendedorFijo(instance=usuario)
-                print(vendedorFijo.objects.get(email=email).formasDePago)
+                usuario = Vendedor.objects.get(usuario_ptr_id=request.session['id'])
+                request.session['formasDePago'] = usuario.formasDePago
+                request.session['favoritos'] = obtenerFavoritosVendedor(request.session['id'])
+                request.session['activo'] = esActivo(request.session['id'])
                 return render(request, 'main/baseUsuario.html', {"formLogin": vfijo})
             else:
+                request.session['activo'] = esActivo(request.session['id'])
+                usuario = Vendedor.objects.get(usuario_ptr_id = request.session['id'])
+                request.session['formasDePago'] = usuario.formasDePago
                 vambulante = LoginVendedorAmbulante(instance=usuario)
+                request.session['favoritos'] = obtenerFavoritosVendedor(request.session['id'])
                 return render(request, 'main/baseUsuario.html', {"formLogin": vambulante})
 
             return render(request, self.template_name, {"formLoggin": LoginForm()})
@@ -165,13 +176,137 @@ def obtenerFavoritos(request):
     nombre = request.session['nombre']
     favoritos =[]
     nombres = []
-    for fav in Favoritos.objects.raw("SELECT * FROM Favoritos"):
-        if id == fav.idAlumno_id:
-            favoritos.append(fav.idVendedor_id)
-            vendedor = Usuario.objects.filter(id =fav.idVendedor_id).get()
-            nombre = vendedor.nombre
-            nombres.append(nombre)
+    vendedores = Favoritos.objects.filter(idAlumno_id=id)
+    for fav in vendedores:
+        favoritos.append(fav.idVendedor_id)
+        usuario = Usuario.objects.filter(id = fav.idVendedor_id)
+        nombre = usuario.get().nombre
+        nombres.append(nombre)
     return [favoritos,nombres]
+
+def obtenerProductos(id):
+    listaDeProductos = []
+    i = 0
+    try:
+        for producto in Comida.objects.filter(idVendedor_id = id).get():
+            listaDeProductos.append([])
+            listaDeProductos[i].append(producto.nombre)
+            categoria = str(producto.categorias)
+            listaDeProductos[i].append(categoria)
+            listaDeProductos[i].append(producto.stock)
+            listaDeProductos[i].append(producto.precio)
+            listaDeProductos[i].append(producto.descripcion)
+            listaDeProductos[i].append(str(producto.imagen))
+            i += 1
+        listaDeProductos = simplejson.dumps(listaDeProductos, ensure_ascii=False).encode('utf8')
+    except:
+        listaDeProductos = []
+    return listaDeProductos
+
+def obtenerFavoritosVendedor(idVendedor):
+    favoritos = 0
+    favoritos = Favoritos.objects.filter(idVendedor_id = idVendedor)
+    favoritos = favoritos.count()
+    return favoritos
+
+def esActivo(idVendedor):
+    tipo = int(Usuario.objects.get(id=idVendedor).tipo)
+    if tipo == 2:
+        usuario = vendedorFijo.objects.get(vendedor_ptr_id=idVendedor)
+        horarioIni = usuario.horarioIni
+        horarioIni = time(int(horarioIni[:2]),int(horarioIni[3:5]))
+        horarioFin = usuario.horarioFin
+        horarioFin = time(int(horarioFin[:2]), int(horarioFin[3:5]))
+
+        if horarioIni <= time(datetime.datetime.now().hour,datetime.datetime.now().minute) <= horarioFin:
+            return True
+        else:
+            return False
+    elif tipo == 3:
+        usuario = vendedorAmbulante.objects.get(vendedor_ptr_id=idVendedor)
+        return  bool(usuario.activo)
+
+def cambiarEstado(request):
+    if request.method == 'GET':
+        if request.is_ajax():
+            print("sucess")
+            estado = request.GET.get('estado')
+            id_vendedor = request.GET.get('id')
+            if estado == "true":
+                vendedorAmbulante.objects.filter(vendedor_ptr_id=id_vendedor).update(activo=True)
+            else:
+                vendedorAmbulante.objects.filter(vendedor_ptr_id=id_vendedor).update(activo=False)
+            data = {"estado": estado}
+            return JsonResponse(data)
+
+
+class signup(View):
+    form_class = LoginForm
+    template_name = 'main/signup.html'
+
+    def get(self, request):
+        return render(request, self.template_name, {"formLoggin": LoginForm()})
+
+    @csrf_exempt
+    def post(self, request):
+        print(request.POST)
+        tipo = int(request.POST.get("tipo"))
+        nombre = request.POST.get("nombre")
+        email = request.POST.get("email")
+        avatar = request.FILES.get("avatar")
+        contraseña = request.POST.get("password")
+        djangoUser = User(username=nombre, password=contraseña, email=email)
+        djangoUser.save()
+
+        if (tipo == 0):
+            adminNuevo = Admin(nombre=nombre, user=djangoUser, email=email, avatar=avatar, tipo=tipo)
+            adminNuevo.save()
+
+        elif (tipo == 1):
+            alumnoNuevo = alumno(nombre=nombre, user=djangoUser, email=email, avatar=avatar, tipo=tipo)
+            alumnoNuevo.save()
+
+        elif (tipo == 2 or tipo == 3):
+            horaInicial = request.POST.get("horaIni")
+            horaFinal = request.POST.get("horaFin")
+            formasDePago = []
+            if not (request.POST.get("formaDePago0") is None):
+                formasDePago.append(request.POST.get("formaDePago0"))
+            if not (request.POST.get("formaDePago1") is None):
+                formasDePago.append(request.POST.get("formaDePago1"))
+            if not (request.POST.get("formaDePago2") is None):
+                formasDePago.append(request.POST.get("formaDePago2"))
+            if not (request.POST.get("formaDePago3") is None):
+                formasDePago.append(request.POST.get("formaDePago3"))
+                if (tipo == 2):
+                    longitud = float(request.POST.get("longitud"))
+                    latitud = float(request.POST.get("latitud"))
+                    nuevoVendedorFijo = vendedorFijo(nombre=nombre, user=djangoUser, email=email, avatar=avatar,
+                                                     tipo=tipo,
+                                                     longitud=longitud, latitud=latitud, horarioIni=horaInicial,
+                                                     horarioFin=horaFinal)
+                    nuevoVendedorFijo.save()
+                else:
+                    nuevoVendedorAmbulante = vendedorAmbulante(nombre=nombre, user=djangoUser, email=email,
+                                                               avatar=avatar, tipo=tipo)
+                    nuevoVendedorAmbulante.save()
+        return render(request, 'main/login.html')
+
+    # verificarEmail request -> JsonResponse
+    # Funcion auxiliar que verifica si un mail esta disponible o no dinamicamente, recibiendo un request de ajax
+
+
+@csrf_exempt
+def verificarEmail(request):
+    if request.is_ajax() or request.method == 'POST':
+        email = request.POST.get("email")
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            data = {"respuesta": "disponible"}
+            return JsonResponse(data)
+        data = {"respuesta": "repetido"}
+        return JsonResponse(data)
 
 
 #vista que carga la pagina para editar datos de alumno
@@ -547,11 +682,7 @@ def loginReq(request):
 #     argumentos = {"nombre":nombre,"id":id,"avatar":avatar,"email":email,"lista":listaDeUsuarios,"numeroUsuarios":numeroUsuarios,"numeroDeComidas":numeroDeComidas,"contraseña":contraseña}
 #     return render(request, 'main/baseAdmin.html', argumentos)
 #
-# def obtenerFavoritos(idVendedor):
-#     favoritos = 0
-#     for fila in Favoritos.objects.raw('SELECT * FROM favoritos WHERE idVendedor = "' + str(idVendedor) + '"'):
-#         favoritos += 1
-#     return favoritos
+
 #
 #
 #

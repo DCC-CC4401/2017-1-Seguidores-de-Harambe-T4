@@ -38,17 +38,29 @@
                   <a href="#!name"><span style="margin-left: 5%;" class="white-text name">{{ request.session.nombre}} </span></a>
                   <li><a href="{% url 'inicio' %}"><i class="material-icons">home</i>Inicio</a></li>
                   <li><a href="{% url 'logout' %}"><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>
+                {% if request.session.tipo == 3 %}
+                <!-- Boton Activo -->>
+                <li><a class="subheader">Activo</a></li>
+                <li>
+                    <div class="switch" style="margin-left: 80px;">
+                        <label>
+                            No<input type="checkbox" id="checkbox-estado"><span class="lever"></span>Si
+                        </label>
+                    </div>
+                </li>
+                {% endif %}
                 </div>
                 </li>
+
         </div>
     </nav>
 
 </head>
 
 {% block content %}
+<!-- si es usuario tipo alumno -->
+{% if request.session.tipo == 1 %}
     <main>
-
-
     <div class='row'>
     <div class = "col s12 m12 l12">
     <img class='activator responsive-img center-block' src="../static/media/mapa.png" alt="Planets" usemap="#vendedoresMap">
@@ -58,11 +70,262 @@
         </map>
      </div>
      </div>
-
-
     </main>
+{% endif %}
+
+<!-- si es usuario tipo vendedor -->
+{% if request.session.tipo == 3 or request.session.tipo == 2 %}
+{#    Perfil del vendedor           #}
+    <div class="container">
+
+        <div id="profile-page-header" class="card">
+            <!-- Fondo del vendedor -->
+            <div class="card-image waves-effect waves-block waves-light">
+                <img class="activator" src="../static/img/food-background3.png" alt="user background">
+            </div>
+
+            <!-- Imagen del perfil en pantallas grandes -->
+            <div class="row hide-on-small-and-down">
+                <a class="card-profile-image-large">
+                    <img style="margin-top: 20%;" id="img-perfil-desktop" src="" alt="profile image" class="circle z-depth-2 responsive-img activator">
+                </a>
+            </div>
+
+            <!-- Imagen del perfil en pantallas medianas/pequeñas -->
+            <div class="row show-on-small hide-on-med-and-up">
+                <a class="card-profile-image-small">
+                    <img id="img-perfil-movil" src="" alt="profile image" class="circle z-depth-2 responsive-img activator">
+                </a>
+            </div>
+
+            <!-- Info del vendedor desktop -->
+            <div class="card-content s12 offset-s1">
+                <div class="row">
+                    <div class="col s3 offset-s2 hide-on-med-and-down">
+
+                        <!-- Nombre -->
+                        <h4 class="card-title grey-text flow-text text-darken-4">{{request.session.nombre}}</h4>
+
+                        <!-- Tipo -->
+                        <p class="medium-small flow-text grey-text">{% if request.session.tipo == 3 %}Vendedor Ambulante {% endif %} {% if request.session.tipo == 2 %} Vendedor Fijo {% endif %}</p>
+
+                    <!-- Horario -->
+                        {% if request.session.tipo == 2 %}
+                    <p class="flow-text text-darken-4" style="font-size: 0.88rem;">
+                        &ensp;Horario: <a class="light-green-text">{{request.session.horarioIni}} - {{request.session.horarioFin}}</a>
+                    </p>
+                            {% endif %}
+
+                    </div>
+                    <!-- Estado -->
+                    <div class="col s3 l2 hide-on-med-and-down center-align">
+                        <h4 class="card-title flow-text text-darken-4">Estado</h4>
+                        <p class="" id="estado-desktop"></p>
+                    </div>
+                    <!-- Formas de pago -->
+                    <div class="col s3 l2 hide-on-med-and-down center-align">
+                        <h3 class=" grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Formas de pago</h3>
+                        <p class="medium-small flow-text grey-text" id="medios-pago-desktop"></p>
+                    </div>
+
+                    <!-- Favoritos -->
+                    <div class="col s3 l2 hide-on-med-and-down center-align">
+                        <div class="switch" style="margin-left: 10px;">
+                            <label>
+                                <h4 class="card-title grey-text flow-text text-darken-4">Favoritos</h4>
+                                <!--<input type="checkbox"><span class="lever"></span>-->
+                                <h6><i class="material-icons amber-text" >grade</i>
+                                    <span class=" grey-text flow-text text-darken-4"style="font-size:24px; line-height:35px;" id="favoritos-desktop"></span>
+                                </h6>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Boton para Editar -->
+                {% comment %}<div class="col s3 l2 hide-on-med-and-down right-align">
+                    <a class="btn-floating activator waves-effect waves-light darken-2">
+                          <i class="material-icons">mode_edit</i>
+                      </a>
+                 </div>{% endcomment %}
+
+            </div>
+
+            <!-- Info del vendedor movil -->
+            <div class = "row show-on-medium-and-down hide-on-med-and-up"></div>
+            <div class = "row show-on-medium-and-down hide-on-med-and-up"></div>
+            <div class = "row show-on-medium-and-down hide-on-med-and-up"></div>
+            <div class = "row show-on-medium-and-down hide-on-med-and-up"></div>
+            <div class="row show-on-medium-and-down hide-on-med-and-up">
+                <div class="col s2 m2 offset-s1">
+
+                    <!-- Nombre -->
+                    <h4 class="card-title grey-text flow-text text-darken-4">{{request.session.nombre}}</h4>
+
+                    <!--  -->
+                    <p class="medium-small flow-text grey-text">&ensp;{% if request.session.tipo == 3 %}Vendedor Ambulante {% endif %} {% if request.session.tipo == 2 %} Vendedor Fijo {% endif %}</p>
+{#                        <p class="flow-text text-darken-4" style="font-size: 0.88rem;">#}
+{#                            &ensp;Horario: <a class="light-green-text">12:30-14:15</a>#}
+{#                        </p>#}
+
+                </div>
+                 <!-- Horario -->
+                        {% if request.session.tipo == 2 %}
+                    <p class="flow-text text-darken-4" style="font-size: 0.88rem;">
+                        &ensp;Horario: <a class="light-green-text">{{request.session.horarioIni}} - {{request.session.horarioFin}}</a>
+                    </p>
+                            {% endif %}
+
+                <!-- Estado -->
+                <div class="col s2 m2 l12 offset-s1">
+                    <p class="flow-text text-darken-4">Estado </p>
+                    <p class="" id="estado-movil"></p>
+                </div>
 
 
+                <!-- Formas de pago -->
+                <div class="col s3 m2 l12 offset-s1"> <!--offset-s2-->
+                    <p class=" grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Formas de pago</p>
+                    <p class="medium-small flow-text grey-text" id="medios-pago-movil"></p>
+                </div>
 
+                <!-- Favoritos -->
+                <div class="col s1 m1 l12">
+                    <label>
+                        <p class="card-title grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Favoritos</p>
+                        <!--<input type="checkbox"><span class="lever"></span>-->
+                        <h6><i class="material-icons amber-text" style="margin-left: 80%">grade</i>
+                            <span class=" grey-text flow-text text-darken-4"style="margin-left: 100%;font-size:22px; line-height:25px;" id="favoritos-movil"></span>
+                        </h6>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+<script>
+    function ProfileImg() {
+        var str = "../static/media/";
+        var ruta = str.concat("{{request.session.avatar}}");
+        document.getElementById("img-perfil-desktop").src = ruta;
+        document.getElementById("img-perfil-movil").src = ruta;
+    }
+    function EstadoVendedor() {
+        var estado = "{{ request.session.activo }}";
+        if (estado == "True") {
+            document.getElementById("estado-desktop").classList.add("medium-small","flow-text","light-green-text");
+            document.getElementById("estado-desktop").innerHTML = "Disponible";
+
+            document.getElementById("estado-movil").classList.add("medium-small","flow-text","light-green-text");
+            document.getElementById("estado-movil").innerHTML = "Disponible";
+        } else {
+            document.getElementById("estado-desktop").classList.add("medium-small","flow-text","red-text");
+            document.getElementById("estado-desktop").innerHTML = "No Disponible";
+
+            document.getElementById("estado-movil").classList.add("medium-small","flow-text","red-text");
+            document.getElementById("estado-movil").innerHTML = "No Disponible";
+        }
+    }
+    function FormasDePago() {
+        var rawPagos = "{{ request.session.formasDePago}}";
+        var pagos = rawPagos.split(", ");
+        var largo = pagos.length;
+        var texto = "<ul>";
+        for (var i = 0; i < largo; i++)  {
+            texto += "<li>" + pagos[i] + "</li>";
+        }
+        document.getElementById("medios-pago-desktop").innerHTML = texto;
+        document.getElementById("medios-pago-movil").innerHTML = texto;
+    }
+    function Favoritos() {
+        var numeroFav = "{{ request.session.favoritos }}";
+        document.getElementById("favoritos-desktop").innerHTML = numeroFav;
+        document.getElementById("favoritos-movil").innerHTML = numeroFav;
+    }
+
+window.onload = Favoritos();
+window.onload = FormasDePago();
+window.onload = ProfileImg();
+window.onload = EstadoVendedor();
+
+</script>
+
+{% endif %}
+{% if request.session.tipo == 3 %}
+<script>
+    function EstadoActual() {
+        var estdoInicial = "{{ request.session.activo }}";
+        if (estdoInicial == "True") {
+            document.getElementById("checkbox-estado").checked = true;
+        } else {
+            document.getElementById("checkbox-estado").checked = false;
+        }
+    }
+</script>
+
+<script>
+    function switchActivo(){
+        var input = document.getElementById("checkbox-estado");
+        input.setAttribute("onChange" ,'handleChange(this);');
+        if ("{{request.sessionactivo}}" == "True") {
+            input.setAttribute("checked", true);
+        } else {
+            input.setAttribute("checked", false);
+        }
+    }
+</script>
+
+<script>
+    function handleChange(checkbox) {
+    if(checkbox.checked == true){
+         var datos ="id=" + "{{request.session.id}}"+"&estado=true";
+         document.getElementById("estado-desktop").classList.remove("red-text");
+         document.getElementById("estado-desktop").classList.add("light-green-text");
+         document.getElementById("estado-desktop").innerHTML = "Disponible";
+
+         document.getElementById("estado-movil").classList.remove("red-text");
+         document.getElementById("estado-movil").classList.add("light-green-text");
+         document.getElementById("estado-movil").innerHTML = "Disponible";
+         $.ajax({
+           url:{% url 'cambiarEstado' %},
+           type: "GET",
+           data: datos,
+           dataType: "json",
+
+           success: function(data) {
+           },
+           error:function(data) {
+               alert("error in getting from server")
+           },
+        });
+    }else{
+        var datos ="id=" + "{{request.session.id}}"+"&estado=false";
+        document.getElementById("estado-desktop").classList.remove("light-green-text");
+        document.getElementById("estado-desktop").classList.add("red-text");
+        document.getElementById("estado-desktop").innerHTML = "No Disponible";
+
+        document.getElementById("estado-movil").classList.remove("light-green-text");
+        document.getElementById("estado-movil").classList.add("red-text");
+        document.getElementById("estado-movil").innerHTML = "No Disponible";
+         $.ajax({
+           url:{% url 'cambiarEstado' %},
+           type: "GET",
+           data: datos,
+           dataType: "json",
+
+           success: function(data) {
+           },
+           error:function(data) {
+               alert("error in getting from server")
+           },
+        });
+   }
+}
+</script>
+
+ <script>
+    window.onload = EstadoActual();
+    window.onload = switchActivo();
+</script>
+{% endif  %}
 
 {% endblock %}
