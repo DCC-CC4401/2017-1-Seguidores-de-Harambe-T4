@@ -76,6 +76,7 @@
 <!-- si es usuario tipo vendedor -->
 {% if request.session.tipo == 3 or request.session.tipo == 2 %}
 {#    Perfil del vendedor           #}
+    <main>
     <div class="container">
 
         <div id="profile-page-header" class="card">
@@ -202,6 +203,7 @@
             </div>
         </div>
     </div>
+    </main>
 <script>
     function ProfileImg() {
         var str = "../static/media/";

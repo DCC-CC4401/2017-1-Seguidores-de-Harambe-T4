@@ -1,6 +1,8 @@
 {% extends 'main/base.html' %}
 {% block content %}
+
 	<div id="map"></div>
+
 
     <script>
       function initMap() {
@@ -65,6 +67,7 @@
             infoVendedor.open(map, marker3);
           });
 
+        // posicion actual
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(function(position) {
             var pos = {
@@ -90,6 +93,6 @@
       }
     </script>
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=KEY&callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDilbsVtQUD7bOOlJwGMRF4jV8rz3H5E6c&callback=initMap">
     </script>
 {% endblock %}

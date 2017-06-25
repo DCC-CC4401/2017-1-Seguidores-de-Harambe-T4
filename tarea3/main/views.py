@@ -29,7 +29,26 @@ from datetime import time
 
 #Vista inicial
 def index(request):
-    return render(request, 'main/base.html',{})
+    vendedores = list(Vendedor.objects.all())
+    lista_vend = []
+    for vendedor in vendedores:
+        # print(Vendedor.objects.get(nombre=vendedor).tipo, Vendedor.objects.get(nombre=vendedor).id)
+        id = Vendedor.objects.get(nombre=vendedor).id
+        print(vendedor, tieneStock(id))
+        # lista_vend.append()
+    # print(vendedores[0])
+    return render(request, 'main/index.html',{})
+
+def listaVendedoresActivosConStock():
+    vendedores = list(Vendedor.objects.all())
+
+def tieneStock(id_vendedor):
+    comidas = list(Comida.objects.filter(idVendedor=id_vendedor))
+    for c in comidas:
+        if Comida.objects.get(nombre=c).stock > 0:
+            return True
+    return False
+
 
 class login(View):
     form_class = LoginForm
@@ -164,7 +183,7 @@ class editarUsuario(View):
         return inicio(request)
 
 def inicio(request):
-    return render(request, 'main/baseUsuario.html', {})
+    return render(request, 'main/baseUsuario.html')
 
 def logOut(request):
     logout(request)
@@ -364,9 +383,6 @@ def verificarEmail(request):
 #
 #         return JsonResponse({"ejemplo": "correcto"})
 
-
-def signup(request):
-    return render(request, 'main/signup.html', {})
 
 def loginReq(request):
     #inicaliar variables
