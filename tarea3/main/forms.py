@@ -29,8 +29,6 @@ class LoginVendedorAmbulante(LoginVendedor):
         model = vendedorAmbulante
         fields = ['id', 'user', 'nombre', 'email', 'avatar','activo']
 
-
-
 class GestionProductosForm(forms.Form):
     idVendedor = 0
     nombre = forms.CharField(max_length=200)
@@ -59,3 +57,4 @@ class editarPerfilVendedorAmbulante(editarPerfilUsuario):
     class Meta:
         model = vendedorAmbulante
         fields = ['id', 'user', 'nombre', 'email', 'avatar', 'activo']
+

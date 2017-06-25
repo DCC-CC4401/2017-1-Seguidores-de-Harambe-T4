@@ -1,4 +1,4 @@
-{% extends 'main/baseAlumno-sinLogin.html' %}
+{% extends 'main/base.html' %}
 {% block content %}
 
 <script>
@@ -9,9 +9,10 @@
 </script>
     <main>
 {#    Perfil del vendedor           #}
+   {#    Perfil del vendedor           #}
     <div class="container">
-        <div id="profile-page-header" class="card">
 
+        <div id="profile-page-header" class="card">
             <!-- Fondo del vendedor -->
             <div class="card-image waves-effect waves-block waves-light">
                 <img class="activator" src="../static/img/food-background3.png" alt="user background">
@@ -29,67 +30,100 @@
                 <a class="card-profile-image-small">
                     <img id="img-perfil-movil" src="" alt="profile image" class="circle z-depth-2 responsive-img activator">
                 </a>
-
             </div>
 
             <!-- Info del vendedor desktop -->
-            <div class="card-content s12">
+            <div class="card-content s12 offset-s1">
                 <div class="row">
                     <div class="col s3 offset-s2 hide-on-med-and-down">
 
                         <!-- Nombre -->
-                        <h4 class="card-title grey-text flow-text text-darken-4">{{nombre}}</h4>
+                        <h4 class="card-title grey-text flow-text text-darken-4">{{form.nombre.value}}</h4>
 
                         <!-- Tipo -->
-                        <p class="medium-small flow-text grey-text">&emsp;&emsp;&ensp;Vendedor Ambulante</p>
+                        <p class="medium-small flow-text grey-text">{% if tipo == 3 %}Vendedor Ambulante {% endif %} {% if tipo == 2 %} Vendedor Fijo {% endif %}</p>
 
-                        <!-- Horario -->
-{#                        <p class="flow-text text-darken-4" style="font-size: 0.88rem;">#}
-{#                            &emsp;&emsp;Horario: <a class="light-green-text">12:30-14:15</a>#}
-{#                        </p>#}
+                    <!-- Horario -->
+                        {% if tipo == 2 %}
+                    <p class="flow-text text-darken-4" style="font-size: 0.88rem;">
+                        &ensp;Horario: <a class="light-green-text">{{form.horarioIni.value}} - {{form.horarioFin.value}}</a>
+                    </p>
+                            {% endif %}
+
                     </div>
-
                     <!-- Estado -->
                     <div class="col s3 l2 hide-on-med-and-down center-align">
                         <h4 class="card-title flow-text text-darken-4">Estado</h4>
                         <p class="" id="estado-desktop"></p>
                     </div>
-
                     <!-- Formas de pago -->
-                     <div class="col s3 l2 hide-on-med-and-down center-align">
+                    <div class="col s3 l2 hide-on-med-and-down center-align">
                         <h3 class=" grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Formas de pago</h3>
                         <p class="medium-small flow-text grey-text" id="medios-pago-desktop"></p>
                     </div>
 
+                    <!-- Favoritos -->
                     <div class="col s3 l2 hide-on-med-and-down center-align">
                         <div class="switch" style="margin-left: 10px;">
+                            <label>
+                                {% if login == False %}
+                                <h4 class="card-title grey-text flow-text text-darken-4">Favoritos</h4>
+                                <!--<input type="checkbox"><span class="lever"></span>-->
+                                <h6><i class="material-icons amber-text" >grade</i>
+                                    <span class=" grey-text flow-text text-darken-4"style="font-size:24px; line-height:35px;" id="favoritos-desktop"></span>
+                                </h6>
+                                {% else %}
+                                    <h4 class="card-title grey-text flow-text text-darken-4">Favorito</h4>
+                                <h6><i class="material-icons amber-text" >grade</i></h6>
+
+                                 <div id = "favorito-desktop">
+                                </div>
+                                {% endif %}
+                            </label>
                         </div>
                     </div>
                 </div>
+
+                <!-- Boton para Editar -->
+                {% comment %}<div class="col s3 l2 hide-on-med-and-down right-align">
+                    <a class="btn-floating activator waves-effect waves-light darken-2">
+                          <i class="material-icons">mode_edit</i>
+                      </a>
+                 </div>{% endcomment %}
+
             </div>
 
             <!-- Info del vendedor movil -->
-
             <div class = "row show-on-medium-and-down hide-on-med-and-up"></div>
-            <div class = "row show-on-medium-and-down hide-on-med-and-up"></div><div class = "row show-on-medium-and-down hide-on-med-and-up"></div>
+            <div class = "row show-on-medium-and-down hide-on-med-and-up"></div>
+            <div class = "row show-on-medium-and-down hide-on-med-and-up"></div>
             <div class = "row show-on-medium-and-down hide-on-med-and-up"></div>
             <div class="row show-on-medium-and-down hide-on-med-and-up">
-                <div class="col s3 m2 offset-s2">
-                        <h4 class="card-title grey-text flow-text text-darken-4">{{nombre}}</h4>
-                        <p class="medium-small flow-text grey-text">&ensp;Vendedor Ambulante</p>
+                <div class="col s2 m2 offset-s1">
+
+                    <!-- Nombre -->
+                    <h4 class="card-title grey-text flow-text text-darken-4">{{form.nombre.value}</h4>
+
+                    <!--  -->
+                    <p class="medium-small flow-text grey-text">&ensp;{% if tipo == 3 %}Vendedor Ambulante {% endif %} {% if tipo == 2 %} Vendedor Fijo {% endif %}</p>
 {#                        <p class="flow-text text-darken-4" style="font-size: 0.88rem;">#}
 {#                            &ensp;Horario: <a class="light-green-text">12:30-14:15</a>#}
 {#                        </p>#}
-                         <div class="col s3 l2 hide-on-med-and-down center-align">
-                        <div class="switch" style="margin-left: 10px;">
-                        </div>
-                    </div>
-                    </div>
-                 <!-- Estado -->
-                <div class="col s3 m2 l12 offset-s1">
-                    <p class="flow-text text-darken-4">Estado</p>
+
+                </div>
+                 <!-- Horario -->
+                        {% if tipo == 2 %}
+                    <p class="flow-text text-darken-4" style="font-size: 0.88rem;">
+                        &ensp;Horario: <a class="light-green-text">{{form.horarioIni.value}} - {{form.horarioFin.value}}</a>
+                    </p>
+                            {% endif %}
+
+                <!-- Estado -->
+                <div class="col s2 m2 l12 offset-s1">
+                    <p class="flow-text text-darken-4">Estado </p>
                     <p class="" id="estado-movil"></p>
                 </div>
+
 
                 <!-- Formas de pago -->
                 <div class="col s3 m2 l12 offset-s1"> <!--offset-s2-->
@@ -97,20 +131,28 @@
                     <p class="medium-small flow-text grey-text" id="medios-pago-movil"></p>
                 </div>
 
-                <!--<div class="col s3 offset-s2 offset-l10">
-                    <div class="switch" style="margin-left: 10px;">
-                        <label>
-                            <p class="card-title grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Favorito</p>
-                            <input type="checkbox"><span class="lever"></span>
-                        </label>
-                    </div>
-                </div>-->
+                <!-- Favoritos -->
+                <div class="col s1 m1 l12">
+                    <label>
+                        <p class="card-title grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Favoritos</p>
+                        <!--<input type="checkbox"><span class="lever"></span>-->
+                        {% if login == False %}
+                        <h6><i class="material-icons amber-text" style="margin-left: 80%">grade</i>
+                            <span class=" grey-text flow-text text-darken-4"style="margin-left: 100%;font-size:22px; line-height:25px;" id="favoritos-movil"></span>
+                        </h6>
+                        {% else %}
+                            <h4 class="card-title grey-text flow-text text-darken-4">Favorito</h4>
+                            <h6><i class="material-icons amber-text" style="margin-left: 150%">grade</i></h6>
+                                 <div id = "favorito-movil">
+                                </div>
+                        {% endif %}
+                    </label>
+                </div>
             </div>
         </div>
     </div>
 
-{#        Productos del vendedor                #}
-    <div id="profile-page-content" class="row">
+      <div id="profile-page-content" class="row">
         <div id="profile-page-wall" class="col s12 m8">
             <div class="col s12 z-depth-1">
                 <div class="tab-content col s12">
@@ -119,20 +161,10 @@
                             <div class="row">
                                 <!-- Aca se definen los modales -->
                                 <!-- aca comienzan a mostrarse los productos -->
-                                <!--Este script es para ordenar el listado de productos --> <!-- TODO agregar imagenes, crear dinamicamente los modales-->
-                                            <script>
+                                <!--Este script es para ordenar el listado de productos -->
+                                        <script>
                                             var productos ={{ listaDeProductos|safe }};
                                             var largo = productos.length;
-                                            //crear todos los modales
-                                            for (var i = 0; i < largo; i++)  {
-                                                document.write( "<div id='modal"+(i + 1)+"' class='modal'>");
-                                                document.write("<div class='modal-content'>");
-                                                document.write("<img class='activator responsive-img center-block'  style='max-width: 30%; margin-top:20px; margin-bottom:20px;' src ='../static/media/"+productos[i][5]+"'>");
-                                                document.write("</div>");
-                                                document.write("<div class='modal-footer'>");
-                                                document.write("<a href='#!' class='modal-action modal-close waves-effect waves-green btn-flat'><i class='large material-icons'>close</i></a>");
-                                                document.write("</div></div>");
-                                            }
                                             //imprimir en pantalla todas las tarjetas de productos
                                             for (var i = 0; i < largo; i++)  {
                                                 document.write(" <div class='col s6 m12 l4'>");
@@ -145,6 +177,8 @@
                                                 document.write("<span class='card-title activator grey-text text-darken-4'> "+productos[i][0] +" <i class='material-icons right'>more_vert</i></span>");
                                                 document.write("<p><a class='teal-text'> $"+productos[i][3]+" </a></p>");
                                                 document.write("<p><a class='row col l5' id='Stock-"+productos[i][0]+"' class='teal-text'> Stock :"+productos[i][2]+" </a>");
+                                                document.write("<div class='row' ></div>");
+                                                document.write("<div class='col s3 m4' ></div>");
                                                 document.write("</div>");
                                                 document.write(" <div class='card-reveal'>");
                                                 document.write(" <span class='card-title grey-text text-darken-4'> "+productos[i][0] +" <i class='material-icons right'>close</i></span>");
@@ -153,9 +187,9 @@
                                                 document.write("<li>Categoria: "+productos[i][1]+" </li>");
                                                 document.write("<li>Stock: "+productos[i][2]+" </li>");
                                                 document.write("<li>Descripcion: "+productos[i][4]+" </li>");
-                                                document.write("<li> <p class='right-align'><a class='waves-effect waves-light' href='#modal"+(i+1)+"'>Ver imagen</a></p></li>");
                                                 document.write(" </ul></div></div></div></div>");
                                             }
+
                                             </script>
                             </div>
                         </div>
@@ -163,23 +197,14 @@
                     </div>
 
                 </div>
-
             </div>
         </div>
-    </div>    </main>
+    </main>
 
-<script>
-    function ProfileImg() {
-        var str = "../static/media/";
-        var ruta = str.concat("{{ avatar }}");
-        document.getElementById("img-perfil-desktop").src = ruta;
-        document.getElementById("img-perfil-movil").src = ruta;
-    }
-</script>
 
 <script>
     function EstadoVendedor() {
-        var estado = "{{ activo }}";
+        var estado = "{{ form.activo.value }}";
         if (estado == "True") {
             document.getElementById("estado-desktop").classList.add("medium-small","flow-text","light-green-text");
             document.getElementById("estado-desktop").innerHTML = "Disponible";
@@ -198,7 +223,7 @@
 
 <script>
     function FormasDePago() {
-        var rawPagos = "{{ formasDePago|safe }}";
+        var rawPagos = "{{formasDePago|safe }}";
         var pagos = rawPagos.split(", ");
         var largo = pagos.length;
         var texto = "<ul>";
@@ -212,15 +237,87 @@
     <script>
     function ProfileImg() {
         var str = "../static/media/";
-        var ruta = str.concat("{{ avatar }}");
+        var ruta = str.concat("{{ form.avatar.value }}");
         document.getElementById("img-perfil-desktop").src = ruta;
         document.getElementById("img-perfil-movil").src = ruta;
     }
+    {% if login == False %}
+    function Favoritos() {
+        var numeroFav = "{{ favoritos }}";
+        document.getElementById("favoritos-desktop").innerHTML = numeroFav;
+        document.getElementById("favoritos-movil").innerHTML = numeroFav;
+    {% else %}
+
+    function switchFavorito(){
+        var div = document.getElementById("favorito-desktop");
+        var input = document.createElement("input");
+        input.setAttribute("type" ,'checkbox' );
+        input.setAttribute("onchange" ,'handleChange(this);');
+        if ("{{favoritos}}" == '1'){
+            input.setAttribute("checked",true);
+        }
+        div.appendChild(input);
+        var span = document.createElement("span");
+        span.setAttribute("class","lever");
+        div.appendChild(span);
+
+        var div2 = document.getElementById("favorito-movil");
+        var input2 = document.createElement("input");
+        input2.setAttribute("type" ,'checkbox' );
+        input2.setAttribute("onchange" ,'handleChange(this);');
+        if ("{{favoritos}}" == '1'){
+            input2.setAttribute("checked",true);
+        }
+        div2.appendChild(input2);
+        var span2 = document.createElement("span");
+        span2.setAttribute("class","lever");
+        div2.appendChild(span2);
+    }
+    function handleChange(checkbox) {
+    if(checkbox.checked == true){
+         var datos ="favorito=" + "{{id}}"+"&agregar=si";
+         $.ajax({
+           url:{% url 'cambiarFavorito' %},
+           type: "GET",
+           data: datos,
+           dataType: "json",
+
+           success: function(data) {
+           },
+           error:function(data) {
+               alert("error in getting from server")
+           },
+        });
+    }else{
+        var datos ="favorito=" + "{{id}}"+"&agregar=no";
+         $.ajax({
+           url:{% url 'cambiarFavorito' %},
+           type: "GET",
+           data: datos,
+           dataType: "json",
+
+           success: function(data) {
+           },
+           error:function(data) {
+               alert("error in getting from server")
+           },
+        });
+   }
+}
+
+
+    {% endif %}
+
+
 </script>
 
  <script>
     window.onload = ProfileImg();
     window.onload = EstadoVendedor();
     window.onload = FormasDePago();
+    {% if login == False %}
+    window.onload = Favoritos;
+        {% else %}window.onload = switchFavorito();
+    {% endif %}
 </script>
 {% endblock %}

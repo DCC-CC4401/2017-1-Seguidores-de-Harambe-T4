@@ -31,254 +31,7 @@ from datetime import time
 def index(request):
     return render(request, 'main/base.html',{})
 
-class login(View):
-    form_class = LoginForm
-    template_name = 'main/login.html'
-    def get(self,request):
-        return render(request, self.template_name, {"formLoggin" : LoginForm()})
-
-    def post(self,request):
-        login = LoginForm(request.POST)
-        email = request.POST['email']
-        password = request.POST['password']
-        if login.is_valid():
-
-            #autenticar el usuario
-            try:
-                user = User.objects.get(email=email)
-                username = User.objects.get(email=email).username
-            except User.DoesNotExist:
-                return render(request, self.template_name, {"error": "Usuario o contraseña invalidos","formLoggin" : LoginForm()})
-            userAuth = authenticate(username=username, password=password)
-            if userAuth is None:
-                return render(request, self.template_name, {"error": "Usuario o contraseña invalidos", "formLoggin": LoginForm()})
-            usuario = Usuario.objects.get(user=user)
-            tipo = usuario.tipo
-
-            #en caso de que se autentique, guardar sesion y enviar a la pagina
-            request.session['id'] = int(usuario.id)
-            print (request.session['id'])
-            request.session['user'] = str(usuario.user)
-            request.session['nombre'] = str(usuario.nombre)
-            request.session['avatar'] = str(usuario.avatar)
-            request.session['email'] = email
-            request.session['tipo'] = tipo
-            return inicio(request)
-
-class editarUsuario(View):
-    #acceder a pagina de edicion
-    def get(self,request):
-        usuario = Usuario.objects.get(nombre=request.session['nombre'])
-        if request.session['tipo'] == 1:
-            UserForm = editarPerfilUsuario(instance=usuario)
-            favoritos = obtenerFavoritos(request)
-            return render(request, 'main/editar-perfil.html', {'UserInfo': UserForm,'favoritos': favoritos[0] ,'nombres':favoritos[1]})
-
-        elif request.session['tipo'] == 2:
-            UserForm = editarPerfilVendedorFijo(instance=usuario)
-
-        elif request.session['tipo'] == 3:
-            UserForm = editarPerfilVendedorAmbulante(instance=usuario)
-
-        return render(request,'main/editar-perfil.html', {'UserInfo': UserForm})
-
-    #cuando se editan los datos
-    def post(self,request):
-        nombreOriginal = request.session['nombre']
-        nuevoNombre = request.POST.get("nombre")
-        nuevaImagen = request.FILES.get("avatar")
-        print(request.POST)
-        #cambiar nombre
-        if nuevoNombre != "" and nuevoNombre != nombreOriginal:
-            if Usuario.objects.filter(nombre=nuevoNombre).exists():
-                data = {"respuesta": "repetido"}
-                return JsonResponse(data)
-            Usuario.objects.filter(nombre=nombreOriginal).update(nombre=nuevoNombre)
-            request.session['nombre'] = nuevoNombre
-
-        #cambiar imagen
-        if nuevaImagen != None:
-            filename = nombreOriginal + ".jpg"
-            with default_storage.open('../media/avatars/' + filename, 'wb+') as destination:
-                for chunk in nuevaImagen.chunks():
-                    destination.write(chunk)
-            Usuario.objects.filter(nombre=request.session['nombre']).update(avatar='/avatars/' + filename)
-            request.session['avatar'] = str(Usuario.objects.get(nombre=request.session['nombre']).avatar)
-
-        #eliminar favoritos en caso de ser alumno
-        if request.session['tipo'] == 1:
-            count = int(request.POST.get("switchs")) - 1
-            while(count >= 0):
-                Favoritos.objects.filter(idAlumno_id=request.session['id'],idVendedor_id=request.POST.get("switch" + str(count))).delete()
-                count -= 1
-        return inicio(request)
-
-class agregarproductos(View):
-    def get(self,request):
-        return render(request, 'main/gestionar-productos.html', {'productoForm': editarProductosForm(),'contexto' : 'Agregar Producto','boton': 'Agregar Producto'})
-
-    def post(self,request):
-        print(request.POST)
-        print(request.FILES)
-        id_vendedor = request.session['id']
-        nombre = request.POST['nombre']
-        descripcion = request.POST['nombre']
-        precio = request.POST['precio']
-        stock = request.POST['stock']
-        imagen = request.FILES['imagen']
-        categorias = []
-        for i in range(0,17):
-            try:
-                categoria =request.POST['categoria'+str(i)]
-                categorias.append(str(i))
-            except:
-                pass
-        producto = Comida(idVendedor_id = id_vendedor, categorias = categorias, nombre = nombre, descripcion = descripcion, precio = precio, stock = stock, imagen = imagen)
-        producto.save()
-        return inicio(request)
-
-class editarproductos(View):
-    def get(self,request):
-        nombre = request.GET['nombre']
-        id = request.session['id']
-        producto = Comida.objects.get(nombre=nombre)
-        form = editarProductosForm(instance=producto)
-        return render(request, 'main/gestionar-productos.html', {'productoForm': form ,'contexto' : 'Editar Producto','boton': 'Guardar Cambios'})
-
-    def post(self,request):
-        nombreOriginal = request.GET['nombre']
-        id = request.session['id']
-        nombre = request.POST['nombre']
-        descripcion = request.POST['descripcion']
-        precio = request.POST['precio']
-        stock = request.POST['stock']
-        try:
-            imagen = request.FILES['imagen']
-        except:
-            imagen = Comida.objects.get(nombre=nombreOriginal).imagen
-        categorias = []
-        for i in range(0,17):
-            try:
-                categoria =request.POST['categoria'+str(i)]
-                categorias.append(str(i))
-            except:
-                pass
-        try:
-            Comida.objects.filter(nombre=nombreOriginal).update(nombre=nombre,descripcion=descripcion,precio=precio,stock=stock,imagen=imagen,categorias=categorias)
-        except:
-            return self.get(request)
-
-        return inicio(request)
-
-@csrf_exempt
-def borrarProducto(request):
-    nombre = request.POST['nombre']
-    Comida.objects.filter(nombre= nombre).delete()
-    return inicio(request)
-
-def inicio(request):
-    tipo = request.session['tipo']
-    user = User.objects.get(email=request.session['email'])
-    usuario = Usuario.objects.get(user=user)
-    if tipo == 0:
-        adminForm = LoginUsuario(instance=usuario)
-        return render(request, 'main/dummy.html', {"formLogin": adminForm})
-    if tipo == 1:
-        alumnoForm = LoginUsuario(instance=usuario)
-        return render(request, 'main/baseUsuario.html', {"formLogin": alumnoForm})
-    if tipo == 2:
-        usuario = vendedorFijo.objects.get(vendedor_ptr_id=request.session['id'])
-        request.session['horarioIni'] = str(usuario.horarioIni)
-        request.session['horarioFin'] = str(usuario.horarioFin)
-        vfijo = LoginVendedorFijo(instance=usuario)
-        usuario = Vendedor.objects.get(usuario_ptr_id=request.session['id'])
-        request.session['formasDePago'] = usuario.formasDePago
-        request.session['favoritos'] = obtenerFavoritosVendedor(request.session['id'])
-        request.session['activo'] = esActivo(request.session['id'])
-        productos = obtenerProductos(request.session['id'])
-        return render(request, 'main/baseUsuario.html', {"formLogin": vfijo, 'listaDeProductos': productos})
-    else:
-        request.session['activo'] = esActivo(request.session['id'])
-        usuario = Vendedor.objects.get(usuario_ptr_id=request.session['id'])
-        request.session['formasDePago'] = usuario.formasDePago
-        vambulante = LoginVendedorAmbulante(instance=usuario)
-        request.session['favoritos'] = obtenerFavoritosVendedor(request.session['id'])
-        productos = obtenerProductos(request.session['id'])
-        return render(request, 'main/baseUsuario.html', {"formLogin": vambulante, 'listaDeProductos': productos})
-
-def logOut(request):
-    logout(request)
-    return index(request)
-
-def obtenerFavoritos(request):
-    id = request.session['id']
-    print (id)
-    nombre = request.session['nombre']
-    favoritos =[]
-    nombres = []
-    vendedores = Favoritos.objects.filter(idAlumno_id=id)
-    for fav in vendedores:
-        favoritos.append(fav.idVendedor_id)
-        usuario = Usuario.objects.filter(id = fav.idVendedor_id)
-        nombre = usuario.get().nombre
-        nombres.append(nombre)
-    return [favoritos,nombres]
-
-def obtenerProductos(id):
-    listaDeProductos = []
-    i = 0
-    for producto in Comida.objects.filter(idVendedor_id = int(id)):
-        listaDeProductos.append([])
-        listaDeProductos[i].append(producto.nombre)
-        categoria = str(producto.categorias)
-        listaDeProductos[i].append(categoria)
-        listaDeProductos[i].append(producto.stock)
-        listaDeProductos[i].append(producto.precio)
-        listaDeProductos[i].append(producto.descripcion)
-        listaDeProductos[i].append(str(producto.imagen))
-        i += 1
-    listaDeProductos = simplejson.dumps(listaDeProductos, ensure_ascii=False).encode('utf8')
-
-    return listaDeProductos
-
-def obtenerFavoritosVendedor(idVendedor):
-    favoritos = 0
-    favoritos = Favoritos.objects.filter(idVendedor_id = idVendedor)
-    favoritos = favoritos.count()
-    return favoritos
-
-def esActivo(idVendedor):
-    tipo = int(Usuario.objects.get(id=idVendedor).tipo)
-    if tipo == 2:
-        usuario = vendedorFijo.objects.get(vendedor_ptr_id=idVendedor)
-        horarioIni = usuario.horarioIni
-        horarioIni = time(int(horarioIni[:2]),int(horarioIni[3:5]))
-        horarioFin = usuario.horarioFin
-        horarioFin = time(int(horarioFin[:2]), int(horarioFin[3:5]))
-
-        if horarioIni <= time(datetime.datetime.now().hour,datetime.datetime.now().minute) <= horarioFin:
-            return True
-        else:
-            return False
-    elif tipo == 3:
-        usuario = vendedorAmbulante.objects.get(vendedor_ptr_id=idVendedor)
-        return  bool(usuario.activo)
-
-def cambiarEstado(request):
-    if request.method == 'GET':
-        if request.is_ajax():
-            print("sucess")
-            estado = request.GET.get('estado')
-            id_vendedor = request.GET.get('id')
-            if estado == "true":
-                vendedorAmbulante.objects.filter(vendedor_ptr_id=id_vendedor).update(activo=True)
-                request.session['activo'] = True
-            else:
-                vendedorAmbulante.objects.filter(vendedor_ptr_id=id_vendedor).update(activo=False)
-                request.session['activo'] = False
-            data = {"estado": estado}
-            return JsonResponse(data)
-
+#registrarse
 class signup(View):
     form_class = LoginForm
     template_name = 'main/signup.html'
@@ -333,6 +86,298 @@ class signup(View):
     # verificarEmail request -> JsonResponse
     # Funcion auxiliar que verifica si un mail esta disponible o no dinamicamente, recibiendo un request de ajax
 
+#login
+class login(View):
+    form_class = LoginForm
+    template_name = 'main/login.html'
+    def get(self,request):
+        return render(request, self.template_name, {"formLoggin" : LoginForm()})
+
+    def post(self,request):
+        login = LoginForm(request.POST)
+        email = request.POST['email']
+        password = request.POST['password']
+        if login.is_valid():
+
+            #autenticar el usuario
+            try:
+                user = User.objects.get(email=email)
+                username = User.objects.get(email=email).username
+            except User.DoesNotExist:
+                return render(request, self.template_name, {"error": "Usuario o contraseña invalidos","formLoggin" : LoginForm()})
+            userAuth = authenticate(username=username, password=password)
+            if userAuth is None:
+                return render(request, self.template_name, {"error": "Usuario o contraseña invalidos", "formLoggin": LoginForm()})
+            usuario = Usuario.objects.get(user=user)
+            tipo = usuario.tipo
+
+            #en caso de que se autentique, guardar sesion y enviar a la pagina
+            request.session['id'] = int(usuario.id)
+            print (request.session['id'])
+            request.session['user'] = str(usuario.user)
+            request.session['nombre'] = str(usuario.nombre)
+            request.session['avatar'] = str(usuario.avatar)
+            request.session['email'] = email
+            request.session['tipo'] = tipo
+            return inicio(request)
+
+#volver a inicio
+def inicio(request):
+    tipo = request.session['tipo']
+    user = User.objects.get(email=request.session['email'])
+    usuario = Usuario.objects.get(user=user)
+    if tipo == 0:
+        adminForm = LoginUsuario(instance=usuario)
+        return render(request, 'main/dummy.html', {"formLogin": adminForm})
+    if tipo == 1:
+        alumnoForm = LoginUsuario(instance=usuario)
+        return render(request, 'main/baseUsuario.html', {"formLogin": alumnoForm})
+    if tipo == 2:
+        usuario = vendedorFijo.objects.get(vendedor_ptr_id=request.session['id'])
+        request.session['horarioIni'] = str(usuario.horarioIni)
+        request.session['horarioFin'] = str(usuario.horarioFin)
+        vfijo = LoginVendedorFijo(instance=usuario)
+        usuario = Vendedor.objects.get(usuario_ptr_id=request.session['id'])
+        request.session['formasDePago'] = usuario.formasDePago
+        request.session['favoritos'] = obtenerFavoritosVendedor(request.session['id'])
+        request.session['activo'] = esActivo(request.session['id'])
+        productos = obtenerProductos(request.session['id'])
+        return render(request, 'main/baseUsuario.html', {"formLogin": vfijo, 'listaDeProductos': productos})
+    else:
+        request.session['activo'] = esActivo(request.session['id'])
+        usuario = Vendedor.objects.get(usuario_ptr_id=request.session['id'])
+        request.session['formasDePago'] = usuario.formasDePago
+        vambulante = LoginVendedorAmbulante(instance=usuario)
+        request.session['favoritos'] = obtenerFavoritosVendedor(request.session['id'])
+        productos = obtenerProductos(request.session['id'])
+        return render(request, 'main/baseUsuario.html', {"formLogin": vambulante, 'listaDeProductos': productos})
+
+
+#editar usuario logeado
+class editarUsuario(View):
+    #acceder a pagina de edicion
+    def get(self,request):
+        usuario = Usuario.objects.get(nombre=request.session['nombre'])
+        if request.session['tipo'] == 1:
+            UserForm = editarPerfilUsuario(instance=usuario)
+            favoritos = obtenerFavoritos(request)
+            return render(request, 'main/editar-perfil.html', {'UserInfo': UserForm,'favoritos': favoritos[0] ,'nombres':favoritos[1]})
+
+        elif request.session['tipo'] == 2:
+            UserForm = editarPerfilVendedorFijo(instance=usuario)
+
+        elif request.session['tipo'] == 3:
+            UserForm = editarPerfilVendedorAmbulante(instance=usuario)
+
+        return render(request,'main/editar-perfil.html', {'UserInfo': UserForm})
+
+    #cuando se editan los datos
+    def post(self,request):
+        print(request.POST)
+        nombreOriginal = request.session['nombre']
+        nuevoNombre = request.POST.get("nombre")
+        nuevaImagen = request.FILES.get("avatar")
+        print(request.POST)
+        #cambiar nombre
+        if nuevoNombre != "" and nuevoNombre != nombreOriginal:
+            if Usuario.objects.filter(nombre=nuevoNombre).exists():
+                data = {"respuesta": "repetido"}
+                return JsonResponse(data)
+            Usuario.objects.filter(nombre=nombreOriginal).update(nombre=nuevoNombre)
+            request.session['nombre'] = nuevoNombre
+
+        #cambiar imagen
+        if nuevaImagen != None:
+            filename = nombreOriginal + ".jpg"
+            with default_storage.open('../media/avatars/' + filename, 'wb+') as destination:
+                for chunk in nuevaImagen.chunks():
+                    destination.write(chunk)
+            Usuario.objects.filter(nombre=request.session['nombre']).update(avatar='/avatars/' + filename)
+            request.session['avatar'] = str(Usuario.objects.get(nombre=request.session['nombre']).avatar)
+
+        #eliminar favoritos en caso de ser alumno
+        if request.session['tipo'] == 1:
+            count = int(request.POST.get("switchs")) - 1
+            while(count >= 0):
+                Favoritos.objects.filter(idAlumno_id=request.session['id'],idVendedor_id=request.POST.get("switch" + str(count))).delete()
+                count -= 1
+        return inicio(request)
+
+#agregar producto a vendedor
+class agregarproductos(View):
+    def get(self,request):
+        return render(request, 'main/gestionar-productos.html', {'productoForm': editarProductosForm(),'contexto' : 'Agregar Producto','boton': 'Agregar Producto'})
+
+    def post(self,request):
+        print(request.POST)
+        print(request.FILES)
+        id_vendedor = request.session['id']
+        nombre = request.POST['nombre']
+        descripcion = request.POST['nombre']
+        precio = request.POST['precio']
+        stock = request.POST['stock']
+        imagen = request.FILES['imagen']
+        categorias = []
+        for i in range(0,17):
+            try:
+                categoria =request.POST['categoria'+str(i)]
+                categorias.append(str(i))
+            except:
+                pass
+        producto = Comida(idVendedor_id = id_vendedor, categorias = categorias, nombre = nombre, descripcion = descripcion, precio = precio, stock = stock, imagen = imagen)
+        producto.save()
+        return inicio(request)
+
+#editar producto de vendedor
+class editarproductos(View):
+    def get(self,request):
+        nombre = request.GET['nombre']
+        id = request.session['id']
+        producto = Comida.objects.get(nombre=nombre)
+        form = editarProductosForm(instance=producto)
+        return render(request, 'main/gestionar-productos.html', {'productoForm': form ,'contexto' : 'Editar Producto','boton': 'Guardar Cambios'})
+
+    def post(self,request):
+        nombreOriginal = request.GET['nombre']
+        id = request.session['id']
+        nombre = request.POST['nombre']
+        descripcion = request.POST['descripcion']
+        precio = request.POST['precio']
+        stock = request.POST['stock']
+        try:
+            imagen = request.FILES['imagen']
+        except:
+            imagen = Comida.objects.get(nombre=nombreOriginal).imagen
+        categorias = []
+        for i in range(0,17):
+            try:
+                categoria =request.POST['categoria'+str(i)]
+                categorias.append(str(i))
+            except:
+                pass
+        try:
+            Comida.objects.filter(nombre=nombreOriginal).update(nombre=nombre,descripcion=descripcion,precio=precio,stock=stock,imagen=imagen,categorias=categorias)
+        except:
+            return self.get(request)
+
+        return inicio(request)
+
+#borrar producto de vendedor
+@csrf_exempt
+def borrarProducto(request):
+    nombre = request.POST['nombre']
+    Comida.objects.filter(nombre= nombre).delete()
+    return inicio(request)
+
+#deslogearse
+def logOut(request):
+    logout(request)
+    return index(request)
+
+class vistaVendedor(View):
+    def get(self,request):
+        idVendedor = int(request.GET['id'])
+        try:
+            usuario = Usuario.objects.get(id=idVendedor)
+            tipo = usuario.tipo
+            if tipo == 3:
+                vendedor = vendedorAmbulante.objects.get(vendedor_ptr_id = idVendedor)
+                form = editarPerfilVendedorAmbulante(instance=vendedor)
+
+            elif tipo == 2:
+                vendedor = vendedorFijo.objects.get(vendedor_ptr_id=idVendedor)
+                form = editarPerfilVendedorFijo(instance=vendedor)
+            else:
+                return inicio(request)
+            formasDePago = vendedor.formasDePago
+            productos = obtenerProductos(idVendedor)
+            if 'id' not in request.session:
+                favoritos = obtenerFavoritosVendedor(idVendedor)
+                login = False
+            else:
+                try:
+                    Favoritos.objects.get(idAlumno_id=request.session['id'],idVendedor_id=idVendedor)
+                    favoritos = "1"
+                except:
+                    favoritos = "0"
+                login = True
+            print ("login "+str(login))
+            return render(request,'main/vistaVendedor.html',{'form': form,'tipo':tipo,'formasDePago':formasDePago,'listaDeProductos': productos,'favoritos': favoritos,'login': login,'id' : idVendedor})
+
+        except:
+            return inicio(request)
+
+#funciones auxiliares
+def obtenerFavoritos(request):
+    id = request.session['id']
+    print (id)
+    nombre = request.session['nombre']
+    favoritos =[]
+    nombres = []
+    vendedores = Favoritos.objects.filter(idAlumno_id=id)
+    for fav in vendedores:
+        favoritos.append(fav.idVendedor_id)
+        usuario = Usuario.objects.filter(id = fav.idVendedor_id)
+        nombre = usuario.get().nombre
+        nombres.append(nombre)
+    return [favoritos,nombres]
+
+def obtenerProductos(id):
+    listaDeProductos = []
+    i = 0
+    for producto in Comida.objects.filter(idVendedor_id = int(id)):
+        listaDeProductos.append([])
+        listaDeProductos[i].append(producto.nombre)
+        categoria = str(producto.categorias)
+        listaDeProductos[i].append(categoria)
+        listaDeProductos[i].append(producto.stock)
+        listaDeProductos[i].append(producto.precio)
+        listaDeProductos[i].append(producto.descripcion)
+        listaDeProductos[i].append(str(producto.imagen))
+        i += 1
+    if listaDeProductos == []:
+        listaDeProductos = simplejson.dumps(listaDeProductos, ensure_ascii=False).encode('utf8')
+
+    return listaDeProductos
+
+def obtenerFavoritosVendedor(idVendedor):
+    favoritos = 0
+    favoritos = Favoritos.objects.filter(idVendedor_id = idVendedor)
+    favoritos = favoritos.count()
+    return favoritos
+
+def esActivo(idVendedor):
+    tipo = int(Usuario.objects.get(id=idVendedor).tipo)
+    if tipo == 2:
+        usuario = vendedorFijo.objects.get(vendedor_ptr_id=idVendedor)
+        horarioIni = usuario.horarioIni
+        horarioIni = time(int(horarioIni[:2]),int(horarioIni[3:5]))
+        horarioFin = usuario.horarioFin
+        horarioFin = time(int(horarioFin[:2]), int(horarioFin[3:5]))
+
+        if horarioIni <= time(datetime.datetime.now().hour,datetime.datetime.now().minute) <= horarioFin:
+            return True
+        else:
+            return False
+    elif tipo == 3:
+        usuario = vendedorAmbulante.objects.get(vendedor_ptr_id=idVendedor)
+        return  bool(usuario.activo)
+
+def cambiarEstado(request):
+    if request.method == 'GET':
+        if request.is_ajax():
+            print("sucess")
+            estado = request.GET.get('estado')
+            id_vendedor = request.GET.get('id')
+            if estado == "true":
+                vendedorAmbulante.objects.filter(vendedor_ptr_id=id_vendedor).update(activo=True)
+                request.session['activo'] = True
+            else:
+                vendedorAmbulante.objects.filter(vendedor_ptr_id=id_vendedor).update(activo=False)
+                request.session['activo'] = False
+            data = {"estado": estado}
+            return JsonResponse(data)
+
 @csrf_exempt
 def verificarEmail(request):
     if request.is_ajax() or request.method == 'POST':
@@ -345,9 +390,6 @@ def verificarEmail(request):
         data = {"respuesta": "repetido"}
         return JsonResponse(data)
 
-#funcion a utilizar con ajax
-#recibe el nombre del producto y una variable que puede ser suma o resta por medio de GET
-#actualiza el stock dependiendo de la variable y retorna el stock actualizado
 def modificarStock(request):
     if request.method == "GET":
         producto = request.GET.get("nombre")
@@ -361,6 +403,25 @@ def modificarStock(request):
                 return JsonResponse({"stock": stock})
             Comida.objects.filter(nombre=producto).update(stock=nuevoStock)
     return JsonResponse({"stock": stock})
+
+def cambiarFavorito(request):
+    if request.method == "GET":
+        if request.is_ajax():
+            favorito = request.GET.get('favorito')
+            agregar = request.GET.get('agregar')
+            if agregar == "si":
+                print("paso")
+                print(favorito)
+                nuevoFavorito = Favoritos()
+                nuevoFavorito.idAlumno_id = request.session['id']
+                nuevoFavorito.idVendedor_id = favorito
+                nuevoFavorito.save()
+                respuesta = {"respuesta": "si"}
+            else:
+                Favoritos.objects.filter(idAlumno_id=request.session['id']).filter(idVendedor_id=favorito).delete()
+                respuesta = {"respuesta": "no"}
+            return JsonResponse(respuesta)
+
 
 
 
@@ -910,7 +971,7 @@ def loginReq(request):
 #                 horarioFin = p.horarioFin
 #                 activo = p.activo
 #                 if tipo == 3:
-#                     url = 'main/vendedor-ambulante-vistaAlumno-sinLogin.html'
+#                     url = 'main/vistaVendedor.html'
 #                     break
 #                 if tipo == 2:
 #                     url = 'main/vendedor-fijo-vistaAlumno-sinLogin.html'
@@ -1158,23 +1219,7 @@ def loginReq(request):
 # #vista para usar con ajax
 # #recibe el id del vendedor y si es que se debe agregar a favorito o eliminar por medio de GET
 # #modifica la tabla favorito para el usuario que tenga iniciada sesion
-# def cambiarFavorito(request):
-#     if request.method == "GET":
-#         if request.is_ajax():
-#             favorito = request.GET.get('favorito')
-#             agregar = request.GET.get('agregar')
-#             if agregar == "si":
-#                 nuevoFavorito = Favoritos()
-#                 nuevoFavorito.idAlumno = request.session['id']
-#                 nuevoFavorito.idVendedor = favorito
-#                 nuevoFavorito.save()
-#                 respuesta = {"respuesta": "si"}
-#             else:
-#                 Favoritos.objects.filter(idAlumno=request.session['id']).filter(idVendedor=favorito).delete()
-#                 respuesta = {"respuesta": "no"}
-#             return JsonResponse(respuesta)
-#
-#
+
 # def cambiarEstado(request):
 #     if request.method == 'GET':
 #         if request.is_ajax():

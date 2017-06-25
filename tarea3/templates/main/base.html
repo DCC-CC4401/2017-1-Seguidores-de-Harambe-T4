@@ -30,16 +30,43 @@
             <ul id="slide-out" class="side-nav fixed leftside-navigation ps-container ps-active-y">
                 <li>
                     <div class="userView">
-                  <div class="background" style="height:175px;">
+                    {% if request.session.id != None%}
+                    <a href="{% url 'editarUsuario' %}"><i class="material-icons right grey-text text-lighten-2" style="position: absolute; bottom: -0.5em; right: 0.5em; padding: 0 0 !important;">settings</i> </a>
+                    {% endif %}
+                        <div class="background" style="height:175px;">
                     <img src="../static/img/background4.png">
                   </div>
+                  {% if request.session.id != None%}
+                        <a href="#!user"><img style="margin-top: 16%;" class="circle" src="../static/media/{{ request.session.avatar}}"></a>
+                  <a href="#!name"><span style="margin-left: 5%;" class="white-text name">{{ request.session.nombre}} </span></a>
+                  <li><a href="{% url 'inicio' %}"><i class="material-icons">home</i>Inicio</a></li>
+                  <li><a href="{% url 'logout' %}"><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>
+                {% if request.session.tipo == 3 %}
+                <!-- Boton Activo -->>
+                <li><a class="subheader">Activo</a></li>
+                <li>
+                    <div class="switch" style="margin-left: 80px;">
+                        <label>
+                            No<input type="checkbox" id="checkbox-estado"><span class="lever"></span>Si
+                        </label>
+                    </div>
+                </li>
+                {% endif %}
+                {% else %}
                   <a href="#!user"><img style="margin-top: 16%;" class="circle" src="../static/img/AvatarPenguin.png"></a>
                   <a href="#!name"><span style="margin-left: 5%;" class="white-text name">Invitado</span></a>
                 </div>
                 </li>
                 <li><a href="{% url 'index' %}"><i class="material-icons">home</i>Inicio</a></li>
                 <li><a href="{% url 'login' %}"><i class="material-icons">account_circle</i>Iniciar Sesión</a></li>
-                <!--<li><a href=""><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>-->
+                {% endif %}
+    {% if request.session.id == None or request.session.tipo == 1 %}
+    <li><form method = "GET" action ="{% url 'vistaVendedor' %}">{% csrf_token %}
+<input type = "hidden" value = 4 name="id" id="id">
+<button type = "submit">clic</button>
+            </form></li>
+    {% endif %}
+        <!--<li><a href=""><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>-->
                 <!--<li><div class="divider"></div></li>
                 <li><a class="subheader">Activo</a></li>
                 <li>
@@ -80,8 +107,85 @@
 <body>
 
 {% block content %}
-{% endblock %}
 
+{% endblock %}
+{% if request.session.tipo == 3 %}
+<script>
+    function EstadoActual() {
+        var estdoInicial = "{{ request.session.activo }}";
+        if (estdoInicial == "True") {
+            document.getElementById("checkbox-estado").checked = true;
+        } else {
+            document.getElementById("checkbox-estado").checked = false;
+        }
+    }
+</script>
+
+<script>
+    function switchActivo(){
+        var input = document.getElementById("checkbox-estado");
+        input.setAttribute("onChange" ,'handleChange(this);');
+        if ("{{request.session.activo}}" == "True") {
+            input.setAttribute("checked", true);
+        } else {
+            input.setAttribute("checked", false);
+        }
+    }
+</script>
+
+<script>
+    function handleChange(checkbox) {
+    if(checkbox.checked == true){
+         var datos ="id=" + "{{request.session.id}}"+"&estado=true";
+         document.getElementById("estado-desktop").classList.remove("red-text");
+         document.getElementById("estado-desktop").classList.add("light-green-text");
+         document.getElementById("estado-desktop").innerHTML = "Disponible";
+
+         document.getElementById("estado-movil").classList.remove("red-text");
+         document.getElementById("estado-movil").classList.add("light-green-text");
+         document.getElementById("estado-movil").innerHTML = "Disponible";
+         $.ajax({
+           url:{% url 'cambiarEstado' %},
+           type: "GET",
+           data: datos,
+           dataType: "json",
+
+           success: function(data) {
+           },
+           error:function(data) {
+               alert("error in getting from server")
+           },
+        });
+    }else{
+        var datos ="id=" + "{{request.session.id}}"+"&estado=false";
+        document.getElementById("estado-desktop").classList.remove("light-green-text");
+        document.getElementById("estado-desktop").classList.add("red-text");
+        document.getElementById("estado-desktop").innerHTML = "No Disponible";
+
+        document.getElementById("estado-movil").classList.remove("light-green-text");
+        document.getElementById("estado-movil").classList.add("red-text");
+        document.getElementById("estado-movil").innerHTML = "No Disponible";
+         $.ajax({
+           url:{% url 'cambiarEstado' %},
+           type: "GET",
+           data: datos,
+           dataType: "json",
+
+           success: function(data) {
+           },
+           error:function(data) {
+               alert("error in getting from server")
+           },
+        });
+   }
+}
+</script>
+
+ <script>
+    window.onload = EstadoActual();
+    window.onload = switchActivo();
+</script>
+{% endif  %}
 </body>
 
 </html>
