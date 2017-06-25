@@ -169,6 +169,13 @@ class editarproductos(View):
 
         return inicio(request)
 
+@csrf_exempt
+def borrarProducto(request):
+    nombre = request.POST['nombre']
+    Comida.objects.filter(nombre= nombre).delete()
+    return inicio(request)
+
+
 def inicio(request):
     tipo = request.session['tipo']
     user = User.objects.get(email=request.session['email'])
