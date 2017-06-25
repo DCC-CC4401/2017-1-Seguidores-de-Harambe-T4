@@ -5,6 +5,7 @@ from django.views import View
 from django.utils import timezone
 from .forms import *
 from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import make_password
 from .forms import GestionProductosForm
 from .forms import editarProductosForm
 from .models import Usuario
@@ -170,6 +171,8 @@ class editarUsuario(View):
             UserForm = editarPerfilVendedorAmbulante(instance=usuario)
 
         return render(request,'main/editar-perfil.html', {'UserInfo': UserForm})
+
+
 
     #cuando se editan los datos
     def post(self,request):
@@ -377,6 +380,63 @@ def cambiarEstado(request):
                 request.session['activo'] = False
             data = {"estado": estado}
             return JsonResponse(data)
+
+class signup(View):
+    form_class = LoginForm
+    template_name = 'main/signup.html'
+
+    def get(self, request):
+        return render(request, self.template_name, {"formLoggin": LoginForm()})
+
+    @csrf_exempt
+    def post(self, request):
+        tipo = int(request.POST.get("tipo"))
+        nombre = request.POST.get("nombre")
+        email = request.POST.get("email")
+        avatar = request.FILES.get("avatar")
+        password = request.POST.get("password")
+        contraseña = make_password(request.POST.get("password"))
+        djangoUser = User(username=nombre, password=contraseña, email=email)
+        djangoUser.save()
+
+        if (tipo == 0):
+            adminNuevo = Admin(nombre=nombre, user=djangoUser, email=email, avatar=avatar, tipo=tipo)
+            adminNuevo.save()
+
+        elif (tipo == 1):
+            alumnoNuevo = alumno(nombre=nombre, user=djangoUser, email=email, avatar=avatar, tipo=tipo)
+            alumnoNuevo.save()
+
+        elif (tipo == 2 or tipo == 3):
+            horaInicial = request.POST.get("horaIni")
+            horaFinal = request.POST.get("horaFin")
+            formasDePago = []
+            if not (request.POST.get("formaDePago0") is None):
+                formasDePago.append(request.POST.get("formaDePago0"))
+            if not (request.POST.get("formaDePago1") is None):
+                formasDePago.append(request.POST.get("formaDePago1"))
+            if not (request.POST.get("formaDePago2") is None):
+                formasDePago.append(request.POST.get("formaDePago2"))
+            if not (request.POST.get("formaDePago3") is None):
+                formasDePago.append(request.POST.get("formaDePago3"))
+
+            if (tipo == 2):
+                longitud = float(request.POST.get("longitud"))
+                latitud = float(request.POST.get("latitud"))
+                nuevoVendedorFijo = vendedorFijo(nombre=nombre, user=djangoUser, email=email, avatar=avatar,
+                                                     tipo=tipo,
+                                                     longitud=longitud, latitud=latitud, horarioIni=horaInicial,
+                                                     horarioFin=horaFinal)
+                nuevoVendedorFijo.save()
+            else:
+                nuevoVendedorAmbulante = vendedorAmbulante(nombre=nombre, user=djangoUser, email=email,
+                                                               avatar=avatar, tipo=tipo)
+                nuevoVendedorAmbulante.save()
+
+        return render(request, 'main/login.html',{'email' : email , 'password' : password})
+
+    # verificarEmail request -> JsonResponse
+    # Funcion auxiliar que verifica si un mail esta disponible o no dinamicamente, recibiendo un request de ajax
 
 @csrf_exempt
 def verificarEmail(request):
@@ -611,68 +671,96 @@ def loginReq(request):
 
 
 
-# def fijoDashboard(request):
-#     print(request.POST)
-#     id = request.POST.get("fijoId")
-#     #id = str(id)
-#     #transacciones hechas por hoy
-#     transaccionesDiarias=Transacciones.objects.filter(idVendedor=id).values('fecha').annotate(conteo=Count('fecha'))
-#     temp_transaccionesDiarias = list(transaccionesDiarias)
-#     transaccionesDiariasArr = []
-#     for element in temp_transaccionesDiarias:
-#         aux = []
-#         aux.append(element['fecha'])
-#         aux.append(element['conteo'])
-#         transaccionesDiariasArr.append(aux)
-#     transaccionesDiariasArr=simplejson.dumps(transaccionesDiariasArr)
-#     #print(transaccionesDiariasArr)
-#
-#     #ganancias de hoy
-#     gananciasDiarias = Transacciones.objects.filter(idVendedor=id).values('fecha').annotate(ganancia=Sum('precio'))
-#     temp_gananciasDiarias = list(gananciasDiarias)
-#     gananciasDiariasArr = []
-#     for element in temp_gananciasDiarias:
-#         aux = []
-#         aux.append(element['fecha'])
-#         aux.append(element['ganancia'])
-#         #print("AUX")
-#         #print(aux)
-#         gananciasDiariasArr.append(aux)
-#     gananciasDiariasArr = simplejson.dumps(gananciasDiariasArr)
-#     #print(gananciasDiariasArr)
-#
-#
-#     #todos los productos del vendedor
-#     productos = Comida.objects.filter(idVendedor=id).values('nombre','precio')
-#     temp_productos = list(productos)
-#     productosArr = []
-#     productosPrecioArr = []
-#     for element in temp_productos:
-#         aux = []
-#         productosArr.append(element['nombre'])
-#         aux.append(element['nombre'])
-#         aux.append(element['precio'])
-#         productosPrecioArr.append(aux)
-#     productosArr = simplejson.dumps(productosArr)
-#     productosPrecioArr = simplejson.dumps(productosPrecioArr)
-#     print(productosPrecioArr)
-#
-#     #productos vendidos hoy con su cantidad respectiva
-#     fechaHoy = str(timezone.now()).split(' ', 1)[0]
-#     productosHoy = Transacciones.objects.filter(idVendedor=id,fecha=fechaHoy).values('nombreComida').annotate(conteo=Count('nombreComida'))
-#     temp_productosHoy = list(productosHoy)
-#     productosHoyArr = []
-#     for element in temp_productosHoy:
-#         aux = []
-#         aux.append(element['nombreComida'])
-#         aux.append(element['conteo'])
-#         productosHoyArr.append(aux)
-#     productosHoyArr = simplejson.dumps(productosHoyArr)
-#     #print(productosHoyArr)
-#
-#
-#     return render(request, 'main/fijoDashboard.html', {"transacciones":transaccionesDiariasArr,"ganancias":gananciasDiariasArr,"productos":productosArr,"productosHoy":productosHoyArr,"productosPrecio":productosPrecioArr})
-#
+
+class Dashboard(View):
+    template_name = 'main/vistaDashboard.html'
+
+    @csrf_exempt
+    def post(self, request):
+        print(request.POST)
+        id = int(request.POST.get("vendedorId"))
+
+        # transacciones hechas por hoy
+        #transaccionesDiarias = Transacciones.objects.filter(idVendedor=id).values('fecha').annotate(conteo=Count('fecha'))
+        #temp_transaccionesDiarias = list(transaccionesDiarias)
+        transaccionesDiariasArr = []
+
+        #for element in temp_transaccionesDiarias:
+        #    aux = []
+        #    aux.append(element['fecha'])
+        #    aux.append(element['conteo'])
+        #    transaccionesDiariasArr.append(aux)
+        #transaccionesDiariasArr = simplejson.dumps(transaccionesDiariasArr)
+
+    # print(transaccionesDiariasArr)
+
+        #ganancias de hoy
+        gananciasDiarias = Transacciones.objects.filter(idVendedor=id).values('fecha').annotate(ganancia=Sum('precio'))
+        temp_gananciasDiarias = list(gananciasDiarias)
+        gananciasDiariasArr = []
+        for element in temp_gananciasDiarias:
+            aux = []
+            aux.append(element['fecha'])
+            aux.append(element['ganancia'])
+            gananciasDiariasArr.append(aux)
+        gananciasDiariasArr = simplejson.dumps(gananciasDiariasArr)
+        print(gananciasDiariasArr)
+
+
+        #todos los productos del vendedor
+        productos = Comida.objects.filter(idVendedor=id).values('nombre','precio')
+        temp_productos = list(productos)
+        productosArr = []
+        productosPrecioArr = []
+        for element in temp_productos:
+            aux = []
+            productosArr.append(element['nombre'])
+            aux.append(element['nombre'])
+            aux.append(element['precio'])
+            productosPrecioArr.append(aux)
+        productosArr = simplejson.dumps(productosArr)
+        productosPrecioArr = simplejson.dumps(productosPrecioArr)
+        print(productosPrecioArr)
+
+        #productos vendidos hoy con su cantidad respectiva
+        fechaHoy = str(timezone.now()).split(' ', 1)[0]
+        print("FECHA HOY:" + fechaHoy)
+        productosHoy = Transacciones.objects.filter(idVendedor=id,fecha=fechaHoy).values('comida').annotate(conteo=Count('comida'))
+        temp_productosHoy = list(productosHoy)
+        productosHoyArr = []
+        for element in temp_productosHoy:
+             aux = []
+             aux.append(element['comida'])
+             aux.append(element['conteo'])
+             productosHoyArr.append(aux)
+        productosHoyArr = simplejson.dumps(productosHoyArr)
+        print(productosHoyArr)
+        return render(request, 'main/dashboard.html', {"transacciones":transaccionesDiariasArr,"ganancias":gananciasDiariasArr,"productos":productosArr,"productosHoy":productosHoyArr,"productosPrecio":productosPrecioArr})
+
+
+@csrf_exempt
+def dataDashboard(request):
+    if request.is_ajax():
+        print("DATA DASHBOARD")
+        print(request.POST)
+        id = int(request.POST.get("id"))
+        fechaHoy = request.POST.get('dateDay')
+        #print("FECHA HOY:" + fechaHoy)
+        productosHoy = Transacciones.objects.filter(idVendedor=id, fecha=fechaHoy).values('comida').annotate(
+            conteo=Count('comida'))
+        temp_productosHoy = list(productosHoy)
+        productosHoyArr = []
+        for element in temp_productosHoy:
+            aux = []
+            aux.append(element['comida'])
+            aux.append(element['conteo'])
+            productosHoyArr.append(aux)
+        productosHoyArr = simplejson.dumps(productosHoyArr)
+        print(productosHoyArr)
+        respuesta = {"datos": productosHoyArr}
+        return JsonResponse(respuesta)
+
+
 # def ambulanteDashboard(request):
 #     print(request.POST)
 #     id = request.POST.get("ambulanteId")
@@ -1423,21 +1511,26 @@ def loginReq(request):
 #
 
 #
-# def createTransaction(request):
-#     print("GET:")
-#     print(request.GET)
-#     nombreProducto = request.GET.get("nombre")
-#     precio=0
-#     idVendedor = request.GET.get("idUsuario")
-#     if Comida.objects.filter(nombre=nombreProducto).exists():
-#         precio = Comida.objects.filter(nombre=nombreProducto).values('precio')[0]
-#         listaAux=list(precio.values())
-#         precio=listaAux[0]
-#         print(precio)
-#     else:
-#         return HttpResponse('error message')
-#     print(nombreProducto)
-#     transaccionNueva = Transacciones(idVendedor=idVendedor,precio=precio,nombreComida=nombreProducto)
-#     transaccionNueva.save()
-#     return JsonResponse({"transaccion": "realizada"})
-#
+def createTransaction(request):
+    print("GET:")
+    print(request.GET)
+    nombreProducto = request.GET.get("nombre")
+    precio=0
+    idVendedor = request.GET.get("idUsuario")
+    vendedor =  Vendedor.objects.get(id=idVendedor)
+
+
+    if Comida.objects.filter(nombre=nombreProducto).exists():
+        comida = Comida.objects.get(nombre=nombreProducto)
+        precio = Comida.objects.filter(nombre=nombreProducto).values('precio')[0]
+        listaAux=list(precio.values())
+        precio=listaAux[0]
+        print(precio)
+    else:
+        return HttpResponse('error message')
+    print(nombreProducto)
+    transaccionNueva = Transacciones(idVendedor=vendedor,precio=precio)
+    transaccionNueva.save()
+    transaccionNueva.comida.add(comida)
+    return JsonResponse({"transaccion": "realizada"})
+

@@ -264,20 +264,20 @@
     }
 
     function bajarStock(id){
-        //crea la transaccion en la bdd
-       /*  var datosTransaccion="nombre=" + id + "&" + "idUsuario=" + "{{request.session.id}}";
+                //crea la transaccion en la bdd
+         var datosTransaccion="nombre=" + id + "&" + "idUsuario=" + "{{ request.session.id }}";
         $.ajax({
-           url: '#',
+           url:"{% url 'createTransaction' %}",
            type: "GET",
            data: datosTransaccion,
            dataType: "json",
            success: function(data) {
-              //alert("funciono");
+              alert("funciono");
            },
            error:function(data) {
                alert("error in getting from server");
            },
-         });*/
+         });
 
 
 

@@ -37,9 +37,9 @@ urlpatterns = [
     # url(r'^adminEdit/$', views.adminEdit,name='adminEdit'),
     # url(r'^editarUsuarioAdmin/$', views.editarUsuarioAdmin,name='editarUsuarioAdmin'),
     # url(r'^loginAdmin/$', views.loginAdmin, name='loginAdmin'),
-    # url(r'^createTransaction/$', views.createTransaction, name='createTransaction'),
-    # url(r'^fijoDashboard/$', views.fijoDashboard, name='fijoDashboard'),
-    # url(r'^ambulanteDashboard/$', views.ambulanteDashboard, name='ambulanteDashboard'),
+    url(r'^createTransaction/$', views.createTransaction, name='createTransaction'),
+    url(r'^vistaDashboard/$', views.Dashboard.as_view(), name='vistaDashboard'),
+    url(r'^dataDashboard/$', views.dataDashboard, name='dataDashboard'),
 
 
 ]
