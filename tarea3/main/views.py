@@ -348,24 +348,19 @@ def verificarEmail(request):
 #funcion a utilizar con ajax
 #recibe el nombre del producto y una variable que puede ser suma o resta por medio de GET
 #actualiza el stock dependiendo de la variable y retorna el stock actualizado
-def getStock(request):
+def modificarStock(request):
     if request.method == "GET":
-        stock = request.GET.get("nombre")
-        for producto in Comida.objects.raw("SELECT * FROM Comida"):
-            if producto.nombre == request.GET.get("nombre"):
-                stock =  producto.stock
+        producto = request.GET.get("nombre")
+        stock = int(Comida.objects.get(nombre=producto).stock)
         if request.GET.get("op") == "suma":
             nuevoStock = stock + 1
-            Comida.objects.filter(nombre=request.GET.get("nombre")).update(stock=nuevoStock)
+            Comida.objects.filter(nombre=producto).update(stock=nuevoStock)
         if request.GET.get("op") == "resta":
             nuevoStock = stock - 1
             if stock == 0:
                 return JsonResponse({"stock": stock})
-            Comida.objects.filter(nombre=request.GET.get("nombre")).update(stock=nuevoStock)
+            Comida.objects.filter(nombre=producto).update(stock=nuevoStock)
     return JsonResponse({"stock": stock})
-
-
-
 
 
 

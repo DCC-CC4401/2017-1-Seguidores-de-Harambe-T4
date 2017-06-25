@@ -305,7 +305,7 @@
     function subirStock(id){
          var datos ="op=suma&nombre=" + id;
          $.ajax({
-           url:{% url 'getStock' %},
+           url:{% url 'modificarStock' %},
            type: "GET",
            data: datos,
            dataType: "json",
@@ -342,7 +342,7 @@
         //restar en la bdd
         var datos ="op=resta&nombre=" + id;
          $.ajax({
-           url:{% url 'getStock' %},
+           url:{% url 'modificarStock' %},
            type: "GET",
            data: datos,
            dataType: "json",
