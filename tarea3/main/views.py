@@ -58,8 +58,8 @@ def stringVendedoresActivosConStockParaAlumnos(id_alumno):
     vendedores = list(Vendedor.objects.all())
     for vendedor in vendedores:
         id = Vendedor.objects.get(nombre=vendedor).id
-        categorias = categoriasVendedor(id)
         if esActivo(id) and tieneStock(id):
+            categorias = categoriasVendedor(id)
             fav = "no"
             if list(Favoritos.objects.filter(idAlumno=id_alumno,idVendedor=id)) != []:
                 fav = "si"
@@ -78,8 +78,9 @@ def categoriasVendedor(id_vendedor):
     categorias = ""
     comidas = list(Comida.objects.filter(idVendedor=id_vendedor))
     for c in comidas:
-        for i in str(Comida.objects.get(nombre=c).categorias).split(", "):
-            categorias += i + ":"
+        if Comida.objects.get(nombre=c).stock > 0:
+            for i in str(Comida.objects.get(nombre=c).categorias).split(", "):
+                categorias += i + ":"
     if categorias == "" or categorias == ":":
         return "None"
     return categorias[:-1]

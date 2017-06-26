@@ -6,6 +6,7 @@
 
 
     <script>
+        var markers = [];
       function initMap() {
         var infoWindow;
         var beau850 = {lat: -33.457785, lng: -70.663950};
@@ -39,7 +40,7 @@
 
         var v = "{{vendedores}}"; //nombre, avatar, lat, longitud, id, categorias
         var arreglo_v = v.split(";");
-        var markers = [];
+        markers = [];
         for (i = 0; i<arreglo_v.length; i++) {
             var vendedor = arreglo_v[i].split(",");
             var nuevo = new google.maps.Marker({
@@ -77,6 +78,40 @@
           handleLocationError(false, infoWindow, map.getCenter());
         }
       }
+
+//      function agregarMarcadoresfiltrados(markers, categorias) {
+//            var v = "{{vendedores}}"; //nombre, avatar, lat, longitud, id, categorias
+//            var arreglo_v = v.split(";");
+//            markers = [];
+//            for (i = 0; i<arreglo_v.length; i++) {
+//                var vendedor = arreglo_v[i].split(",");
+//                var categorias_vendedor = vendedor[5];
+//                var nuevo = new google.maps.Marker({
+//                    position: {lat: parseFloat(vendedor[2]), lng: parseFloat(vendedor[3])},
+//                    map: map
+//                });
+//                markers.push(nuevo);
+//            }
+//
+//            for (i = 0; i<markers.length; i++) {
+//                var vendedor = arreglo_v[i].split(",");
+//                var info_vendedor = cuerpoDelInfowindow(vendedor);
+//
+//                markers[i].infowindow = new google.maps.InfoWindow({
+//                  content: info_vendedor
+//                });
+//                google.maps.event.addListener(markers[i], 'click', function() {
+//                    this.infowindow.open(map, this);
+//                });
+//            }
+//      }
+
+      function deleteMarkers(markers) {
+          for (i = 0; i<markers.length; i++) {
+              markers[i].setMap(null);
+          }
+          markers = [];
+      }
       
       function cuerpoDelInfowindow(vendedor) {
           var info = '<div id="content">'+
@@ -108,6 +143,10 @@
                               'Error: Your browser doesn\'t support geolocation.');
         infoWindow.open(map);
       }
+
+
+
+
     </script>
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDilbsVtQUD7bOOlJwGMRF4jV8rz3H5E6c&callback=initMap">
