@@ -55,11 +55,17 @@
                 {% else %}
                   <a href="#!user"><img style="margin-top: 16%;" class="circle" src="../static/img/AvatarPenguin.png"></a>
                   <a href="#!name"><span style="margin-left: 5%;" class="white-text name">Invitado</span></a>
+
                 </div>
                 </li>
                 <li><a href="{% url 'index' %}"><i class="material-icons">home</i>Inicio</a></li>
                 <li><a href="{% url 'login' %}"><i class="material-icons">account_circle</i>Iniciar Sesión</a></li>
+
                 {% endif %}
+                {% if request.session.tipo == 2 or request.session.tipo == 3 %}
+                <li><a href="javascript:;" onclick="document.getElementById('linkDashboard').submit();"><i class="material-icons">assessment</i>Datos de ventas</a></li>
+                {% endif %}
+
     {% if request.session.id == None or request.session.tipo == 1 %}
     <li><form method = "GET" action ="{% url 'vistaVendedor' %}">{% csrf_token %}
 <input type = "hidden" value = 4 name="id" id="id">
@@ -105,6 +111,14 @@
 </head>
 
 <body>
+
+
+{% if request.session.tipo == 3 or request.session.tipo == 2 %}
+ <form id="linkDashboard" action="{% url 'vistaDashboard' %}" method="post" >{% csrf_token %}
+                    <input value = "{{ request.session.id }}" name="vendedorId" id="vendedorId" type="text" style="display:none;">
+ </form>
+{% endif %}
+
 
 {% block content %}
 
