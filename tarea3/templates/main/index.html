@@ -1,11 +1,13 @@
 {% extends 'main/base.html' %}
 {% block content %}
+
 	<div id="map"></div>
+
 
     <script>
       function initMap() {
         var infoWindow;
-        var beau850 = {lat: -33.457785, lng: -70.663808};
+        var beau850 = {lat: -33.457785, lng: -70.663950};
         var map = new google.maps.Map(document.getElementById('map'), {
           zoom: 19,
           center: beau850
@@ -25,7 +27,7 @@
             '<p><i>Horario:</i> 12:30-14:15</p>' +
             '<p><input type="checkbox" class="filled-in" id="test" checked="checked" />' +
             '<label for="test">Favorito</label></p>' +
-            '<p style="text-align: right;">Ver detalles»</p>' +
+            '<button style="text-align: right;" type="button">Click Me!</button>' +
             '</div>'+
             '</div>';
 
@@ -34,37 +36,29 @@
           maxWidth: 400
         });
 
+        var v = "{{vendedores}}"; //nombre, avatar, lat, longitud
+        var arreglo_v = v.split(";");
+        var markers = [];
+        for (i = 0; i<arreglo_v.length; i++) {
+            var vendedor = arreglo_v[i].split(",");
+            var nuevo = new google.maps.Marker({
+                position: {lat: parseFloat(vendedor[2]), lng: parseFloat(vendedor[3])},
+                map: map
+            });
+            markers.push(nuevo);
+        }
+        for (i = 0; i<markers.length; i++) {
+            var vendedor = arreglo_v[i].split(",");
+            var info_vendedor = cuerpoDelInfowindow(vendedor);
+            markers[i].infowindow = new google.maps.InfoWindow({
+              content: info_vendedor
+            });
+            google.maps.event.addListener(markers[i], 'click', function() {
+                this.infowindow.open(map, this);
+            });
+        }
 
-        var marker = new google.maps.Marker({
-          position: beau850,
-          map: map
-        });
-
-        var marker2 = new google.maps.Marker({
-          position: {lat: -33.457885, lng: -70.663808},
-          map: map
-        });
-
-        var marker3 = new google.maps.Marker({
-          position: {lat: -33.458085, lng: -70.663808},
-          map: map,
-          icon: '../static/img/star.png'
-        });
-
-        var marker4 = new google.maps.Marker({
-          position: {lat: -33.458158, lng: -70.663678},
-          map: map
-        });
-
-        var marker5 = new google.maps.Marker({
-          position: {lat: -33.457658, lng: -70.663778},
-          map: map
-        });
-
-        marker3.addListener('click', function() {
-            infoVendedor.open(map, marker3);
-          });
-
+        // posicion actual
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(function(position) {
             var pos = {
@@ -80,6 +74,26 @@
           handleLocationError(false, infoWindow, map.getCenter());
         }
       }
+      
+      function cuerpoDelInfowindow(vendedor) {
+          var info = '<div id="content">'+
+            '<div id="siteNotice">'+
+            '</div>'+
+            '<div><p style="float: left;"><img src="../static/media/'+ vendedor[1] +'" width="50" hspace="10"></p>' +
+            '<h4>'+ vendedor[0] +'</h4></div>'+ //vendedor
+//            '<p style="color:#029500;"> Disponible</p>' +
+            '<div id="bodyContent">'+
+            '<p>Vendedores de almuerzo</p>'+
+            '<p><i>Menú de hoy:</i> Lasaña</p>' +
+            '<p><i>Formas de pago:</i> Efectivo, Tarjeta de Crédito o Débito, Junaeb</p>' +
+            '<p><i>Horario:</i> 12:30-14:15</p>' +
+            '<p><input type="checkbox" class="filled-in" id="test" checked="checked" />' +
+            '<label for="test">Favorito</label></p>' +
+            '<button style="text-align: right;" type="button">Click Me!</button>' +
+            '</div>'+
+            '</div>';
+          return info;
+      }
 
       function handleLocationError(browserHasGeolocation, infoWindow, pos) {
         infoWindow.setPosition(pos);
@@ -90,6 +104,6 @@
       }
     </script>
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=KEY&callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDilbsVtQUD7bOOlJwGMRF4jV8rz3H5E6c&callback=initMap">
     </script>
 {% endblock %}

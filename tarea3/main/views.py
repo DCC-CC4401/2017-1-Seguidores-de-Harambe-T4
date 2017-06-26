@@ -30,7 +30,32 @@ from datetime import time
 
 #Vista inicial
 def index(request):
-    return render(request, 'main/base.html',{})
+    vendedores = stringVendedoresActivosConStock()
+    return render(request, 'main/index.html',{'vendedores':vendedores})
+
+def stringVendedoresActivosConStock():
+    string_vend = ""
+    vendedores = list(Vendedor.objects.all())
+    for vendedor in vendedores:
+        id = Vendedor.objects.get(nombre=vendedor).id
+        if esActivo(id) and tieneStock(id):
+            v = Vendedor.objects.get(nombre=vendedor)
+            nombre = v.nombre
+            latitud = v.latitud
+            longitud = v.longitud
+            avatar = v.avatar
+            string_vend+= nombre + "," + str(avatar) + "," + str(latitud) + "," + str(longitud) + ";"
+    if string_vend != "":
+        string_vend = string_vend[:-1]
+    return string_vend
+
+def tieneStock(id_vendedor):
+    comidas = list(Comida.objects.filter(idVendedor=id_vendedor))
+    for c in comidas:
+        if Comida.objects.get(nombre=c).stock > 0:
+            return True
+    return False
+
 
 #registrarse
 class signup(View):
@@ -159,16 +184,22 @@ class editarUsuario(View):
     #acceder a pagina de edicion
     def get(self,request):
         usuario = Usuario.objects.get(nombre=request.session['nombre'])
+        UserForm = editarPerfilUsuario(instance=usuario)
         if request.session['tipo'] == 1:
             UserForm = editarPerfilUsuario(instance=usuario)
             favoritos = obtenerFavoritos(request)
             return render(request, 'main/editar-perfil.html', {'UserInfo': UserForm,'favoritos': favoritos[0] ,'nombres':favoritos[1]})
 
         elif request.session['tipo'] == 2:
+            usuario = vendedorFijo.objects.get(nombre=request.session['nombre'])
             UserForm = editarPerfilVendedorFijo(instance=usuario)
+            return render(request, 'main/editar-perfil.html', {'UserInfo': UserForm, 'pagosActuales': usuario.formasDePago})
 
         elif request.session['tipo'] == 3:
+            usuario = vendedorAmbulante.objects.get(nombre=request.session['nombre'])
             UserForm = editarPerfilVendedorAmbulante(instance=usuario)
+            return render(request, 'main/editar-perfil.html',
+                          {'UserInfo': UserForm, 'pagosActuales': usuario.formasDePago})
 
         return render(request,'main/editar-perfil.html', {'UserInfo': UserForm})
 
@@ -176,7 +207,6 @@ class editarUsuario(View):
 
     #cuando se editan los datos
     def post(self,request):
-        print(request.POST)
         nombreOriginal = request.session['nombre']
         nuevoNombre = request.POST.get("nombre")
         nuevaImagen = request.FILES.get("avatar")
@@ -204,6 +234,27 @@ class editarUsuario(View):
             while(count >= 0):
                 Favoritos.objects.filter(idAlumno_id=request.session['id'],idVendedor_id=request.POST.get("switch" + str(count))).delete()
                 count -= 1
+        # cambiar formas de pago
+        if request.session['tipo'] == 2 or request.session['tipo'] == 3:
+            formasDePago = ""
+            alternativas = {0: "Efectivo", 1: "Tarjeta de Crédito", 2: "Tarjeta de Débito", 3: "Tarjeta Junaeb"}
+            for x in range(0,4):
+                if request.POST.get("formaDePago"+str(x)) == 'on':
+                    formasDePago += str(x)+','
+            if (formasDePago != ""):
+                Vendedor.objects.filter(nombre=request.session['nombre']).update(formasDePago=formasDePago[:-1])
+                request.session['formasDePago'] = formasDePago
+        # cambiar horario fijo
+        if request.session['tipo'] == 2:
+            horaInicial = request.POST.get("horarioIni")
+            horaFinal = request.POST.get("horarioFin")
+            print(horaInicial, horaFinal)
+            if horaInicial != '':
+                vendedorFijo.objects.filter(nombre=request.session['nombre']).update(horarioIni=horaInicial)
+                request.session['horarioIni'] = horaInicial
+            if horaFinal != '':
+                vendedorFijo.objects.filter(nombre=request.session['nombre']).update(horarioFin=horaFinal)
+                request.session['horarioFin'] = horaFinal
         return inicio(request)
 
 #agregar producto a vendedor
@@ -263,8 +314,8 @@ class editarproductos(View):
         except:
             return self.get(request)
 
-        return inicio(request)
 
+        return inicio(request)
 #borrar producto de vendedor
 @csrf_exempt
 def borrarProducto(request):
