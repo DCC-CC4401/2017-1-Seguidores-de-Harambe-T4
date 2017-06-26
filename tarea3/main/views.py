@@ -393,8 +393,8 @@ class vistaVendedor(View):
                 except:
                     favoritos = "0"
                 login = True
-            print ("login "+str(login))
-            return render(request,'main/vistaVendedor.html',{'form': form,'tipo':tipo,'formasDePago':formasDePago,'listaDeProductos': productos,'favoritos': favoritos,'login': login,'id' : idVendedor})
+            activo = esActivo(idVendedor)
+            return render(request,'main/vistaVendedor.html',{'form': form,'tipo':tipo,'formasDePago':formasDePago,'listaDeProductos': productos,'favoritos': favoritos,'login': login,'id' : idVendedor,'activo':activo})
 
         except:
             return inicio(request)
@@ -446,7 +446,6 @@ def esActivo(idVendedor):
         horarioIni = time(int(horarioIni[:2]),int(horarioIni[3:5]))
         horarioFin = usuario.horarioFin
         horarioFin = time(int(horarioFin[:2]), int(horarioFin[3:5]))
-
         if horarioIni <= time(datetime.datetime.now().hour,datetime.datetime.now().minute) <= horarioFin:
             return True
         else:
@@ -571,7 +570,15 @@ def cambiarFavorito(request):
                 respuesta = {"respuesta": "no"}
             return JsonResponse(respuesta)
 
-
+@csrf_exempt
+def filtrarCategorias(request):
+    if request.method == "POST":
+        if request.is_ajax():
+            filtros = request.POST.lists()
+            listaFiltrada = []
+            for key,values in filtros:
+                listaFiltrada.append(values[0])
+            return JsonResponse({"filtros":listaFiltrada})
 
 
 

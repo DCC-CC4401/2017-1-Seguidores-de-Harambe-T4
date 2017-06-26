@@ -42,5 +42,7 @@ urlpatterns = [
     url(r'^dataDashboard/$', views.dataDashboard, name='dataDashboard'),
     url(r'^checkAlert/$', views.checkAlert, name='checkAlert'),
     url(r'^createAlert/$', views.createAlert, name='createAlert'),
+    url(r'^filtrarCategorias/$', views.filtrarCategorias, name='filtrarCategorias'),
+
 
 ]
