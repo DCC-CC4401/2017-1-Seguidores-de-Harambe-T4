@@ -173,7 +173,6 @@ window.onload = function() {
                 processData: false,
                 contentType: false,
                 success:function(){
-                    //alert("funciono!!");
                     document.getElementById("fileName").value = document.getElementById("image").files[0].name;
                     document.getElementById("avatarActual").src = "../static/media/avatars/"+document.getElementById("image").files[0].name;
                     document.getElementById("imagenActual").innerHTML = "Nueva imagen";
@@ -198,9 +197,6 @@ window.onload = function() {
                 data: formdata,
                 processData: false,
                 contentType: false,
-                success:function(){
-                    alert("funciono!!");
-                },
                 error:function(data) {
                alert("error in getting from server");
            }

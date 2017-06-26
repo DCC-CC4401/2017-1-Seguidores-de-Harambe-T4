@@ -2,17 +2,114 @@
 {% block content %}
 <!-- si es usuario tipo alumno -->
 {% if request.session.tipo == 1 %}
-    <main>
-    <div class='row'>
-    <div class = "col s12 m12 l12">
-    <img class='activator responsive-img center-block' src="../static/media/mapa.png" alt="Planets" usemap="#vendedoresMap">
-        <map name="vendedoresMap">
-          <area shape="circle" coords="555,233,25" id="vendedor1" onclick="vendedor1();">
-          <area shape="circle" coords="501,337,25" id="vendedor2" onclick="vendedor2();">
-        </map>
-     </div>
-     </div>
-    </main>
+   <div id="map"></div>
+
+
+    <script>
+      function initMap() {
+        var infoWindow;
+        var beau850 = {lat: -33.457785, lng: -70.663950};
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 19,
+          center: beau850
+        });
+        infoWindow = new google.maps.InfoWindow;
+
+        var info = '<div id="content">'+
+            '<div id="siteNotice">'+
+            '</div>'+
+            '<div><p style="float: left;"><img src="../static/img/AvatarVendedor4.png" width="50" hspace="10"></p>'    +
+            '<h4>Casino</h4></div>'+
+            '<p style="color:#029500;"> Disponible</p>' +
+            '<div id="bodyContent">'+
+            '<p>Vendedores de almuerzo</p>'+
+            '<p><i>Menú de hoy:</i> Lasaña</p>' +
+            '<p><i>Formas de pago:</i> Efectivo, Tarjeta de Crédito o Débito, Junaeb</p>' +
+            '<p><i>Horario:</i> 12:30-14:15</p>' +
+            '<p><input type="checkbox" class="filled-in" id="test" checked="checked" />' +
+            '<label for="test">Favorito</label></p>' +
+            '<button style="text-align: right;" type="button">Click Me!</button>' +
+            '</div>'+
+            '</div>';
+
+        var infoVendedor = new google.maps.InfoWindow({
+          content: info,
+          maxWidth: 400
+        });
+
+        var v = "{{vendedores}}"; //nombre, avatar, lat, longitud, id
+        var arreglo_v = v.split(";");
+        var markers = [];
+        for (i = 0; i<arreglo_v.length; i++) {
+            var vendedor = arreglo_v[i].split(",");
+            var nuevo = new google.maps.Marker({
+                position: {lat: parseFloat(vendedor[2]), lng: parseFloat(vendedor[3])},
+                map: map
+            });
+            markers.push(nuevo);
+        }
+        for (i = 0; i<markers.length; i++) {
+            var vendedor = arreglo_v[i].split(",");
+            var info_vendedor = cuerpoDelInfowindow(vendedor);
+            markers[i].infowindow = new google.maps.InfoWindow({
+              content: info_vendedor
+            });
+            google.maps.event.addListener(markers[i], 'click', function() {
+                this.infowindow.open(map, this);
+            });
+        }
+
+        // posicion actual
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            }
+            map.setCenter(pos);
+          }, function() {
+            handleLocationError(true, infoWindow, map.getCenter());
+          });
+        } else {
+          // Browser doesn't support Geolocation
+          handleLocationError(false, infoWindow, map.getCenter());
+        }
+      }
+
+      function cuerpoDelInfowindow(vendedor) {
+          var info = '<div id="content">'+
+            '<div id="siteNotice">'+
+            '</div>'+
+            '<div><p style="float: left;"><img src="../static/media/'+ vendedor[1] +'" width="50" hspace="10"></p>' +
+            '<h4>'+ vendedor[0] +'</h4></div>'+ //vendedor
+//            '<p style="color:#029500;"> Disponible</p>' +
+//            '<div id="bodyContent">'+
+//            '<p>Vendedores de almuerzo</p>'+
+//            '<p><i>Menú de hoy:</i> Lasaña</p>' +
+//            '<p><i>Formas de pago:</i> Efectivo, Tarjeta de Crédito o Débito, Junaeb</p>' +
+//            '<p><i>Horario:</i> 12:30-14:15</p>' +
+//            '<p><input type="checkbox" class="filled-in" id="test" checked="checked" />' +
+//            '<label for="test">Favorito</label></p>' +
+            "<form method = \"GET\" action =\"{% url 'vistaVendedor' %}\">{% csrf_token %}" +
+            '<input type = "hidden" value =' + vendedor[4] +' name="id" id="id">' +
+            '<button style="float: right;" type = "submit">Ver ficha del vendedor</button>' +
+            '</form>' +
+            '</div>'+
+            '</div>';
+          return info;
+      }
+
+      function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+        infoWindow.setPosition(pos);
+        infoWindow.setContent(browserHasGeolocation ?
+                              'Error: The Geolocation service failed.' :
+                              'Error: Your browser doesn\'t support geolocation.');
+        infoWindow.open(map);
+      }
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDilbsVtQUD7bOOlJwGMRF4jV8rz3H5E6c&callback=initMap">
+    </script>
 {% endif %}
 
 <!-- si es usuario tipo vendedor -->
@@ -145,7 +242,7 @@
             </div>
         </div>
     </div>
-    </main>
+
 
     {% if request.session.tipo == 2 or request.session.tipo == 3  %}
       <div id="profile-page-content" class="row">
@@ -204,6 +301,7 @@
                 </div>
             </div>
         </div>
+          </main>
     {% endif %}
 <script>
     function ProfileImg() {
@@ -274,7 +372,7 @@
            data: datosTransaccion,
            dataType: "json",
            success: function(data) {
-              alert("funciono");
+//              alert("funciono");
            },
            error:function(data) {
                alert("error in getting from server");

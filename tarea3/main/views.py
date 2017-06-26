@@ -44,7 +44,7 @@ def stringVendedoresActivosConStock():
             latitud = v.latitud
             longitud = v.longitud
             avatar = v.avatar
-            string_vend+= nombre + "," + str(avatar) + "," + str(latitud) + "," + str(longitud) + ";"
+            string_vend+= nombre + "," + str(avatar) + "," + str(latitud) + "," + str(longitud) + "," + str(id) + ";"
     if string_vend != "":
         string_vend = string_vend[:-1]
     return string_vend
@@ -156,8 +156,9 @@ def inicio(request):
         adminForm = LoginUsuario(instance=usuario)
         return render(request, 'main/dummy.html', {"formLogin": adminForm})
     if tipo == 1:
+        vendedores = stringVendedoresActivosConStock()
         alumnoForm = LoginUsuario(instance=usuario)
-        return render(request, 'main/baseUsuario.html', {"formLogin": alumnoForm})
+        return render(request, 'main/baseUsuario.html', {"formLogin": alumnoForm, 'vendedores':vendedores})
     if tipo == 2:
         usuario = vendedorFijo.objects.get(vendedor_ptr_id=request.session['id'])
         request.session['horarioIni'] = str(usuario.horarioIni)
