@@ -102,7 +102,7 @@
                 <div class="col s2 m2 offset-s1">
 
                     <!-- Nombre -->
-                    <h4 class="card-title grey-text flow-text text-darken-4">{{form.nombre.value}</h4>
+                    <h4 class="card-title grey-text flow-text text-darken-4">{{form.nombre.value}}</h4>
 
                     <!--  -->
                     <p class="medium-small flow-text grey-text">&ensp;{% if tipo == 3 %}Vendedor Ambulante {% endif %} {% if tipo == 2 %} Vendedor Fijo {% endif %}</p>
@@ -201,8 +201,6 @@
         </div>
       </div>
     </main>
-
-
 <script>
     function EstadoVendedor() {
         var estado = "{{ form.activo.value }}";
@@ -220,9 +218,6 @@
             document.getElementById("estado-movil").innerHTML = "No Disponible";
         }
     }
-</script>
-
-<script>
     function FormasDePago() {
         var rawPagos = "{{formasDePago|safe }}";
         var pagos = rawPagos.split(", ");
@@ -234,21 +229,19 @@
         document.getElementById("medios-pago-desktop").innerHTML = texto;
         document.getElementById("medios-pago-movil").innerHTML = texto;
     }
-</script>
-    <script>
     function ProfileImg() {
         var str = "../static/media/";
         var ruta = str.concat("{{ form.avatar.value }}");
         document.getElementById("img-perfil-desktop").src = ruta;
         document.getElementById("img-perfil-movil").src = ruta;
     }
-    {% if login == False %}
+{% if login == False %}
     function Favoritos() {
         var numeroFav = "{{ favoritos }}";
         document.getElementById("favoritos-desktop").innerHTML = numeroFav;
         document.getElementById("favoritos-movil").innerHTML = numeroFav;
-    {% else %}
-
+        }
+{% else %}
     function switchFavorito(){
         var div = document.getElementById("favorito-desktop");
         var input = document.createElement("input");
@@ -304,21 +297,15 @@
            },
         });
    }
-}
-
-
-    {% endif %}
-
-
-</script>
-
- <script>
+}}
+{% endif %}
     window.onload = ProfileImg();
     window.onload = EstadoVendedor();
     window.onload = FormasDePago();
     {% if login == False %}
-    window.onload = Favoritos;
-        {% else %}window.onload = switchFavorito();
+        window.onload = Favoritos;
+    {% else %}
+        window.onload = switchFavorito();
     {% endif %}
 </script>
 {% endblock %}
