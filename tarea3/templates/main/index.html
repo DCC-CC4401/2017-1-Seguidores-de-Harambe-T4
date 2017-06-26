@@ -48,43 +48,15 @@
             markers.push(nuevo);
         }
         for (i = 0; i<markers.length; i++) {
+            var vendedor = arreglo_v[i].split(",");
+            var info_vendedor = cuerpoDelInfowindow(vendedor);
             markers[i].infowindow = new google.maps.InfoWindow({
-              content: info
+              content: info_vendedor
             });
             google.maps.event.addListener(markers[i], 'click', function() {
                 this.infowindow.open(map, this);
             });
         }
-
-//        new google.maps.Marker({
-//                position: {lat: parseFloat(arreglo_v[0].split(",")[2]), lng: parseFloat(vendedor[3])},
-//                map: map
-//            });
-//
-//        new google.maps.Marker({
-//          position: {lat: -33.457885, lng: -70.663808},
-//          map: map
-//        });
-//
-//        new google.maps.Marker({
-//          position: {lat: -33.458085, lng: -70.663808},
-//          map: map,
-//          icon: '../static/img/star.png'
-//        });
-//
-//        new google.maps.Marker({
-//          position: {lat: -33.458158, lng: -70.663678},
-//          map: map
-//        });
-//
-//        new google.maps.Marker({
-//          position: {lat: -33.457658, lng: -70.663778},
-//          map: map
-//        });
-//
-//        marker3.addListener('click', function() {
-//            infoVendedor.open(map, marker3);
-//          });
 
         // posicion actual
         if (navigator.geolocation) {
@@ -101,6 +73,26 @@
           // Browser doesn't support Geolocation
           handleLocationError(false, infoWindow, map.getCenter());
         }
+      }
+      
+      function cuerpoDelInfowindow(vendedor) {
+          var info = '<div id="content">'+
+            '<div id="siteNotice">'+
+            '</div>'+
+            '<div><p style="float: left;"><img src="../static/media/'+ vendedor[1] +'" width="50" hspace="10"></p>' +
+            '<h4>'+ vendedor[0] +'</h4></div>'+ //vendedor
+//            '<p style="color:#029500;"> Disponible</p>' +
+            '<div id="bodyContent">'+
+            '<p>Vendedores de almuerzo</p>'+
+            '<p><i>Menú de hoy:</i> Lasaña</p>' +
+            '<p><i>Formas de pago:</i> Efectivo, Tarjeta de Crédito o Débito, Junaeb</p>' +
+            '<p><i>Horario:</i> 12:30-14:15</p>' +
+            '<p><input type="checkbox" class="filled-in" id="test" checked="checked" />' +
+            '<label for="test">Favorito</label></p>' +
+            '<button style="text-align: right;" type="button">Click Me!</button>' +
+            '</div>'+
+            '</div>';
+          return info;
       }
 
       function handleLocationError(browserHasGeolocation, infoWindow, pos) {
