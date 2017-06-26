@@ -41,6 +41,6 @@ urlpatterns = [
     url(r'^vistaDashboard/$', views.Dashboard.as_view(), name='vistaDashboard'),
     url(r'^dataDashboard/$', views.dataDashboard, name='dataDashboard'),
     url(r'^checkAlert/$', views.checkAlert, name='checkAlert'),
-
+    url(r'^createAlert/$', views.createAlert, name='createAlert'),
 
 ]

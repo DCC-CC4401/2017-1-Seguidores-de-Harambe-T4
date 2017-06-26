@@ -118,6 +118,7 @@
  <!-- Modal Trigger -->
 
 
+
   <!-- Modal Structure -->
   <div id="modal1" class="modal">
     <div class="modal-content">
@@ -126,13 +127,17 @@
         <p>¿Estas seguro que deseas activar la alarma? Su mal uso traera sanciones fisicas</p>
     </div>
     <div class="modal-footer">
-      <a href="#!" class="red darken-1 modal-action modal-close waves-effect waves-green btn-flat">Activar</a>
+      <a href="javascript:;" onclick="document.getElementById('createAlert').submit();" class="red darken-1 modal-action modal-close waves-effect waves-green btn-flat">Activar</a>
         <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Volver</a>
 
     </div>
   </div>
 
-
+{% if request.session.tipo == 3 or request.session.tipo == 2 %}
+ <form id="createAlert" action="{% url 'createAlert' %}" method="post" >{% csrf_token %}
+                    <input value = "{{ request.session.id }}" name="alertId" id="alertId" type="text" style="display:none;">
+ </form>
+{% endif %}
 
 {% if request.session.tipo == 3 or request.session.tipo == 2 %}
  <form id="linkDashboard" action="{% url 'vistaDashboard' %}" method="post" >{% csrf_token %}

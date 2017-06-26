@@ -27,6 +27,9 @@ from django.views.decorators.csrf import csrf_exempt
 from multiselectfield import MultiSelectField
 from django.core.files.storage import default_storage
 from datetime import time
+from .utilities import haversine
+
+
 
 #Vista inicial
 def index(request):
@@ -1603,3 +1606,33 @@ def checkAlert(request):
 
     alerta.delete()
     return JsonResponse({"alertar": "true"})
+
+
+
+
+
+
+
+@csrf_exempt
+def createAlert(request):
+    #print("POST:")
+    #print(request.POST)
+    #print("meemboyz")
+    idUsuario = request.POST.get("alertId")
+    usuario = Usuario.objects.get(id=idUsuario)
+    #nuevaAlertaPolicialUsuario = alertaPolicial(usuario=usuario)
+    #nuevaAlertaPolicialUsuario.save()
+    #print(usuario.longitud)
+    #print(usuario.latitud)
+    longitud = usuario.longitud
+    latitud = usuario.latitud
+    usuariosTodos = Usuario.objects.all()
+
+    #print(usuariosTodos)
+    for u in usuariosTodos:
+        if haversine(u.longitud,u.latitud,longitud,latitud):
+            usuarioAlertar = Usuario.objects.get(id=u.id)
+            print(usuarioAlertar)
+            nuevaAlertaPolicial = alertaPolicial(usuario=usuarioAlertar)
+            nuevaAlertaPolicial.save()
+    return HttpResponse(status=204)
