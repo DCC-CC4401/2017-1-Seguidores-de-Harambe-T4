@@ -50,6 +50,26 @@ def stringVendedoresActivosConStock():
         string_vend = string_vend[:-1]
     return string_vend
 
+def stringVendedoresActivosConStockParaAlumnos(id_alumno):
+    string_vend = ""
+    vendedores = list(Vendedor.objects.all())
+    for vendedor in vendedores:
+        id = Vendedor.objects.get(nombre=vendedor).id
+        categorias = categoriasVendedor(id)
+        if esActivo(id) and tieneStock(id):
+            fav = "no"
+            if list(Favoritos.objects.filter(idAlumno=id_alumno,idVendedor=id)) != []:
+                fav = "si"
+            v = Vendedor.objects.get(nombre=vendedor)
+            nombre = v.nombre
+            latitud = v.latitud
+            longitud = v.longitud
+            avatar = v.avatar
+            string_vend+= nombre + "," + str(avatar) + "," + str(latitud) + "," + str(longitud) + "," + str(id) + "," + categorias + "," + fav + ";"
+    if string_vend != "":
+        string_vend = string_vend[:-1]
+    return string_vend
+
 def categoriasVendedor(id_vendedor):
     comidas = list(Comida.objects.filter(idVendedor=id_vendedor))
     categorias = ""
@@ -169,7 +189,7 @@ def inicio(request):
         adminForm = LoginUsuario(instance=usuario)
         return render(request, 'main/dummy.html', {"formLogin": adminForm})
     if tipo == 1:
-        vendedores = stringVendedoresActivosConStock()
+        vendedores = stringVendedoresActivosConStockParaAlumnos(request.session['id'])
         alumnoForm = LoginUsuario(instance=usuario)
         return render(request, 'main/baseUsuario.html', {"formLogin": alumnoForm, 'vendedores':vendedores})
     if tipo == 2:
