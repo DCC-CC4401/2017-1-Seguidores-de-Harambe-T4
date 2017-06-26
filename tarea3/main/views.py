@@ -191,7 +191,7 @@ def inicio(request):
     usuario = Usuario.objects.get(user=user)
     if tipo == 0:
         adminForm = LoginUsuario(instance=usuario)
-        return render(request, 'main/dummy.html', {"formLogin": adminForm})
+        return render(request, '#', {"formLogin": adminForm})
     if tipo == 1:
         vendedores = stringVendedoresActivosConStockParaAlumnos(request.session['id'])
         alumnoForm = LoginUsuario(instance=usuario)
@@ -522,7 +522,7 @@ class signup(View):
                                                                avatar=avatar, tipo=tipo)
                 nuevoVendedorAmbulante.save()
 
-        return render(request, 'main/login.html',{'email' : email , 'password' : password})
+        return inicio(request)
 
     # verificarEmail request -> JsonResponse
     # Funcion auxiliar que verifica si un mail esta disponible o no dinamicamente, recibiendo un request de ajax
