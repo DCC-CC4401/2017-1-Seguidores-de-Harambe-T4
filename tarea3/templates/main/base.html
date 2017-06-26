@@ -83,7 +83,7 @@
                 {% endif %}
 
     {% if request.session.id == None or request.session.tipo == 1 %}
-    <<input onclick="deleteMarkers(markers);" type=button value="Delete Markers">
+    <<input onclick="agregarMarcadoresfiltrados(1);" type=button value="Delete Markers">
     {% endif %}
         <!--<li><a href=""><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>-->
                 <!--<li><div class="divider"></div></li>
@@ -325,6 +325,7 @@
         li.appendChild(button);
         form.appendChild(li);
     }
+
     function handleFiltros() {
         var form = document.forms.namedItem("aplicarFiltros");
         var formulario = new FormData(form);
@@ -336,10 +337,12 @@
                 processData: false,
                 contentType: false,
                 success: function(data) {
-                    alert(data.filtros);
+//                    alert(data.filtros);
+//                    alert(markers);
                     deleteMarkers(markers);
-//                    agregarMarcadoresfiltrados(markers, data.filtros);
+                    agregarMarcadoresfiltrados(data.filtros);
 //                    alert(markers.length);
+//                    alert(markers);
                },
                error:function(data) {
                alert("error in getting from server");
@@ -348,8 +351,6 @@
          });
 
     }
-
-
 
     window.onload = cargarFiltros();
 </script>
