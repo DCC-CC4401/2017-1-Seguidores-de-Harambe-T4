@@ -36,7 +36,7 @@
           maxWidth: 400
         });
 
-        var v = "{{vendedores}}"; //nombre, avatar, lat, longitud
+        var v = "{{vendedores}}"; //nombre, avatar, lat, longitud, id
         var arreglo_v = v.split(";");
         var markers = [];
         for (i = 0; i<arreglo_v.length; i++) {
@@ -82,14 +82,17 @@
             '<div><p style="float: left;"><img src="../static/media/'+ vendedor[1] +'" width="50" hspace="10"></p>' +
             '<h4>'+ vendedor[0] +'</h4></div>'+ //vendedor
 //            '<p style="color:#029500;"> Disponible</p>' +
-            '<div id="bodyContent">'+
-            '<p>Vendedores de almuerzo</p>'+
-            '<p><i>Menú de hoy:</i> Lasaña</p>' +
-            '<p><i>Formas de pago:</i> Efectivo, Tarjeta de Crédito o Débito, Junaeb</p>' +
-            '<p><i>Horario:</i> 12:30-14:15</p>' +
-            '<p><input type="checkbox" class="filled-in" id="test" checked="checked" />' +
-            '<label for="test">Favorito</label></p>' +
-            '<button style="text-align: right;" type="button">Click Me!</button>' +
+//            '<div id="bodyContent">'+
+//            '<p>Vendedores de almuerzo</p>'+
+//            '<p><i>Menú de hoy:</i> Lasaña</p>' +
+//            '<p><i>Formas de pago:</i> Efectivo, Tarjeta de Crédito o Débito, Junaeb</p>' +
+//            '<p><i>Horario:</i> 12:30-14:15</p>' +
+//            '<p><input type="checkbox" class="filled-in" id="test" checked="checked" />' +
+//            '<label for="test">Favorito</label></p>' +
+            "<form method = \"GET\" action =\"{% url 'vistaVendedor' %}\">{% csrf_token %}" +
+            '<input type = "hidden" value =' + vendedor[4] +' name="id" id="id">' +
+            '<button style="float: right;" type = "submit">Ver ficha del vendedor</button>' +
+            '</form>' +
             '</div>'+
             '</div>';
           return info;
