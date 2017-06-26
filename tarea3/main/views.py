@@ -38,16 +38,29 @@ def stringVendedoresActivosConStock():
     vendedores = list(Vendedor.objects.all())
     for vendedor in vendedores:
         id = Vendedor.objects.get(nombre=vendedor).id
+        categorias = categoriasVendedor(id)
         if esActivo(id) and tieneStock(id):
             v = Vendedor.objects.get(nombre=vendedor)
             nombre = v.nombre
             latitud = v.latitud
             longitud = v.longitud
             avatar = v.avatar
-            string_vend+= nombre + "," + str(avatar) + "," + str(latitud) + "," + str(longitud) + "," + str(id) + ";"
+            string_vend+= nombre + "," + str(avatar) + "," + str(latitud) + "," + str(longitud) + "," + str(id) + "," + categorias + ";"
     if string_vend != "":
         string_vend = string_vend[:-1]
     return string_vend
+
+def categoriasVendedor(id_vendedor):
+    comidas = list(Comida.objects.filter(idVendedor=id_vendedor))
+    categorias = ""
+    comidas = list(Comida.objects.filter(idVendedor=id_vendedor))
+    for c in comidas:
+        for i in str(Comida.objects.get(nombre=c).categorias).split(", "):
+            categorias += i + ":"
+    if categorias == "" or categorias == ":":
+        return "None"
+    return categorias[:-1]
+
 
 def tieneStock(id_vendedor):
     comidas = list(Comida.objects.filter(idVendedor=id_vendedor))
