@@ -51,7 +51,6 @@ def stringVendedoresActivosConStock():
             string_vend+= nombre + "," + str(avatar) + "," + str(latitud) + "," + str(longitud) + "," + str(id) + "," + categorias + ";"
     if string_vend != "":
         string_vend = string_vend[:-1]
-    print(categorias)
     return string_vend
 
 def stringVendedoresActivosConStockParaAlumnos(id_alumno):
