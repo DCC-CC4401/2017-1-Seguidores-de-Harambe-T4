@@ -48,6 +48,7 @@ def stringVendedoresActivosConStock():
             string_vend+= nombre + "," + str(avatar) + "," + str(latitud) + "," + str(longitud) + "," + str(id) + "," + categorias + ";"
     if string_vend != "":
         string_vend = string_vend[:-1]
+    print(categorias)
     return string_vend
 
 def categoriasVendedor(id_vendedor):
@@ -548,7 +549,15 @@ def cambiarFavorito(request):
                 respuesta = {"respuesta": "no"}
             return JsonResponse(respuesta)
 
-
+@csrf_exempt
+def filtrarCategorias(request):
+    if request.method == "POST":
+        if request.is_ajax():
+            filtros = request.POST.lists()
+            listaFiltrada = []
+            for key,values in filtros:
+                listaFiltrada.append(values[0])
+            return JsonResponse({"filtros":listaFiltrada})
 
 
 

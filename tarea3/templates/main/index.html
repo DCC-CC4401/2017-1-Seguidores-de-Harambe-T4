@@ -51,6 +51,7 @@
         for (i = 0; i<markers.length; i++) {
             var vendedor = arreglo_v[i].split(",");
             var info_vendedor = cuerpoDelInfowindow(vendedor);
+
             markers[i].infowindow = new google.maps.InfoWindow({
               content: info_vendedor
             });

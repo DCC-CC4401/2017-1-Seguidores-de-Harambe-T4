@@ -40,6 +40,7 @@ urlpatterns = [
     url(r'^createTransaction/$', views.createTransaction, name='createTransaction'),
     url(r'^vistaDashboard/$', views.Dashboard.as_view(), name='vistaDashboard'),
     url(r'^dataDashboard/$', views.dataDashboard, name='dataDashboard'),
+    url(r'^filtrarCategorias/$', views.filtrarCategorias, name='filtrarCategorias'),
 
 
 ]
