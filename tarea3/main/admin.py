@@ -9,6 +9,7 @@ from .models import vendedorFijo
 from .models import vendedorAmbulante
 from .models import Admin
 from .models import Vendedor
+from .models import Favoritos
 #from .models import Alert
 from .models import alertaPolicial
 
@@ -21,5 +22,6 @@ admin.site.register(vendedorFijo)
 admin.site.register(vendedorAmbulante)
 admin.site.register(Admin)
 admin.site.register(Vendedor)
+admin.site.register(Favoritos)
 admin.site.register(alertaPolicial)
 #admin.site.register(Alert)

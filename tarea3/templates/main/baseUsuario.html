@@ -15,37 +15,34 @@
         });
         infoWindow = new google.maps.InfoWindow;
 
-        var info = '<div id="content">'+
-            '<div id="siteNotice">'+
-            '</div>'+
-            '<div><p style="float: left;"><img src="../static/img/AvatarVendedor4.png" width="50" hspace="10"></p>'    +
-            '<h4>Casino</h4></div>'+
-            '<p style="color:#029500;"> Disponible</p>' +
-            '<div id="bodyContent">'+
-            '<p>Vendedores de almuerzo</p>'+
-            '<p><i>Menú de hoy:</i> Lasaña</p>' +
-            '<p><i>Formas de pago:</i> Efectivo, Tarjeta de Crédito o Débito, Junaeb</p>' +
-            '<p><i>Horario:</i> 12:30-14:15</p>' +
-            '<p><input type="checkbox" class="filled-in" id="test" checked="checked" />' +
-            '<label for="test">Favorito</label></p>' +
-            '<button style="text-align: right;" type="button">Click Me!</button>' +
-            '</div>'+
-            '</div>';
+        var info;
 
         var infoVendedor = new google.maps.InfoWindow({
           content: info,
           maxWidth: 400
         });
 
-        var v = "{{vendedores}}"; //nombre, avatar, lat, longitud, id
+        var v = "{{vendedores}}"; //nombre, avatar, lat, longitud, id, categorias, favorito
+          //                        [0]        [1]  [2]     [3]    [4]     [5]        [6]
         var arreglo_v = v.split(";");
         var markers = [];
         for (i = 0; i<arreglo_v.length; i++) {
             var vendedor = arreglo_v[i].split(",");
-            var nuevo = new google.maps.Marker({
+            var nuevo;
+//            alert(vendedor[6]);
+            if (vendedor[6] == "si"){
+                var nuevo = new google.maps.Marker({
+                position: {lat: parseFloat(vendedor[2]), lng: parseFloat(vendedor[3])},
+                map: map,
+                icon: '../static/img/star.png'
+            });
+            } else {
+                var nuevo = new google.maps.Marker({
                 position: {lat: parseFloat(vendedor[2]), lng: parseFloat(vendedor[3])},
                 map: map
             });
+            }
+
             markers.push(nuevo);
         }
         for (i = 0; i<markers.length; i++) {

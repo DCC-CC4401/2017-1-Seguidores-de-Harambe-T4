@@ -118,7 +118,7 @@ class Favoritos(models.Model):
     fecha = models.CharField(max_length=200, default=fechaAhora)
 
     def __str__(self):
-        return self.idAlumno
+        return str(self.idAlumno) + "X" + str(self.idVendedor)
 
     class Meta:
         db_table = 'Favoritos'
