@@ -64,12 +64,26 @@
                 <li><a href="{% url 'login' %}"><i class="material-icons">account_circle</i>Iniciar Sesión</a></li>
 
                 {% endif %}
+    {% if request.session.id == None or request.session.tipo == 1%}
+        <li class="no-padding">
+        <ul class="collapsible collapsible-accordion">
+        <li>
+            <a class="collapsible-header">Filtrar Categorias<i class="material-icons">arrow_drop_down</i></a>
+            <div class="collapsible-body">
+              <ul id ="filtros">
+
+              </ul>
+            </div>
+        </li>
+        </ul>
+        </li>
+    {% endif %}
                 {% if request.session.tipo == 2 or request.session.tipo == 3 %}
                 <li><a href="javascript:;" onclick="document.getElementById('linkDashboard').submit();"><i class="material-icons">assessment</i>Datos de ventas</a></li>
                 {% endif %}
 
     {% if request.session.id == None or request.session.tipo == 1 %}
-    <li><form method = "GET" action ="{% url 'vistaVendedor' %}">
+    <li><form method = "GET" action ="{% url 'vistaVendedor' %}">{% csrf_token %}
 <input type = "hidden" value = 4 name="id" id="id">
 <button type = "submit">clic</button>
             </form></li>
@@ -192,6 +206,8 @@
             document.getElementById("checkbox-estado").checked = false;
         }
     }
+
+
 </script>
 
 <script>
@@ -257,8 +273,85 @@
  <script>
     window.onload = EstadoActual();
     window.onload = switchActivo();
+
 </script>
 {% endif  %}
+{% if request.session.id == None or request.session.tipo == 1%}
+<script>
+    function cargarFiltros(){
+        var v = "{{vendedores}}";
+        var arreglo_v = v.split(";");
+        var categorias = [];
+        for (i = 0; i<arreglo_v.length; i++) {
+            var vendedor = arreglo_v[i].split(",");
+            var categoriaV = vendedor[5].split(":");
+            for (i = 0; i<categoriaV.length; i++) {
+                if (!categorias.includes(categoriaV[i])){
+                    categorias.push(categoriaV[i]);
+                }
+            }
+
+        }
+        var filtros = document.getElementById("filtros");
+        var form = document.createElement("form");
+        form.setAttribute("method","post");
+        form.setAttribute("action","#");
+        form.setAttribute("name","aplicarFiltros");
+        filtros.appendChild(form);
+        for (i = 0; i<categorias.length; i++){
+           var li = document.createElement("li");
+           li.setAttribute("style","margin-left:40px;")
+           var input = document.createElement("input");
+           input.setAttribute("type","checkbox");
+           input.setAttribute("name","filtro"+i);
+           input.setAttribute("id",categorias[i]);
+           input.setAttribute("value",categorias[i]);
+           var label = document.createElement("label");
+           label.setAttribute("for",categorias[i]);
+           label.innerHTML = categorias[i];
+           li.appendChild(input);
+           li.appendChild(label);
+           form.appendChild(li);
+        }
+        var li = document.createElement("li");
+        li.setAttribute("style","margin-left:40px;");
+        var button = document.createElement("button");
+        button.setAttribute("type","button");
+        button.setAttribute("onclick","handleFiltros();");
+        button.setAttribute("class","col l5 offset-l4 btn btn-large waves-effect button teal");
+        button.innerHTML = "Aplicar filtros";
+        var i = document.createElement("i");
+        i.setAttribute("class","material-icons right");
+        i.innerHTML = "send";
+        button.appendChild(i);
+        li.appendChild(button);
+        form.appendChild(li);
+    }
+    function handleFiltros() {
+        var form = document.forms.namedItem("aplicarFiltros");
+        var formulario = new FormData(form);
+        $.ajax({
+               url:'{% url 'filtrarCategorias' %}', //procesarPerfilAlumno
+               type: "POST",
+               data: formulario,
+               cache: false,
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    alert(data.filtros);
+
+               },
+               error:function(data) {
+               alert("error in getting from server");
+           }
+
+         });
+
+    }
+
+    window.onload = cargarFiltros();
+</script>
+{% endif %}
 </body>
 
 </html>
