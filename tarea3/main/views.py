@@ -225,7 +225,7 @@ class editarUsuario(View):
             with default_storage.open('../media/avatars/' + filename, 'wb+') as destination:
                 for chunk in nuevaImagen.chunks():
                     destination.write(chunk)
-            Usuario.objects.filter(nombre=request.session['nombre']).update(avatar='/avatars/' + filename)
+            Usuario.objects.filter(nombre=request.session['nombre']).update(avatar='avatars/' + filename)
             request.session['avatar'] = str(Usuario.objects.get(nombre=request.session['nombre']).avatar)
 
         #eliminar favoritos en caso de ser alumno
@@ -344,6 +344,7 @@ class vistaVendedor(View):
             else:
                 return inicio(request)
             formasDePago = vendedor.formasDePago
+            print(formasDePago)
             productos = obtenerProductos(idVendedor)
             if 'id' not in request.session:
                 favoritos = obtenerFavoritosVendedor(idVendedor)

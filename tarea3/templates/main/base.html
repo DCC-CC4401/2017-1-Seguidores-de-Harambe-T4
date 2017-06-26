@@ -67,7 +67,7 @@
                 {% endif %}
 
     {% if request.session.id == None or request.session.tipo == 1 %}
-    <li><form method = "GET" action ="{% url 'vistaVendedor' %}">{% csrf_token %}
+    <li><form method = "GET" action ="{% url 'vistaVendedor' %}">
 <input type = "hidden" value = 4 name="id" id="id">
 <button type = "submit">clic</button>
             </form></li>
