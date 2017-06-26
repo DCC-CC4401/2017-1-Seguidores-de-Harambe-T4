@@ -42,7 +42,10 @@
                   <a href="#!name"><span style="margin-left: 5%;" class="white-text name">{{ request.session.nombre}} </span></a>
                   <li><a href="{% url 'inicio' %}"><i class="material-icons">home</i>Inicio</a></li>
                   <li><a href="{% url 'logout' %}"><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>
+                {% if request.session.id == 2 or request.session.id == 3 %}
                   <li><a href="#modal1"><i class="material-icons">add_alert</i>Alerta policial</a></li>
+                  <li><a href="javascript:;" onclick="document.getElementById('linkDashboard').submit();"><i class="material-icons">assessment</i>Datos de ventas</a></li>
+                {% endif %}
                 {% if request.session.tipo == 3 %}
                 <!-- Boton Activo -->>
                 <li><a class="subheader">Activo</a></li>
@@ -78,9 +81,7 @@
         </ul>
         </li>
     {% endif %}
-                {% if request.session.tipo == 2 or request.session.tipo == 3 %}
-                <li><a href="javascript:;" onclick="document.getElementById('linkDashboard').submit();"><i class="material-icons">assessment</i>Datos de ventas</a></li>
-                {% endif %}
+
 
     {% if request.session.id == None or request.session.tipo == 1 %}
     <li><form method = "GET" action ="{% url 'vistaVendedor' %}">{% csrf_token %}

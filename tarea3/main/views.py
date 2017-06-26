@@ -1643,7 +1643,15 @@ def checkAlert(request):
         alerta = alertaPolicial.objects.get(usuario=usuario)
     except alertaPolicial.DoesNotExist:
         return JsonResponse({"alertar": "false"})
-
+    #la alerta existe, se procede a verificar la hora y fecha
+    fechaAhora = str(timezone.now()).split(' ', 1)[0]
+    horaAhora = str(timezone.now()).split(' ', 1)[1].split('.')[0].split(':')[0] + ':' + \
+                str(timezone.now()).split(' ', 1)[1].split('.')[0].split(':')[1]
+    print("defirencia de hora: " + str((abs(int(alerta.hora.split(':')[1])) - (int(horaAhora.split(':')[1])))))
+    if(alerta.fecha != fechaAhora or alerta.hora.split(':')[0] != horaAhora.split(':')[0]
+       or (abs(int(alerta.hora.split(':')[1])) - (int(horaAhora.split(':')[1]))) >=5):
+        alerta.delete()
+        return JsonResponse({"alertar": "false"})
     alerta.delete()
     return JsonResponse({"alertar": "true"})
 
@@ -1655,24 +1663,35 @@ def checkAlert(request):
 
 @csrf_exempt
 def createAlert(request):
-    #print("POST:")
-    #print(request.POST)
-    #print("meemboyz")
     idUsuario = request.POST.get("alertId")
     usuario = Usuario.objects.get(id=idUsuario)
-    #nuevaAlertaPolicialUsuario = alertaPolicial(usuario=usuario)
-    #nuevaAlertaPolicialUsuario.save()
-    #print(usuario.longitud)
-    #print(usuario.latitud)
+    try:
+        alertaUsuarioAlertor = alertaPolicial.objects.get(usuario=usuario)
+    except alertaPolicial.DoesNotExist:
+        print(usuario)
+        nuevaAlertaPolicialUsuario = alertaPolicial(usuario=usuario)
+        nuevaAlertaPolicialUsuario.save()
     longitud = usuario.longitud
     latitud = usuario.latitud
     usuariosTodos = Usuario.objects.all()
 
-    #print(usuariosTodos)
+
     for u in usuariosTodos:
         if haversine(u.longitud,u.latitud,longitud,latitud):
             usuarioAlertar = Usuario.objects.get(id=u.id)
             print(usuarioAlertar)
+            try:
+                #veo si ya existe una alerta epndiente para ese usaurio
+                alerta = alertaPolicial.objects.get(usuario=usuarioAlertar)
+            except alertaPolicial.DoesNotExist:
+                # si no existe creo nomas
+                nuevaAlertaPolicial = alertaPolicial(usuario=usuarioAlertar)
+                nuevaAlertaPolicial.save()
+                return HttpResponse(status=204)
+            #si ya existia la borro
+            alerta.delete()
             nuevaAlertaPolicial = alertaPolicial(usuario=usuarioAlertar)
             nuevaAlertaPolicial.save()
-    return HttpResponse(status=204)
+            return HttpResponse(status=204)
+
+
