@@ -1587,3 +1587,19 @@ def createTransaction(request):
     transaccionNueva.comida.add(comida)
     return JsonResponse({"transaccion": "realizada"})
 
+
+@csrf_exempt
+def checkAlert(request):
+    #print("POST:")
+    #print(request.POST)
+    #print("meemboyz")
+    idUsuario = request.POST.get("id")
+    usuario = Usuario.objects.get(id=idUsuario)
+    #print(usuario)
+    try:
+        alerta = alertaPolicial.objects.get(usuario=usuario)
+    except alertaPolicial.DoesNotExist:
+        return JsonResponse({"alertar": "false"})
+
+    alerta.delete()
+    return JsonResponse({"alertar": "true"})

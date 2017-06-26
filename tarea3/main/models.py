@@ -14,6 +14,9 @@ class Usuario(models.Model):
     avatar = models.ImageField(upload_to = 'avatars')
   #  tipos = ((0, 'admin'), (1, 'alumno'), (2, 'fijo'), (3, 'ambulante'))
     tipo = models.IntegerField()
+    longitud = models.DecimalField(max_digits=8, decimal_places=6, default=-33.457879)
+    latitud = models.DecimalField(max_digits=8, decimal_places=6, default=-70.663949)
+
 
     def __init__(self, *args, **kwargs):
         super(Usuario, self).__init__(*args, **kwargs)
@@ -34,8 +37,8 @@ class Vendedor(Usuario):
         (3, 'Tarjeta Junaeb'),
     )
     formasDePago = MultiSelectField(choices=listaFormasDePago, null=True, blank=True)
-    longitud = models.DecimalField(max_digits=8, decimal_places=6, default=-33.457879)
-    latitud = models.DecimalField(max_digits=8, decimal_places=6, default=-70.663949)
+    #longitud = models.DecimalField(max_digits=8, decimal_places=6, default=-33.457879)
+    #latitud = models.DecimalField(max_digits=8, decimal_places=6, default=-70.663949)
 
     def __init__(self, *args, **kwargs):
         super(Usuario, self).__init__(*args, **kwargs)
@@ -145,3 +148,28 @@ class Transacciones(models.Model):
 
     class Meta:
         db_table = 'transacciones'
+
+
+class alertaPolicial(models.Model):
+    id = models.AutoField(primary_key=True)
+    usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.id)
+
+    class Meta:
+        db_table = 'alertaPolicial'
+
+
+
+# class Alert(models.Model):
+#     id = models.AutoField(primary_key=True)
+#     activada = models.BooleanField(default=False,blank=True)
+#     longitud = models.DecimalField(max_digits=8, decimal_places=6, default=-33.457879)
+#     latitud = models.DecimalField(max_digits=8, decimal_places=6, default=-70.663949)
+#
+#     def __str__(self):
+#         return str(self.id)
+#
+#     class Meta:
+#         db_table = 'alert'
