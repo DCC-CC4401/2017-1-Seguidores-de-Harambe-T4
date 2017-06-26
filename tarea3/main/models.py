@@ -54,7 +54,7 @@ class vendedorFijo(Vendedor):
         db_table = 'vendedorFijo'
 
 class vendedorAmbulante(Vendedor):
-    activo = models.BooleanField()
+    activo = models.BooleanField(default=False,blank=True)
     DEFAULT_TYPE = 3
     class Meta:
         db_table = 'vendedorAmbulante'
@@ -74,7 +74,7 @@ class Admin(Usuario):
         db_table = 'admin'
 
 class Comida(models.Model):
-    idVendedor =models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    idVendedor = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=200,primary_key=True)
     listaCategorias = (
         (0, 'Cerdo'),
@@ -111,6 +111,8 @@ class Comida(models.Model):
 class Favoritos(models.Model):
     idAlumno = models.ForeignKey(alumno, on_delete=models.CASCADE)
     idVendedor = models.ForeignKey(Vendedor, on_delete=models.CASCADE)
+    fechaAhora = str(timezone.now()).split(' ', 1)[0]
+    fecha = models.CharField(max_length=200, default=fechaAhora)
 
     def __str__(self):
         return self.idAlumno
@@ -132,9 +134,9 @@ class Imagen(models.Model):
 class Transacciones(models.Model):
     my_formats = get_format('DATETIME_INPUT_FORMATS')
     idTransaccion = models.AutoField(primary_key=True)
-    nombreComida = models.CharField(max_length=200,blank=True,null=True)
-    idVendedor =models.ForeignKey(Vendedor, on_delete=models.CASCADE)
-    precio = models.IntegerField()
+    comida = models.ManyToManyField(Comida,blank=True)
+    idVendedor = models.ForeignKey(Vendedor, on_delete=models.CASCADE,blank=True,null=True)
+    precio = models.IntegerField(blank=True,null=True)
     fechaAhora = str(timezone.now()).split(' ', 1)[0]
     fecha = models.CharField(max_length=200,default=fechaAhora)
 

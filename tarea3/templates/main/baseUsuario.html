@@ -1,62 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Compiled and minified CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
-
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-    <link rel="stylesheet" href="../static/style.css">
-
-    <!--Import jQuery before materialize.js-->
-    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <script type="text/javascript" src="../static/fb.js"></script>
-
-    <!-- Compiled and minified JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
-    <script src="http://materializecss.com/templates/starter-template/js/init.js"></script>
-
-    <nav class="top-nav">
-        <div class="nav-wrapper teal lighten-1">
-            <a href="#" class="brand-logo right"><img style="max-height: 65px!important;  padding: 8px 0!important;" class="circle" src="../static/img/logo.png"></a>
-          <div class="navbar-fixed">
-            <a href="#" data-activates="slide-out"
-               class="left button-collapse btn-floating btn-large waves-effect waves-light"><i
-                    class="material-icons">menu</i></a>
-            <a class="center page-title"></a>
-          </div>
-            <ul id="slide-out" class="side-nav fixed leftside-navigation ps-container ps-active-y">
-                <li>
-                    <div class="userView">
-                        <a href="{% url 'editarUsuario' %}"><i class="material-icons right grey-text text-lighten-2" style="position: absolute; bottom: -0.5em; right: 0.5em; padding: 0 0 !important;">settings</i> </a>
-                  <div class="background" style="height:175px;">
-                    <img src="../static/img/background4.png">
-                  </div>
-                  <a href="#!user"><img style="margin-top: 16%;" class="circle" src="../static/media/{{ request.session.avatar}}"></a>
-                  <a href="#!name"><span style="margin-left: 5%;" class="white-text name">{{ request.session.nombre}} </span></a>
-                  <li><a href="{% url 'inicio' %}"><i class="material-icons">home</i>Inicio</a></li>
-                  <li><a href="{% url 'logout' %}"><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>
-                {% if request.session.tipo == 3 %}
-                <!-- Boton Activo -->>
-                <li><a class="subheader">Activo</a></li>
-                <li>
-                    <div class="switch" style="margin-left: 80px;">
-                        <label>
-                            No<input type="checkbox" id="checkbox-estado"><span class="lever"></span>Si
-                        </label>
-                    </div>
-                </li>
-                {% endif %}
-                </div>
-                </li>
-
-        </div>
-    </nav>
-
-</head>
-
+{% extends 'main/base.html' %}
 {% block content %}
 <!-- si es usuario tipo alumno -->
 {% if request.session.tipo == 1 %}
@@ -204,6 +146,65 @@
         </div>
     </div>
     </main>
+
+    {% if request.session.tipo == 2 or request.session.tipo == 3  %}
+      <div id="profile-page-content" class="row">
+        <div id="profile-page-wall" class="col s12 m8">
+            <div class="col s12 z-depth-1">
+                <div class="tab-content col s12">
+                    <div class="container">
+                        <div class="section">
+                            <div class="row">
+                                <!-- Aca se definen los modales -->
+                                <!-- aca comienzan a mostrarse los productos -->
+                                <!--Este script es para ordenar el listado de productos -->
+                                        <script>
+                                            var productos ={{ listaDeProductos|safe }};
+                                            var largo = productos.length;
+                                            //imprimir en pantalla todas las tarjetas de productos
+                                            for (var i = 0; i < largo; i++)  {
+                                                document.write(" <div class='col s6 m12 l4'>");
+                                                document.write("<div class='container'>");
+                                                document.write(" <div class='card z-depth-1'>");
+                                                document.write("<div class='teal lighten-2 card-image waves-effect waves-block waves-light'>");
+                                                document.write("<form method='GET' action='{% url 'editarproductos' %}'>")
+                                                document.write("<input type='hidden' name ='nombre' id='nombre' value='"+productos[i][0]+"'>");
+                                                document.write("<button style='position: absolute; bottom: 4.5em; right: 0.5em; padding: 0 0 !important;' class='btn-floating btn-large '' type='submit'>");
+                                                document.write("<i class='large material-icons'>mode_edit</i>");
+                                                document.write("</button></form>")
+                                                document.write("<img class='activator responsive-img center-block'  style='max-width: 30%; margin-top:20px; margin-bottom:20px;height: 100px; width: 100px;' src ='../static/media/"+productos[i][5]+"'>");
+                                                document.write("</div>");
+                                                document.write(" <div class='card-content'>");
+                                                document.write("<span class='card-title activator grey-text text-darken-4'> "+productos[i][0] +" <i class='material-icons right'>more_vert</i></span>");
+                                                document.write("<p><a class='teal-text'> $"+productos[i][3]+" </a></p>");
+                                                document.write("<p><a class='row col l5' id='Stock-"+productos[i][0]+"' class='teal-text'> Stock :"+productos[i][2]+" </a>");
+                                                document.write("<div class='row' ></div>");
+                                                document.write("<div class='col s3 m4' ></div>");
+                                                document.write('<button class=" btn btn-large waves-effect button teal" id="Button--'+productos[i][0]+'" type="button" onclick ="bajarStock('+"\'"+productos[i][0]+"\'"+' );"   >-</button> <button class="btn btn-large waves-effect button teal" id="Button-'+productos[i][0]+'" type="button" onclick ="subirStock('+"\'"+productos[i][0]+"\'"+' );"   >+</button></p>');
+                                                document.write("</div>");
+                                                document.write(" <div class='card-reveal'>");
+                                                document.write(" <span class='card-title grey-text text-darken-4'> "+productos[i][0] +" <i class='material-icons right'>close</i></span>");
+                                                document.write(" <ul>");
+                                                document.write(" <li>Precio: <a class='green-text light-green-text'> $"+productos[i][3]+" </a></li>");
+                                                document.write("<li>Categoria: "+productos[i][1]+" </li>");
+                                                document.write("<li>Stock: "+productos[i][2]+" </li>");
+                                                document.write("<li>Descripcion: "+productos[i][4]+" </li>");
+                                                document.write(" </ul></div></div></div></div>");
+                                            }
+
+                                            </script>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class='row'>
+                    <a class='col l5 offset-l4 btn btn-large waves-effect button teal' href="{% url 'agregarproductos' %}">Agregar Item</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 <script>
     function ProfileImg() {
         var str = "../static/media/";
@@ -244,6 +245,70 @@
         document.getElementById("favoritos-movil").innerHTML = numeroFav;
     }
 
+
+    function subirStock(id){
+         var datos ="op=suma&nombre=" + id;
+         $.ajax({
+           url:{% url 'modificarStock' %},
+           type: "GET",
+           data: datos,
+           dataType: "json",
+           success: function(data) {
+               var nuevoStock = parseInt(data.stock);
+               nuevoStock +=1;
+               document.getElementById("Stock-"+id).innerHTML = "Stock: "+nuevoStock;
+               document.getElementById("Button-"+id).setAttribute("onclick",'subirStock('+"\'"+id+"\'"+' );');
+           },
+           error:function(data) {
+               alert("error in getting from server");
+           },
+         });
+    }
+
+    function bajarStock(id){
+                //crea la transaccion en la bdd
+         var datosTransaccion="nombre=" + id + "&" + "idUsuario=" + "{{ request.session.id }}";
+        $.ajax({
+           url:"{% url 'createTransaction' %}",
+           type: "GET",
+           data: datosTransaccion,
+           dataType: "json",
+           success: function(data) {
+              alert("funciono");
+           },
+           error:function(data) {
+               alert("error in getting from server");
+           },
+         });
+
+
+
+        //restar en la bdd
+        var datos ="op=resta&nombre=" + id;
+         $.ajax({
+           url:{% url 'modificarStock' %},
+           type: "GET",
+           data: datos,
+           dataType: "json",
+           success: function(data) {
+               //alert("tambien funciono");
+               var nuevoStock = parseInt(data.stock);
+               if (nuevoStock != 0){
+                nuevoStock -=1;
+               }
+
+               document.getElementById("Stock-"+id).innerHTML = "Stock: "+nuevoStock;
+               document.getElementById("Button--"+id).setAttribute("onclick",'bajarStock('+"\'"+id+"\'"+' );');
+           },
+           error:function(data) {
+               alert("error in getting from server");
+           },
+         });
+    }
+
+
+
+
 window.onload = Favoritos();
 window.onload = FormasDePago();
 window.onload = ProfileImg();
@@ -252,82 +317,6 @@ window.onload = EstadoVendedor();
 </script>
 
 {% endif %}
-{% if request.session.tipo == 3 %}
-<script>
-    function EstadoActual() {
-        var estdoInicial = "{{ request.session.activo }}";
-        if (estdoInicial == "True") {
-            document.getElementById("checkbox-estado").checked = true;
-        } else {
-            document.getElementById("checkbox-estado").checked = false;
-        }
-    }
-</script>
 
-<script>
-    function switchActivo(){
-        var input = document.getElementById("checkbox-estado");
-        input.setAttribute("onChange" ,'handleChange(this);');
-        if ("{{request.sessionactivo}}" == "True") {
-            input.setAttribute("checked", true);
-        } else {
-            input.setAttribute("checked", false);
-        }
-    }
-</script>
-
-<script>
-    function handleChange(checkbox) {
-    if(checkbox.checked == true){
-         var datos ="id=" + "{{request.session.id}}"+"&estado=true";
-         document.getElementById("estado-desktop").classList.remove("red-text");
-         document.getElementById("estado-desktop").classList.add("light-green-text");
-         document.getElementById("estado-desktop").innerHTML = "Disponible";
-
-         document.getElementById("estado-movil").classList.remove("red-text");
-         document.getElementById("estado-movil").classList.add("light-green-text");
-         document.getElementById("estado-movil").innerHTML = "Disponible";
-         $.ajax({
-           url:{% url 'cambiarEstado' %},
-           type: "GET",
-           data: datos,
-           dataType: "json",
-
-           success: function(data) {
-           },
-           error:function(data) {
-               alert("error in getting from server")
-           },
-        });
-    }else{
-        var datos ="id=" + "{{request.session.id}}"+"&estado=false";
-        document.getElementById("estado-desktop").classList.remove("light-green-text");
-        document.getElementById("estado-desktop").classList.add("red-text");
-        document.getElementById("estado-desktop").innerHTML = "No Disponible";
-
-        document.getElementById("estado-movil").classList.remove("light-green-text");
-        document.getElementById("estado-movil").classList.add("red-text");
-        document.getElementById("estado-movil").innerHTML = "No Disponible";
-         $.ajax({
-           url:{% url 'cambiarEstado' %},
-           type: "GET",
-           data: datos,
-           dataType: "json",
-
-           success: function(data) {
-           },
-           error:function(data) {
-               alert("error in getting from server")
-           },
-        });
-   }
-}
-</script>
-
- <script>
-    window.onload = EstadoActual();
-    window.onload = switchActivo();
-</script>
-{% endif  %}
 
 {% endblock %}

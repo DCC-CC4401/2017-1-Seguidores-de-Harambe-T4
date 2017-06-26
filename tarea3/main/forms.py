@@ -29,8 +29,6 @@ class LoginVendedorAmbulante(LoginVendedor):
         model = vendedorAmbulante
         fields = ['id', 'user', 'nombre', 'email', 'avatar','activo']
 
-
-
 class GestionProductosForm(forms.Form):
     idVendedor = 0
     nombre = forms.CharField(max_length=200)
@@ -40,8 +38,10 @@ class GestionProductosForm(forms.Form):
     precio = forms.IntegerField()
 
 
-class editarProductosForm(forms.Form):
-    foto = forms.FileField()
+class editarProductosForm(ModelForm):
+    class Meta:
+        model = Comida
+        fields = ['nombre','categorias','descripcion','stock','precio','imagen']
 
 class editarPerfilUsuario(ModelForm):
     class Meta:
