@@ -203,7 +203,7 @@
     </main>
 <script>
     function EstadoVendedor() {
-        var estado = "{{ form.activo.value }}";
+        var estado = "{{ activo }}";
         if (estado == "True") {
             document.getElementById("estado-desktop").classList.add("medium-small","flow-text","light-green-text");
             document.getElementById("estado-desktop").innerHTML = "Disponible";
