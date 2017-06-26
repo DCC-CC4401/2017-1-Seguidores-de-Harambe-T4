@@ -62,12 +62,27 @@
                 <li><a href="{% url 'login' %}"><i class="material-icons">account_circle</i>Iniciar Sesión</a></li>
 
                 {% endif %}
+        <li class="no-padding">
+        <ul class="collapsible collapsible-accordion">
+        <li>
+            <a class="collapsible-header">Filtrar Categorias<i class="material-icons">arrow_drop_down</i></a>
+            <div class="collapsible-body">
+              <ul>
+                <li><a href="#!">First</a></li>
+                <li><a href="#!">Second</a></li>
+                <li><a href="#!">Third</a></li>
+                <li><a href="#!">Fourth</a></li>
+              </ul>
+            </div>
+        </li>
+        </ul>
+        </li>
                 {% if request.session.tipo == 2 or request.session.tipo == 3 %}
                 <li><a href="javascript:;" onclick="document.getElementById('linkDashboard').submit();"><i class="material-icons">assessment</i>Datos de ventas</a></li>
                 {% endif %}
 
     {% if request.session.id == None or request.session.tipo == 1 %}
-    <li><form method = "GET" action ="{% url 'vistaVendedor' %}">
+    <li><form method = "GET" action ="{% url 'vistaVendedor' %}">{% csrf_token %}
 <input type = "hidden" value = 4 name="id" id="id">
 <button type = "submit">clic</button>
             </form></li>
