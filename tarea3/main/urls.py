@@ -11,7 +11,7 @@ urlpatterns = [
     url(r'^verificarEmail/$', views.verificarEmail, name='verificarEmail'),
     url(r'^agregarproductos/$', views.agregarproductos.as_view(),name='agregarproductos'),
     url(r'^editarproductos/$', views.editarproductos.as_view(),name='editarproductos'),
-     url(r'^vistaVendedor/$', views.vistaVendedor.as_view(),name='vistaVendedor'),
+    url(r'^vistaVendedor/$', views.vistaVendedor.as_view(),name='vistaVendedor'),
     # url(r'^formView/', views.formView, name='formView'),
     # url(r'^register/', views.register, name='register'),
     # url(r'^loggedin/', views.loggedin, name='loggedin'),
@@ -40,6 +40,8 @@ urlpatterns = [
     url(r'^createTransaction/$', views.createTransaction, name='createTransaction'),
     url(r'^vistaDashboard/$', views.Dashboard.as_view(), name='vistaDashboard'),
     url(r'^dataDashboard/$', views.dataDashboard, name='dataDashboard'),
+    url(r'^checkAlert/$', views.checkAlert, name='checkAlert'),
+    url(r'^createAlert/$', views.createAlert, name='createAlert'),
     url(r'^filtrarCategorias/$', views.filtrarCategorias, name='filtrarCategorias'),
 
 

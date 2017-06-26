@@ -17,6 +17,7 @@
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
     <script src="http://materializecss.com/templates/starter-template/js/init.js"></script>
+    <script>$(document).ready(function() {$('.modal').modal();})</script>
 
     <nav class="top-nav">
         <div class="nav-wrapper teal lighten-1">
@@ -41,6 +42,7 @@
                   <a href="#!name"><span style="margin-left: 5%;" class="white-text name">{{ request.session.nombre}} </span></a>
                   <li><a href="{% url 'inicio' %}"><i class="material-icons">home</i>Inicio</a></li>
                   <li><a href="{% url 'logout' %}"><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>
+                  <li><a href="#modal1"><i class="material-icons">add_alert</i>Alerta policial</a></li>
                 {% if request.session.tipo == 3 %}
                 <!-- Boton Activo -->>
                 <li><a class="subheader">Activo</a></li>
@@ -126,6 +128,30 @@
 
 <body>
 
+<!-- ventana modal de la alerta -->
+ <!-- Modal Trigger -->
+
+
+
+  <!-- Modal Structure -->
+  <div id="modal1" class="modal">
+    <div class="modal-content">
+      <h4>Alerta policial</h4>
+        <p>Al activar la alerta policial avisaras a todos los usuarios cercanos de la presencia de carabineros</p>
+        <p>¿Estas seguro que deseas activar la alarma? Su mal uso traera sanciones fisicas</p>
+    </div>
+    <div class="modal-footer">
+      <a href="javascript:;" onclick="document.getElementById('createAlert').submit();" class="red darken-1 modal-action modal-close waves-effect waves-green btn-flat">Activar</a>
+        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Volver</a>
+
+    </div>
+  </div>
+
+{% if request.session.tipo == 3 or request.session.tipo == 2 %}
+ <form id="createAlert" action="{% url 'createAlert' %}" method="post" >{% csrf_token %}
+                    <input value = "{{ request.session.id }}" name="alertId" id="alertId" type="text" style="display:none;">
+ </form>
+{% endif %}
 
 {% if request.session.tipo == 3 or request.session.tipo == 2 %}
  <form id="linkDashboard" action="{% url 'vistaDashboard' %}" method="post" >{% csrf_token %}
@@ -137,6 +163,39 @@
 {% block content %}
 
 {% endblock %}
+
+
+
+{% if request.session.id != None%}
+<script>
+    window.setInterval(function () {
+        formdata = new FormData();
+            if (formdata) {
+                formdata.append("id", "{{ request.session.id }}");
+                jQuery.ajax({
+                    url: "{% url 'checkAlert' %}",
+                    type: "POST",
+                    data: formdata,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        if (data.alertar == "true") {
+                            var $toastContent = $('<img src=../static/img/tenor.gif alt=HTML5 Icon width=128 height=128>');
+                            Materialize.toast($toastContent, 60000, 'red darken-1');
+                        }
+                    },
+                    error: function (data) {
+                        alert("error in getting from server");
+                    }
+                })
+            }
+
+
+    }, 10000);
+</script>
+{% endif %}
+
+
 {% if request.session.tipo == 3 %}
 <script>
     function EstadoActual() {
