@@ -27,7 +27,7 @@
             '<p><i>Horario:</i> 12:30-14:15</p>' +
             '<p><input type="checkbox" class="filled-in" id="test" checked="checked" />' +
             '<label for="test">Favorito</label></p>' +
-            '<p style="text-align: right;">Ver detalles»</p>' +
+            '<button style="text-align: right;" type="button">Click Me!</button>' +
             '</div>'+
             '</div>';
 
@@ -44,11 +44,18 @@
             var nuevo = new google.maps.Marker({
                 position: {lat: parseFloat(vendedor[2]), lng: parseFloat(vendedor[3])},
                 map: map
-            })
-            alert(vendedor[2]);
-            alert(vendedor[3]);
+            });
             markers.push(nuevo);
         }
+        for (i = 0; i<markers.length; i++) {
+            markers[i].infowindow = new google.maps.InfoWindow({
+              content: info
+            });
+            google.maps.event.addListener(markers[i], 'click', function() {
+                this.infowindow.open(map, this);
+            });
+        }
+
 //        new google.maps.Marker({
 //                position: {lat: parseFloat(arreglo_v[0].split(",")[2]), lng: parseFloat(vendedor[3])},
 //                map: map
