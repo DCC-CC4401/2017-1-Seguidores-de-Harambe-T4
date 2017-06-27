@@ -40,17 +40,6 @@
                   <li><a href="{% url 'inicio' %}"><i class="material-icons">home</i>Inicio</a></li>
                   <li><a href="{% url 'logout' %}"><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>
 
-                {% if request.session.tipo == 3 %}
-                <!-- Boton Activo -->>
-                <li><a class="subheader">Activo</a></li>
-                <li>
-                    <div class="switch" style="margin-left: 80px;">
-                        <label>
-                            No<input type="checkbox" id="checkbox-estado"><span class="lever"></span>Si
-                        </label>
-                    </div>
-                </li>
-                {% endif %}
                 </div>
                 </li>
 
@@ -91,7 +80,7 @@
 <div class="row">
     <div class="row"></div>
     <div id="canvas-container">
-        <canvas id="chartVentasHoy" width=600 height=400></canvas>
+        <canvas id="chartVentasHoy" width=550 height=400></canvas>
     </div>
 </div>
     <div class="row">
@@ -340,19 +329,19 @@ jQuery("#dateDay").on("change", function () {
 <div class="row">
     <div class="row"></div>
     <div id="canvas-container-week" class="center-align">
-        <canvas id="week-chart" width=600 height=400></canvas>
+        <canvas id="week-chart" width=550 height=400></canvas>
     </div>
 </div>
 
     <div class="row">
-        <div class="input-field col s6">
+        <div class="input-field col s4  offset-s2">
             <h5>Fecha Inicio</h5>
            <input type="date" class="datepicker" name="dateIni" id="dateIni" value="2017-06-20">
         </div>
 
 
 
-        <div class="input-field col s6">
+        <div class="input-field col s4">
              <h5>Fecha termino</h5>
            <input type="date" class="datepicker" name="dateFin" id="dateFin" value="">
         </div>
