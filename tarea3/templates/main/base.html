@@ -283,13 +283,13 @@
         for (i = 0; i<arreglo_v.length; i++) {
             var vendedor = arreglo_v[i].split(",");
             var categoriaV = vendedor[5].split(":");
-            for (i = 0; i<categoriaV.length; i++) {
-                if (!categorias.includes(categoriaV[i])){
-                    categorias.push(categoriaV[i]);
+            for (j = 0; j<categoriaV.length; j++) {
+                if (!categorias.includes(categoriaV[j])){
+                    categorias.push(categoriaV[j]);
                 }
             }
-
         }
+        console.log(categorias)
         var filtros = document.getElementById("filtros");
         var form = document.createElement("form");
         form.setAttribute("method","post");
