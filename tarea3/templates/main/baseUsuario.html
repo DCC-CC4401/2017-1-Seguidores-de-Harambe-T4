@@ -9,7 +9,7 @@
       function initMap() {
         var infoWindow;
         var beau850 = {lat: -33.457785, lng: -70.663950};
-        var map = new google.maps.Map(document.getElementById('map'), {
+        map = new google.maps.Map(document.getElementById('map'), {
           zoom: 19,
           center: beau850
         });
@@ -22,10 +22,10 @@
           maxWidth: 400
         });
 
-        var v = "{{vendedores}}"; //nombre, avatar, lat, longitud, id, categorias, favorito
-          //                        [0]        [1]  [2]     [3]    [4]     [5]        [6]
+        var v = "{{vendedores}}"; //nombre, avatar, lat, longitud, id, categorias, favorito, formasDePago
+          //                        [0]        [1]  [2]     [3]    [4]     [5]        [6]         [7]
         var arreglo_v = v.split(";");
-        var markers = [];
+        markers = [];
         for (i = 0; i<arreglo_v.length; i++) {
             var vendedor = arreglo_v[i].split(",");
             var nuevo;
@@ -42,7 +42,6 @@
                 map: map
             });
             }
-
             markers.push(nuevo);
         }
         for (i = 0; i<markers.length; i++) {
@@ -83,7 +82,8 @@
 //            '<div id="bodyContent">'+
 //            '<p>Vendedores de almuerzo</p>'+
 //            '<p><i>Menú de hoy:</i> Lasaña</p>' +
-//            '<p><i>Formas de pago:</i> Efectivo, Tarjeta de Crédito o Débito, Junaeb</p>' +
+            '<p><b><i>Formas de pago:  </i>' + String(vendedor[7].split("$")) + '</b></p>' +
+//            '<p><i><b>Categorías:  </b></i>' + categoriasVendedor(vendedor[5]) + '</p>' +
 //            '<p><i>Horario:</i> 12:30-14:15</p>' +
 //            '<p><input type="checkbox" class="filled-in" id="test" checked="checked" />' +
 //            '<label for="test">Favorito</label></p>' +
@@ -96,12 +96,83 @@
           return info;
       }
 
+      function categoriasVendedor(categorias_raw) {
+          var arreglo_categorias = categorias_raw.split(":");
+          var categorias = [];
+          for (i=0; i<arreglo_categorias.length; i++) {
+              categorias.push(arreglo_categorias[i].split("#")[0]);
+          }
+          return categorias;
+      }
+
+      function agregarMarcadoresfiltrados(categorias) {
+            var v = "{{vendedores}}"; //nombre, avatar, lat, longitud, id, categorias
+            var arreglo_v = v.split(";");
+            arreglo_v = filtrarVendedores(arreglo_v,categorias);
+            for (i = 0; i<arreglo_v.length; i++) {
+                var vendedor = arreglo_v[i].split(",");
+                var nuevo;
+//            alert(vendedor[6]);
+                if (vendedor[6] == "si"){
+                    var nuevo = new google.maps.Marker({
+                    position: {lat: parseFloat(vendedor[2]), lng: parseFloat(vendedor[3])},
+                    map: map,
+                    icon: '../static/img/star.png'
+                });
+                } else {
+                    var nuevo = new google.maps.Marker({
+                    position: {lat: parseFloat(vendedor[2]), lng: parseFloat(vendedor[3])},
+                    map: map
+                });
+                }
+                markers.push(nuevo);
+            }
+
+            for (i = 0; i<markers.length; i++) {
+                var vendedor = arreglo_v[i].split(",");
+                var info_vendedor = cuerpoDelInfowindow(vendedor);
+
+                markers[i].infowindow = new google.maps.InfoWindow({
+                  content: info_vendedor
+                });
+                google.maps.event.addListener(markers[i], 'click', function() {
+                    this.infowindow.open(map, this);
+                });
+            }
+      }
+
+      function filtrarVendedores(vendedores,categorias) {
+          var vendedores_filtrados = [];
+          var categorias_string = categorias.toString();
+          for (i = 0; i<vendedores.length; i++) {
+              var condicion = false;
+              var categorias_vendedor = vendedores[i].split(",")[5].split(":");
+              for (j = 0; j< categorias_vendedor.length; j++) {
+                  if (categorias_string.indexOf(categorias_vendedor[j].split("#")[0]) != -1 && categorias_vendedor[j].split("#")[1] != "0") {
+                      condicion = true;
+                      break;
+                  }
+              }
+              if (condicion) {
+                  vendedores_filtrados.push(vendedores[i]);
+              }
+          }
+          return vendedores_filtrados;
+      }
+
+      function deleteMarkers() {
+          for (i = 0; i<markers.length; i++) {
+              markers[i].setMap(null);
+          }
+          markers = [];
+      }
+
       function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-        infoWindow.setPosition(pos);
-        infoWindow.setContent(browserHasGeolocation ?
-                              'Error: The Geolocation service failed.' :
-                              'Error: Your browser doesn\'t support geolocation.');
-        infoWindow.open(map);
+//        infoWindow.setPosition(pos);
+//        infoWindow.setContent(browserHasGeolocation ?
+//                              'Error: The Geolocation service failed.' :
+//                              'Error: Your browser doesn\'t support geolocation.');
+//        infoWindow.open(map);
       }
     </script>
     <script async defer

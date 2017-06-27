@@ -283,8 +283,8 @@
             var vendedor = arreglo_v[i].split(",");
             var categoriaV = vendedor[5].split(":");
             for (j = 0; j<categoriaV.length; j++) {
-                if (!categorias.includes(categoriaV[j])){
-                    categorias.push(categoriaV[j]);
+                if (!categorias.includes(categoriaV[j].split("#")[0])){
+                    categorias.push(categoriaV[j].split("#")[0]);
                 }
             }
         }

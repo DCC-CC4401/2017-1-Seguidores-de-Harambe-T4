@@ -49,7 +49,8 @@ def stringVendedoresActivosConStock():
             latitud = v.latitud
             longitud = v.longitud
             avatar = v.avatar
-            string_vend+= nombre + "," + str(avatar) + "," + str(latitud) + "," + str(longitud) + "," + str(id) + "," + categorias + ";"
+            pagos = procesarFormasDePago(v.formasDePago)
+            string_vend+= nombre + "," + str(avatar) + "," + str(latitud) + "," + str(longitud) + "," + str(id) + "," + categorias + "," + pagos + ";"
     if string_vend != "":
         string_vend = string_vend[:-1]
     return string_vend
@@ -69,10 +70,15 @@ def stringVendedoresActivosConStockParaAlumnos(id_alumno):
             latitud = v.latitud
             longitud = v.longitud
             avatar = v.avatar
-            string_vend+= nombre + "," + str(avatar) + "," + str(latitud) + "," + str(longitud) + "," + str(id) + "," + categorias + "," + fav + ";"
+            pagos = procesarFormasDePago(v.formasDePago)
+            string_vend+= nombre + "," + str(avatar) + "," + str(latitud) + "," + str(longitud) + "," + str(id) + "," + categorias + "," + fav + "," + pagos + ";"
     if string_vend != "":
         string_vend = string_vend[:-1]
     return string_vend
+
+def procesarFormasDePago(formasDePago):
+    f = str(formasDePago)
+    return f.replace(", ","$")
 
 def categoriasVendedor(id_vendedor):
     comidas = list(Comida.objects.filter(idVendedor=id_vendedor))
@@ -83,7 +89,7 @@ def categoriasVendedor(id_vendedor):
         # if stock == 0:
         #     continue
         for i in str(comida.categorias).split(", "):
-            categorias += i + ":"
+            categorias += i +"#"+ str(stock) + ":"
     if categorias == "" or categorias == ":":
         return "None"
     return categorias[:-1]
