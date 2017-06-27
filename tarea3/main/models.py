@@ -153,7 +153,10 @@ class Transacciones(models.Model):
 class alertaPolicial(models.Model):
     id = models.AutoField(primary_key=True)
     usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE)
-
+    fechaAhora = str(timezone.now()).split(' ', 1)[0]
+    fecha = models.CharField(max_length=200, default=fechaAhora)
+    horaAhora = str(timezone.now()).split(' ', 1)[1].split('.')[0].split(':')[0] + ':' + str(timezone.now()).split(' ', 1)[1].split('.')[0].split(':')[1]
+    hora = models.CharField(max_length=200, default=horaAhora)
     def __str__(self):
         return str(self.id)
 
