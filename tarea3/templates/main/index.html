@@ -80,7 +80,7 @@
       }
       
       function agregarMarcadoresfiltrados(categorias) {
-            var v = "{{vendedores}}"; //nombre, avatar, lat, longitud, id, categorias
+            var v = "{{vendedores}}"; //nombre, avatar, lat, longitud, id, categorias, formasDePago
             var arreglo_v = v.split(";");
             arreglo_v = filtrarVendedores(arreglo_v,categorias);
             for (i = 0; i<arreglo_v.length; i++) {
@@ -113,7 +113,7 @@
               var condicion = false;
               var categorias_vendedor = vendedores[i].split(",")[5].split(":");
               for (j = 0; j< categorias_vendedor.length; j++) {
-                  if (categorias_string.indexOf(categorias_vendedor[j]) != -1) {
+                  if (categorias_string.indexOf(categorias_vendedor[j].split("#")[0]) != -1 && categorias_vendedor[j].split("#")[1] != "0") {
                       condicion = true;
                       break;
                   }
