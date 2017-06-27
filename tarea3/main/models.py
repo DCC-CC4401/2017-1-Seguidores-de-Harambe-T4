@@ -77,7 +77,7 @@ class Admin(Usuario):
         db_table = 'admin'
 
 class Comida(models.Model):
-    idVendedor = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    idVendedor = models.ForeignKey(Vendedor, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=200,primary_key=True)
     listaCategorias = (
         (0, 'Cerdo'),
