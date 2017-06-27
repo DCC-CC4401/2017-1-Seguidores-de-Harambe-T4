@@ -13,6 +13,6 @@ def haversine(lon1, lat1, lon2, lat2):
     c = 2 * asin(sqrt(a))
     r = 6371  # Radius of earth in kilometers. Use 3956 for miles
     d = (c * r) * 1000  # in meters
-    if (d <= 15):
+    if (d <= 100):
         return True
     return False

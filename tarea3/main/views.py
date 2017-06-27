@@ -722,14 +722,6 @@ def checkAlert(request):
         alerta = alertaPolicial.objects.get(usuario=usuario)
     except alertaPolicial.DoesNotExist:
         return JsonResponse({"alertar": "false"})
-    #la alerta existe, se procede a verificar la hora y fecha
-    fechaAhora = str(timezone.now()).split(' ', 1)[0]
-    horaAhora = str(timezone.now()).split(' ', 1)[1].split('.')[0].split(':')[0] + ':' + \
-                str(timezone.now()).split(' ', 1)[1].split('.')[0].split(':')[1]
-    print("defirencia de hora: " + str(abs( (int(horaAhora.split(':')[1])) - int(alerta.hora.split(':')[1])) ))
-    if(alerta.fecha != fechaAhora or alerta.hora.split(':')[0] != horaAhora.split(':')[0]):
-        alerta.delete()
-        return JsonResponse({"alertar": "false"})
     alerta.delete()
     return JsonResponse({"alertar": "true"})
 
