@@ -146,23 +146,29 @@
       }
 
       function cuerpoDelInfowindow(vendedor) {
-          var info = '<div class="row" id="content">'+
-            '<div id="siteNotice">'+
+          var info = '<div id="content">'+
+                '<div id="siteNotice">'+
             '</div>'+
-            '<div><p style="float: left;"><img src="../static/media/'+ vendedor[1] +'" width="50" hspace="10"></p>' +
-            '<h4>'+ vendedor[0] +'</h4></div>'+
+            '<div  class="row">' +
+            '<p style="float: left;"><img src="../static/media/'+ vendedor[1] +'" width="50" hspace="10"></p>' +
+            '<div class="row">'+
+            '<h4>'+ vendedor[0] +'</h4>'+
+                '</div>'+
 //            '<p style="color:#029500;"> Disponible</p>' +
 //            '<div id="bodyContent">'+
 //            '<p>Vendedores de almuerzo</p>'+
 //            '<p><i>Menú de hoy:</i> Lasaña</p>' +
+            '<div class="row">'+
             '<p><b><i>Formas de pago:  </i>' + String(vendedor[6].split("$")) + '</b></p>' +
+            '</div>'+
 //            '<p><b><i>Categorías:  </i>' + categoriasVendedor(vendedor[5]) + '</b></p>' +
 //            '<p><i>Horario:</i> 12:30-14:15</p>' +
 //            '<p><input type="checkbox" class="filled-in" id="test" checked="checked" />' +
 //            '<label for="test">Favorito</label></p>' +
+                  '<div class="row">'+
             "<form method = \"GET\" action =\"{% url 'vistaVendedor' %}\">{% csrf_token %}" +
             '<input type = "hidden" value =' + vendedor[4] +' name="id" id="id">' +
-            '<button style="float: right;" type = "submit">Ver ficha del vendedor</button>' +
+            '<button style="float: center;" type = "submit">Ver ficha del vendedor</button>' +
             '</form>' +
             '</div>'+
             '</div>';
@@ -170,6 +176,9 @@
       }
 
       function categoriasVendedor(categorias_raw) {
+          if(categorias_raw.indexOf(":") == -1) {
+              return categorias_raw.split("#")[0]
+          }
           var arreglo_categorias = categorias_raw.split(":");
           var categorias = [];
           for (i=0; i<arreglo_categorias.length; i++) {
