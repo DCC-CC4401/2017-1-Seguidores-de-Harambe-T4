@@ -177,14 +177,14 @@
 
       function categoriasVendedor(categorias_raw) {
           if(categorias_raw.indexOf(":") == -1) {
-              return categorias_raw.split("#")[0]
+              return categorias_raw.split("#")[0];
           }
           var arreglo_categorias = categorias_raw.split(":");
-          var categorias = [];
+          var categorias = "";
           for (i=0; i<arreglo_categorias.length; i++) {
-              categorias.push(arreglo_categorias[i].split("#")[0]);
+              categorias += arreglo_categorias[i].split("#")[0] + ", ";
           }
-          return String(categorias);
+          return categorias.substring(0, str.length - 2);
       }
 
       function handleLocationError(browserHasGeolocation, infoWindow, pos) {
