@@ -22,8 +22,8 @@
           maxWidth: 400
         });
 
-        var v = "{{vendedores}}"; //nombre, avatar, lat, longitud, id, categorias, favorito
-          //                        [0]        [1]  [2]     [3]    [4]     [5]        [6]
+        var v = "{{vendedores}}"; //nombre, avatar, lat, longitud, id, categorias, favorito, formasDePago
+          //                        [0]        [1]  [2]     [3]    [4]     [5]        [6]         [7]
         var arreglo_v = v.split(";");
         markers = [];
         for (i = 0; i<arreglo_v.length; i++) {
@@ -82,7 +82,8 @@
 //            '<div id="bodyContent">'+
 //            '<p>Vendedores de almuerzo</p>'+
 //            '<p><i>Menú de hoy:</i> Lasaña</p>' +
-//            '<p><i>Formas de pago:</i> Efectivo, Tarjeta de Crédito o Débito, Junaeb</p>' +
+            '<p><b><i>Formas de pago:  </i>' + String(vendedor[7].split("$")) + '</b></p>' +
+//            '<p><i><b>Categorías:  </b></i>' + categoriasVendedor(vendedor[5]) + '</p>' +
 //            '<p><i>Horario:</i> 12:30-14:15</p>' +
 //            '<p><input type="checkbox" class="filled-in" id="test" checked="checked" />' +
 //            '<label for="test">Favorito</label></p>' +
@@ -93,6 +94,15 @@
             '</div>'+
             '</div>';
           return info;
+      }
+
+      function categoriasVendedor(categorias_raw) {
+          var arreglo_categorias = categorias_raw.split(":");
+          var categorias = [];
+          for (i=0; i<arreglo_categorias.length; i++) {
+              categorias.push(arreglo_categorias[i].split("#")[0]);
+          }
+          return categorias;
       }
 
       function agregarMarcadoresfiltrados(categorias) {
