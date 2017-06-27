@@ -728,6 +728,20 @@ def checkAlert(request):
         alerta = alertaPolicial.objects.get(usuario=usuario)
     except alertaPolicial.DoesNotExist:
         return JsonResponse({"alertar": "false"})
+    # la alerta existe, se procede a verificar la hora y fecha
+    fechaAhora = str(timezone.now()).split(' ', 1)[0]
+    horaAhora = str(timezone.now()).split(' ', 1)[1].split('.')[0].split(':')[0] + ':' + \
+                str(timezone.now()).split(' ', 1)[1].split('.')[0].split(':')[1]
+    #print("fecahs:" + alerta.fecha + "/" + fechaAhora)
+    #print("horas:" + alerta.hora + "/" + horaAhora)
+    #print("defirencia de hora: " + str((abs(int(alerta.hora.split(':')[1])) - (int(horaAhora.split(':')[1])))))
+    #print(alerta.fecha != fechaAhora)
+    #print(alerta.hora.split(':')[0] != horaAhora.split(':')[0])
+    #print(not((abs(int(alerta.hora.split(':')[1])) - (int(horaAhora.split(':')[1]))) <= 5))
+    if (alerta.fecha != fechaAhora or alerta.hora.split(':')[0] != horaAhora.split(':')[0]
+        or (not((abs(int(alerta.hora.split(':')[1])) - (int(horaAhora.split(':')[1]))) <= 5))):
+        alerta.delete()
+        return JsonResponse({"alertar": "false"})
     alerta.delete()
     return JsonResponse({"alertar": "true"})
 
@@ -740,12 +754,14 @@ def checkAlert(request):
 @csrf_exempt
 def createAlert(request):
     print(request.POST)
-
     idUsuario = request.POST.get("alertId")
     usuario = Usuario.objects.get(id=idUsuario)
-    latitud = float(request.POST.get("lat"))
-    longitud = float(request.POST.get("lng"))
-    Usuario.objects.filter(id=idUsuario).update(longitud=longitud,latitud=latitud)
+    if ((not (request.POST.get("lat") is None)) and (not (request.POST.get("lng") is None))):
+        longitud = float(request.POST.get("lng"))
+        latitud = float(request.POST.get("lat"))
+        Usuario.objects.filter(id=idUsuario).update(longitud=longitud, latitud=latitud)
+    else:
+        Usuario.objects.filter(id=idUsuario)
     print("actualizado")
     try:
         alertaUsuarioAlertor = alertaPolicial.objects.get(usuario=usuario)

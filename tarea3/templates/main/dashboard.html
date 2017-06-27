@@ -226,7 +226,7 @@ function ventasDia(productosDia){
         }
     }
 
-
+    //alert(valores);
     //script del grafico
     if(saleTodayChart != null) {
         saleTodayChart.destroy();
@@ -246,6 +246,7 @@ function ventasDia(productosDia){
                 legend: {
                     display: false
                 },
+
 
                 scales: {
                     yAxes: [{
@@ -434,6 +435,8 @@ function graficoGanancias() {
 
 
         var valores = [];
+        for(var i = 0;i < intervalo.length; i++){
+            valores[i]=0;}
         //hacer match entre input y semana
         for (var i = 0; i < input.length; i++) {
             var fecha = input[i][0];
@@ -460,8 +463,9 @@ function graficoGanancias() {
                     label: 'Ganancia',
                     data: valores,
                     backgroundColor: "rgba(38, 166, 154,1)",
+                    borderColor: "rgba(38, 166, 154,1)",
                     fill: false,
-                    bordercolor: "rgba(38, 166, 154,1)"
+
 
                 }]
             },
@@ -470,6 +474,7 @@ function graficoGanancias() {
                 legend: {
                     display: false
                 },
+                spanGaps: true,
 
                 scales: {
                     yAxes: [{
