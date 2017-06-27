@@ -174,8 +174,11 @@
                     processData: false,
                     success: function (data) {
                         if (data.alertar == "true") {
-                            var $toastContent = $('<img src=../static/img/tenor.gif alt=HTML5 Icon width=128 height=128>');
-                            Materialize.toast($toastContent, 60000, 'red darken-1');
+                             var $toastContent = $('<h5>ALERTA POLICIAL</h5>');
+                            Materialize.toast($toastContent, 60000, 'rounded red darken-1');
+                            var $toastContent = $('<img src=../static/img/alert.gif width=128 height=128>');
+                            Materialize.toast($toastContent, 60000, 'rounded red darken-1');
+
                         }
                     },
                     error: function (data) {

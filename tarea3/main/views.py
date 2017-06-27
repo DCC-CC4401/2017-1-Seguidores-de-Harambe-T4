@@ -11,6 +11,7 @@ from .forms import editarProductosForm
 from .models import Usuario
 from .models import Comida
 from .models import Favoritos
+from math import fabs
 from .models import Imagen
 from .models import Transacciones
 from django.db.models import Count
@@ -725,9 +726,9 @@ def checkAlert(request):
     fechaAhora = str(timezone.now()).split(' ', 1)[0]
     horaAhora = str(timezone.now()).split(' ', 1)[1].split('.')[0].split(':')[0] + ':' + \
                 str(timezone.now()).split(' ', 1)[1].split('.')[0].split(':')[1]
-    print("defirencia de hora: " + str((abs(int(alerta.hora.split(':')[1])) - (int(horaAhora.split(':')[1])))))
+    print("defirencia de hora: " + str(abs(int(alerta.hora.split(':')[1])) - (int(horaAhora.split(':')[1]))))
     if(alerta.fecha != fechaAhora or alerta.hora.split(':')[0] != horaAhora.split(':')[0]
-       or (abs(int(alerta.hora.split(':')[1])) - (int(horaAhora.split(':')[1]))) >=5):
+       or (abs( (int(horaAhora.split(':')[1])) - int(alerta.hora.split(':')[1])) ) >=5):
         alerta.delete()
         return JsonResponse({"alertar": "false"})
     alerta.delete()
@@ -776,6 +777,6 @@ def createAlert(request):
             alerta.delete()
             nuevaAlertaPolicial = alertaPolicial(usuario=usuarioAlertar)
             nuevaAlertaPolicial.save()
-            return HttpResponse(status=204)
+    return HttpResponse(status=204)
 
 
