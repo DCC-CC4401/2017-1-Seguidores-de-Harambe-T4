@@ -83,10 +83,10 @@
       function agregarMarcadoresfiltrados(categorias) {
             var v = "{{vendedores}}"; //nombre, avatar, lat, longitud, id, categorias
             var arreglo_v = v.split(";");
+            arreglo_v = filtrarVendedores(arreglo_v,categorias);
             for (i = 0; i<arreglo_v.length; i++) {
                 var vendedor = arreglo_v[i].split(",");
                 var categorias_vendedor = vendedor[5].split(":");
-                alert(categorias_vendedor);
                 var nuevo = new google.maps.Marker({
                     position: {lat: parseFloat(vendedor[2]), lng: parseFloat(vendedor[3])},
                     map: map
