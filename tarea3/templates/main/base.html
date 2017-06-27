@@ -42,9 +42,12 @@
                   <a href="#!name"><span style="margin-left: 5%;" class="white-text name">{{ request.session.nombre}} </span></a>
                   <li><a href="{% url 'inicio' %}"><i class="material-icons">home</i>Inicio</a></li>
                   <li><a href="{% url 'logout' %}"><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>
-                {% if request.session.id == 2 or request.session.id == 3 %}
-                  <li><a href="#modal1"><i class="material-icons">add_alert</i>Alerta policial</a></li>
+                {% if request.session.tipo == 2 or request.session.tipo == 3 %}
                   <li><a href="javascript:;" onclick="document.getElementById('linkDashboard').submit();"><i class="material-icons">assessment</i>Datos de ventas</a></li>
+                {% endif %}
+
+                {% if request.session.tipo == 1 or request.session.tipo == 3 %}
+                    <li><a href="#modal1"><i class="material-icons">add_alert</i>Alerta policial</a></li>
                 {% endif %}
                 {% if request.session.tipo == 3 %}
                 <!-- Boton Activo -->>
@@ -89,38 +92,7 @@
 <button type = "submit">clic</button>
             </form></li>
     {% endif %}
-        <!--<li><a href=""><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>-->
-                <!--<li><div class="divider"></div></li>
-                <li><a class="subheader">Activo</a></li>
-                <li>
-                    <div class="switch" style="margin-left: 80px;">
-                        <label>
-                            No<input type="checkbox"><span class="lever"></span>Si
-                        </label>
-                    </div>
-                </li>
-                <li><a class="subheader">Filtros</a></li>
-                <li>
-                    <div class="switch" style="margin-left: 10px;">
-                        <label>
-                            <input type="checkbox"><span class="lever"></span>Sólo mostrar favoritos
-                        </label>
-                    </div>
-                </li>
-                <li>
-                    <div class="switch" style="margin-left: 10px;">
-                        <label>
-                            <input type="checkbox"><span class="lever"></span>Snacks
-                        </label>
-                    </div>
-                </li>
-                <li>
-                    <div class="switch" style="margin-left: 10px;">
-                        <label>
-                            <input type="checkbox"><span class="lever"></span>Almuerzos
-                        </label>
-                    </div>
-                </li>-->
+
             </ul>
         </div>
     </nav>
@@ -138,8 +110,8 @@
   <div id="modal1" class="modal">
     <div class="modal-content">
       <h4>Alerta policial</h4>
-        <p>Al activar la alerta policial avisaras a todos los usuarios cercanos de la presencia de carabineros</p>
-        <p>¿Estas seguro que deseas activar la alarma? Su mal uso traera sanciones fisicas</p>
+        <p>Al activar la alerta policial avisarás a todos los usuarios cercanos de la presencia de carabineros</p>
+        <p>¿Estás seguro que deseas activar la alarma? Su mal uso traerá sanciones físicas.</p>
     </div>
     <div class="modal-footer">
       <a href="javascript:;" onclick="document.getElementById('createAlert').submit();" class="red darken-1 modal-action modal-close waves-effect waves-green btn-flat">Activar</a>
@@ -148,15 +120,39 @@
     </div>
   </div>
 
-{% if request.session.tipo == 3 or request.session.tipo == 2 %}
+{% if request.session.tipo == 1 or request.session.tipo == 3 %}
  <form id="createAlert" action="{% url 'createAlert' %}" method="post" >{% csrf_token %}
-                    <input value = "{{ request.session.id }}" name="alertId" id="alertId" type="text" style="display:none;">
+        <input value = "{{ request.session.id }}" name="alertId" id="alertId" type="text" style="display:none;">
+        <input value = "" name="lat" id="lat" style="display:none;">
+        <input value = "" name="lng" id="lng" style="display:none;">
+
+     <script>
+         function getLocation() {
+             if (navigator.geolocation) {
+                 navigator.geolocation.getCurrentPosition(showPosition);
+             } else {
+                 alert("Geolocation is not supported by this browser.");
+             }
+         }
+
+         function showPosition(position) {
+            document.getElementById("lat").value = position.coords.latitude;
+            document.getElementById("lng").value = position.coords.longitude;
+         }
+
+
+             //alert("sdsd");
+             getLocation();
+     </script>
  </form>
 {% endif %}
 
 {% if request.session.tipo == 3 or request.session.tipo == 2 %}
  <form id="linkDashboard" action="{% url 'vistaDashboard' %}" method="post" >{% csrf_token %}
                     <input value = "{{ request.session.id }}" name="vendedorId" id="vendedorId" type="text" style="display:none;">
+
+
+
  </form>
 {% endif %}
 

@@ -1663,8 +1663,14 @@ def checkAlert(request):
 
 @csrf_exempt
 def createAlert(request):
+    print(request.POST)
+
     idUsuario = request.POST.get("alertId")
     usuario = Usuario.objects.get(id=idUsuario)
+    latitud = float(request.POST.get("lat"))
+    longitud = float(request.POST.get("lng"))
+    Usuario.objects.filter(id=idUsuario).update(longitud=longitud,latitud=latitud)
+    print("actualizado")
     try:
         alertaUsuarioAlertor = alertaPolicial.objects.get(usuario=usuario)
     except alertaPolicial.DoesNotExist:
