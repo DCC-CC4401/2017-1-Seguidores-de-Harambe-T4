@@ -6,10 +6,11 @@
 
 
     <script>
+
       function initMap() {
         var infoWindow;
         var beau850 = {lat: -33.457785, lng: -70.663950};
-        var map = new google.maps.Map(document.getElementById('map'), {
+        map = new google.maps.Map(document.getElementById('map'), {
           zoom: 19,
           center: beau850
         });
@@ -39,7 +40,7 @@
 
         var v = "{{vendedores}}"; //nombre, avatar, lat, longitud, id, categorias
         var arreglo_v = v.split(";");
-        var markers = [];
+        markers = [];
         for (i = 0; i<arreglo_v.length; i++) {
             var vendedor = arreglo_v[i].split(",");
             var nuevo = new google.maps.Marker({
@@ -78,6 +79,73 @@
         }
       }
       
+      function agregarMarcadoresfiltrados(categorias) {
+            var v = "{{vendedores}}"; //nombre, avatar, lat, longitud, id, categorias
+            var arreglo_v = v.split(";");
+            arreglo_v = filtrarVendedores(arreglo_v,categorias);
+            for (i = 0; i<arreglo_v.length; i++) {
+                var vendedor = arreglo_v[i].split(",");
+                var categorias_vendedor = vendedor[5].split(":");
+                var nuevo = new google.maps.Marker({
+                    position: {lat: parseFloat(vendedor[2]), lng: parseFloat(vendedor[3])},
+                    map: map
+                });
+                markers.push(nuevo);
+            }
+
+            for (i = 0; i<markers.length; i++) {
+                var vendedor = arreglo_v[i].split(",");
+                var info_vendedor = cuerpoDelInfowindow(vendedor);
+
+                markers[i].infowindow = new google.maps.InfoWindow({
+                  content: info_vendedor
+                });
+                google.maps.event.addListener(markers[i], 'click', function() {
+                    this.infowindow.open(map, this);
+                });
+            }
+      }
+
+      function filtrarVendedores(vendedores,categorias) {
+          var vendedores_filtrados = [];
+          var categorias_string = categorias.toString();
+          for (i = 0; i<vendedores.length; i++) {
+              var condicion = false;
+              var categorias_vendedor = vendedores[i].split(",")[5].split(":");
+              for (j = 0; j< categorias_vendedor.length; j++) {
+                  if (categorias_string.indexOf(categorias_vendedor[j]) != -1) {
+                      condicion = true;
+                      break;
+                  }
+              }
+              if (condicion) {
+                  vendedores_filtrados.push(vendedores[i]);
+              }
+          }
+          return vendedores_filtrados;
+      }
+
+      function deleteMarkers() {
+          for (i = 0; i<markers.length; i++) {
+              markers[i].setMap(null);
+          }
+          markers = [];
+      }
+      function addDummyMarker() {
+          var nuevo = new google.maps.Marker({
+                position: {lat: -33.4578686431941, lng: -70.6641697883606},
+                map: map
+          });
+          markers.push(nuevo);
+          var info_vendedor = "Hola";
+          markers[markers.length-1].infowindow = new google.maps.InfoWindow({
+              content: info_vendedor
+            });
+          google.maps.event.addListener(markers[markers.length-1], 'click', function() {
+                this.infowindow.open(map, this);
+            });
+      }
+
       function cuerpoDelInfowindow(vendedor) {
           var info = '<div id="content">'+
             '<div id="siteNotice">'+
@@ -102,11 +170,11 @@
       }
 
       function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-        infoWindow.setPosition(pos);
-        infoWindow.setContent(browserHasGeolocation ?
-                              'Error: The Geolocation service failed.' :
-                              'Error: Your browser doesn\'t support geolocation.');
-        infoWindow.open(map);
+//        infoWindow.setPosition(pos);
+//        infoWindow.setContent(browserHasGeolocation ?
+//                              'Error: The Geolocation service failed.' :
+//                              'Error: Your browser doesn\'t support geolocation.');
+//        infoWindow.open(map);
       }
     </script>
     <script async defer

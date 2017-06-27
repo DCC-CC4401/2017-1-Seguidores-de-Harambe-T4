@@ -87,10 +87,7 @@
 
 
     {% if request.session.id == None or request.session.tipo == 1 %}
-    <li><form method = "GET" action ="{% url 'vistaVendedor' %}">{% csrf_token %}
-<input type = "hidden" value = 4 name="id" id="id">
-<button type = "submit">clic</button>
-            </form></li>
+    <!--<<input onclick="deleteMarkers();" type=button value="Delete Markers">-->
     {% endif %}
 
             </ul>
@@ -282,13 +279,13 @@
         for (i = 0; i<arreglo_v.length; i++) {
             var vendedor = arreglo_v[i].split(",");
             var categoriaV = vendedor[5].split(":");
-            for (i = 0; i<categoriaV.length; i++) {
-                if (!categorias.includes(categoriaV[i])){
-                    categorias.push(categoriaV[i]);
+            for (j = 0; j<categoriaV.length; j++) {
+                if (!categorias.includes(categoriaV[j])){
+                    categorias.push(categoriaV[j]);
                 }
             }
-
         }
+        console.log(categorias)
         var filtros = document.getElementById("filtros");
         var form = document.createElement("form");
         form.setAttribute("method","post");
@@ -300,6 +297,7 @@
            li.setAttribute("style","margin-left:40px;")
            var input = document.createElement("input");
            input.setAttribute("type","checkbox");
+           input.setAttribute("checked","true");
            input.setAttribute("name","filtro"+i);
            input.setAttribute("id",categorias[i]);
            input.setAttribute("value",categorias[i]);
@@ -324,6 +322,8 @@
         li.appendChild(button);
         form.appendChild(li);
     }
+    var map; //variable global con el mapa
+    var markers = []; //variable global con los pins del mapa
     function handleFiltros() {
         var form = document.forms.namedItem("aplicarFiltros");
         var formulario = new FormData(form);
@@ -335,8 +335,12 @@
                 processData: false,
                 contentType: false,
                 success: function(data) {
-                    alert(data.filtros);
-
+                    alert(typeof(data.filtros));
+//                    alert(markers);
+                    deleteMarkers(markers);
+                    agregarMarcadoresfiltrados(data.filtros);
+//                    alert(markers.length);
+//                    alert(markers);
                },
                error:function(data) {
                alert("error in getting from server");
