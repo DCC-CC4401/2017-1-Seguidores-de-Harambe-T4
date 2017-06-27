@@ -180,17 +180,20 @@ var preciosProductos = {{ productosPrecio|safe }};
         var nombreProducto = productosHoy[i][0];
         //alert(nombreProducto);
         var cantidadProducto = productosHoy[i][1];
-        var precio = preciosProductos[productos.indexOf(nombreProducto)][1];
-        //alert(precio);
-        var ganancia = precio*cantidadProducto;
-        gananciaTotal += ganancia;
-        var tabla= '<tr>'+
-                '<td>' + nombreProducto + '</td>'+
-                '<td>' + cantidadProducto + '</td>'+
-                '<td>' + "$" + precio + '</td>'+
-                '<td>' + "$" + ganancia + '</td>'+
-                '</tr>';
-        document.getElementById("cuerpoTabla").innerHTML += tabla;
+        if (productos.indexOf(nombreProducto) != -1){
+            var precio = preciosProductos[productos.indexOf(nombreProducto)][1];
+            //alert(precio);
+            var ganancia = precio*cantidadProducto;
+            gananciaTotal += ganancia;
+            var tabla= '<tr>'+
+                    '<td>' + nombreProducto + '</td>'+
+                    '<td>' + cantidadProducto + '</td>'+
+                    '<td>' + "$" + precio + '</td>'+
+                    '<td>' + "$" + ganancia + '</td>'+
+                    '</tr>';
+            document.getElementById("cuerpoTabla").innerHTML += tabla;
+        }
+
     }
      var finTabla ='<tr>'+
                 '<td></td>'+
@@ -456,7 +459,10 @@ function graficoGanancias() {
                 datasets: [{
                     label: 'Ganancia',
                     data: valores,
-                    backgroundColor: "rgba(38, 166, 154,1)"
+                    backgroundColor: "rgba(38, 166, 154,1)",
+                    fill: false,
+                    bordercolor: "rgba(38, 166, 154,1)"
+
                 }]
             },
             options: {
