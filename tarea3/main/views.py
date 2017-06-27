@@ -350,7 +350,7 @@ class editarproductos(View):
             except:
                 pass
         try:
-            Comida.objects.filter(nombre=nombreOriginal).update(nombre=nombre,descripcion=descripcion,precio=precio,stock=stock,imagen=imagen,categorias=categorias)
+            Comida.objects.filter(nombre=nombreOriginal).update(nombre=nombre,descripcion=descripcion,precio=precio,stock=stock,imagen="productos/"+imagen,categorias=categorias)
         except:
             return self.get(request)
 
