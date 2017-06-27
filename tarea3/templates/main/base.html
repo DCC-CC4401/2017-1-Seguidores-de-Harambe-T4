@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="stylesheet" href="../static/style.css">
+
+    <!--Import jQuery before materialize.js-->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="../static/fb.js"></script>
+
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
+    <script src="http://materializecss.com/templates/starter-template/js/init.js"></script>
+    <script>$(document).ready(function() {$('.modal').modal();})</script>
+
+    <nav class="top-nav">
+        <div class="nav-wrapper teal lighten-1">
+            <a href="#" class="brand-logo right"><img style="max-height: 65px!important;  padding: 8px 0!important;" class="circle" src="../static/img/logo.png"></a>
+          <div class="navbar-fixed">
+            <a href="#" data-activates="slide-out"
+               class="left button-collapse btn-floating btn-large waves-effect waves-light"><i
+                    class="material-icons">menu</i></a>
+            <a class="center page-title"></a>
+          </div>
+            <ul id="slide-out" class="side-nav fixed leftside-navigation ps-container ps-active-y">
+                <li>
+                    <div class="userView">
+                    {% if request.session.id != None%}
+                    <a href="{% url 'editarUsuario' %}"><i class="material-icons right grey-text text-lighten-2" style="position: absolute; bottom: -0.5em; right: 0.5em; padding: 0 0 !important;">settings</i> </a>
+                    {% endif %}
+                        <div class="background" style="height:175px;">
+                    <img src="../static/img/background4.png">
+                  </div>
+                  {% if request.session.id != None%}
+                        <a href="#!user"><img style="margin-top: 16%;" class="circle" src="../static/media/{{ request.session.avatar}}"></a>
+                  <a href="#!name"><span style="margin-left: 5%;" class="white-text name">{{ request.session.nombre}} </span></a>
+                  <li><a href="{% url 'inicio' %}"><i class="material-icons">home</i>Inicio</a></li>
+                  <li><a href="{% url 'logout' %}"><i class="material-icons">exit_to_app</i>Cerrar Sesión</a></li>
+                {% if request.session.tipo == 2 or request.session.tipo == 3 %}
+                  <li><a href="javascript:;" onclick="document.getElementById('linkDashboard').submit();"><i class="material-icons">assessment</i>Datos de ventas</a></li>
+                {% endif %}
+
+                {% if request.session.tipo == 1 or request.session.tipo == 3 %}
+                    <li><a href="#modal1"><i class="material-icons">add_alert</i>Alerta policial</a></li>
+                {% endif %}
+                {% if request.session.tipo == 3 %}
+                <!-- Boton Activo -->>
+                <li><a class="subheader">Activo</a></li>
+                <li>
+                    <div class="switch" style="margin-left: 80px;">
+                        <label>
+                            No<input type="checkbox" id="checkbox-estado"><span class="lever"></span>Si
+                        </label>
+                    </div>
+                </li>
+                {% endif %}
+                {% else %}
+                  <a href="#!user"><img style="margin-top: 16%;" class="circle" src="../static/img/AvatarPenguin.png"></a>
+                  <a href="#!name"><span style="margin-left: 5%;" class="white-text name">Invitado</span></a>
+
+                </div>
+                </li>
+                <li><a href="{% url 'index' %}"><i class="material-icons">home</i>Inicio</a></li>
+                <li><a href="{% url 'login' %}"><i class="material-icons">account_circle</i>Iniciar Sesión</a></li>
+
+                {% endif %}
+    {% if request.session.id == None or request.session.tipo == 1%}
+        <li class="no-padding">
+        <ul class="collapsible collapsible-accordion">
+        <li>
+            <a class="collapsible-header">Filtrar Categorias<i class="material-icons">arrow_drop_down</i></a>
+            <div class="collapsible-body">
+              <ul id ="filtros">
+
+              </ul>
+            </div>
+        </li>
+        </ul>
+        </li>
+    {% endif %}
+
+
+    {% if request.session.id == None or request.session.tipo == 1 %}
+    <!--<<input onclick="deleteMarkers();" type=button value="Delete Markers">-->
+    {% endif %}
+
+            </ul>
+        </div>
+    </nav>
+
+</head>
+
+<body>
+
+<!-- ventana modal de la alerta -->
+ <!-- Modal Trigger -->
+
+
+
+  <!-- Modal Structure -->
+  <div id="modal1" class="modal">
+    <div class="modal-content">
+      <h4>Alerta policial</h4>
+        <p>Al activar la alerta policial avisarás a todos los usuarios cercanos de la presencia de carabineros</p>
+        <p>¿Estás seguro que deseas activar la alarma? Su mal uso traerá sanciones físicas.</p>
+    </div>
+    <div class="modal-footer">
+      <a href="javascript:;" onclick="document.getElementById('createAlert').submit();" class="red darken-1 modal-action modal-close waves-effect waves-green btn-flat">Activar</a>
+        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Volver</a>
+
+    </div>
+  </div>
+
+{% if request.session.tipo == 1 or request.session.tipo == 3 %}
+ <form id="createAlert" action="{% url 'createAlert' %}" method="post" >{% csrf_token %}
+        <input value = "{{ request.session.id }}" name="alertId" id="alertId" type="text" style="display:none;">
+        <input value = "" name="lat" id="lat" style="display:none;">
+        <input value = "" name="lng" id="lng" style="display:none;">
+
+     <script>
+         function getLocation() {
+             if (navigator.geolocation) {
+                 navigator.geolocation.getCurrentPosition(showPosition);
+             } else {
+                 alert("Geolocation is not supported by this browser.");
+             }
+         }
+
+         function showPosition(position) {
+            document.getElementById("lat").value = position.coords.latitude;
+            document.getElementById("lng").value = position.coords.longitude;
+         }
+
+
+             //alert("sdsd");
+             getLocation();
+     </script>
+ </form>
+{% endif %}
+
+{% if request.session.tipo == 3 or request.session.tipo == 2 %}
+ <form id="linkDashboard" action="{% url 'vistaDashboard' %}" method="post" >{% csrf_token %}
+                    <input value = "{{ request.session.id }}" name="vendedorId" id="vendedorId" type="text" style="display:none;">
+
+
+
+ </form>
+{% endif %}
+
+
+{% block content %}
+
+{% endblock %}
+
+
+
+{% if request.session.id != None%}
+<script>
+    window.setInterval(function () {
+        formdata = new FormData();
+            if (formdata) {
+                formdata.append("id", "{{ request.session.id }}");
+                jQuery.ajax({
+                    url: "{% url 'checkAlert' %}",
+                    type: "POST",
+                    data: formdata,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        if (data.alertar == "true") {
+                             var $toastContent = $('<h5>ALERTA POLICIAL</h5>');
+                            Materialize.toast($toastContent, 60000, 'rounded red darken-1');
+                            var $toastContent = $('<img src=../static/img/alert.gif width=128 height=128>');
+                            Materialize.toast($toastContent, 60000, 'rounded red darken-1');
+
+                        }
+                    },
+                    error: function (data) {
+                        //alert("error in getting from server");
+                    }
+                })
+            }
+
+
+    }, 10000);
+</script>
+{% endif %}
+
+
+{% if request.session.tipo == 3 %}
+<script>
+    function EstadoActual() {
+        var estdoInicial = "{{ request.session.activo }}";
+        if (estdoInicial == "True") {
+            document.getElementById("checkbox-estado").checked = true;
+        } else {
+            document.getElementById("checkbox-estado").checked = false;
+        }
+    }
+
+
+</script>
+
+<script>
+    function switchActivo(){
+        var input = document.getElementById("checkbox-estado");
+        input.setAttribute("onChange" ,'handleChange(this);');
+        if ("{{request.session.activo}}" == "True") {
+            input.setAttribute("checked", true);
+        } else {
+            input.setAttribute("checked", false);
+        }
+    }
+</script>
+
+<script>
+    function handleChange(checkbox) {
+    if(checkbox.checked == true){
+         var datos ="id=" + "{{request.session.id}}"+"&estado=true";
+         document.getElementById("estado-desktop").classList.remove("red-text");
+         document.getElementById("estado-desktop").classList.add("light-green-text");
+         document.getElementById("estado-desktop").innerHTML = "Disponible";
+
+         document.getElementById("estado-movil").classList.remove("red-text");
+         document.getElementById("estado-movil").classList.add("light-green-text");
+         document.getElementById("estado-movil").innerHTML = "Disponible";
+         $.ajax({
+           url:{% url 'cambiarEstado' %},
+           type: "GET",
+           data: datos,
+           dataType: "json",
+
+           success: function(data) {
+           },
+           error:function(data) {
+               alert("error in getting from server")
+           },
+        });
+    }else{
+        var datos ="id=" + "{{request.session.id}}"+"&estado=false";
+        document.getElementById("estado-desktop").classList.remove("light-green-text");
+        document.getElementById("estado-desktop").classList.add("red-text");
+        document.getElementById("estado-desktop").innerHTML = "No Disponible";
+
+        document.getElementById("estado-movil").classList.remove("light-green-text");
+        document.getElementById("estado-movil").classList.add("red-text");
+        document.getElementById("estado-movil").innerHTML = "No Disponible";
+         $.ajax({
+           url:{% url 'cambiarEstado' %},
+           type: "GET",
+           data: datos,
+           dataType: "json",
+
+           success: function(data) {
+           },
+           error:function(data) {
+               alert("error in getting from server")
+           },
+        });
+   }
+}
+</script>
+
+ <script>
+    window.onload = EstadoActual();
+    window.onload = switchActivo();
+
+</script>
+{% endif  %}
+{% if request.session.id == None or request.session.tipo == 1%}
+<script>
+    function cargarFiltros(){
+        var v = "{{vendedores}}";
+        var arreglo_v = v.split(";");
+        var categorias = [];
+        for (i = 0; i<arreglo_v.length; i++) {
+            var vendedor = arreglo_v[i].split(",");
+            var categoriaV = vendedor[5].split(":");
+            for (j = 0; j<categoriaV.length; j++) {
+                if (!categorias.includes(categoriaV[j].split("#")[0])){
+                    categorias.push(categoriaV[j].split("#")[0]);
+                }
+            }
+        }
+        console.log(categorias)
+        var filtros = document.getElementById("filtros");
+        var form = document.createElement("form");
+        form.setAttribute("method","post");
+        form.setAttribute("action","#");
+        form.setAttribute("name","aplicarFiltros");
+        filtros.appendChild(form);
+        for (i = 0; i<categorias.length; i++){
+           var li = document.createElement("li");
+           li.setAttribute("style","margin-left:40px;")
+           var input = document.createElement("input");
+           input.setAttribute("type","checkbox");
+           input.setAttribute("checked","true");
+           input.setAttribute("name","filtro"+i);
+           input.setAttribute("id",categorias[i]);
+           input.setAttribute("value",categorias[i]);
+           var label = document.createElement("label");
+           label.setAttribute("for",categorias[i]);
+           label.innerHTML = categorias[i];
+           li.appendChild(input);
+           li.appendChild(label);
+           form.appendChild(li);
+        }
+        var li = document.createElement("li");
+        li.setAttribute("style","margin-left:40px;");
+        var button = document.createElement("button");
+        button.setAttribute("type","button");
+        button.setAttribute("onclick","handleFiltros();");
+        button.setAttribute("class","col l5 offset-l4 btn btn-large waves-effect button teal");
+        button.innerHTML = "Aplicar filtros";
+        var i = document.createElement("i");
+        i.setAttribute("class","material-icons right");
+        i.innerHTML = "send";
+        button.appendChild(i);
+        li.appendChild(button);
+        form.appendChild(li);
+    }
+    var map; //variable global con el mapa
+    var markers = []; //variable global con los pins del mapa
+    function handleFiltros() {
+        var form = document.forms.namedItem("aplicarFiltros");
+        var formulario = new FormData(form);
+        $.ajax({
+               url:'{% url 'filtrarCategorias' %}', //procesarPerfilAlumno
+               type: "POST",
+               data: formulario,
+               cache: false,
+                processData: false,
+                contentType: false,
+                success: function(data) {
+//                    alert(typeof(data.filtros));
+//                    alert(markers);
+                    deleteMarkers(markers);
+                    agregarMarcadoresfiltrados(data.filtros);
+//                    alert(markers.length);
+//                    alert(markers);
+               },
+               error:function(data) {
+               alert("error in getting from server");
+           }
+
+         });
+
+    }
+
+    window.onload = cargarFiltros();
+</script>
+{% endif %}
+</body>
+
+</html>

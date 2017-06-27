@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>DATABASE</ID>
+  <OriginalElement>783243a6-e12c-4004-b749-596983a61485</OriginalElement>
+  <nodes>
+    <node x="382.5" y="0.0">783243a6-e12c-4004-b749-596983a61485.TABLE:main.usuario</node>
+    <node x="629.0" y="300.5">783243a6-e12c-4004-b749-596983a61485.TABLE:main.alertaPolicial</node>
+    <node x="819.0" y="266.0">783243a6-e12c-4004-b749-596983a61485.TABLE:main.Comida</node>
+    <node x="203.0" y="335.5">783243a6-e12c-4004-b749-596983a61485.TABLE:main.alumno</node>
+    <node x="406.0" y="323.5">783243a6-e12c-4004-b749-596983a61485.TABLE:main.vendedor</node>
+    <node x="0.0" y="335.5">783243a6-e12c-4004-b749-596983a61485.TABLE:main.admin</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="783243a6-e12c-4004-b749-596983a61485.TABLE:main.alertaPolicial" target="783243a6-e12c-4004-b749-596983a61485.TABLE:main.usuario">
+      <point x="0.0" y="-62.0" />
+      <point x="714.0" y="246.0" />
+      <point x="557.5" y="246.0" />
+      <point x="50.0" y="108.0" />
+    </edge>
+    <edge source="783243a6-e12c-4004-b749-596983a61485.TABLE:main.alumno" target="783243a6-e12c-4004-b749-596983a61485.TABLE:main.usuario">
+      <point x="0.0" y="-27.0" />
+      <point x="294.5" y="246.0" />
+      <point x="457.5" y="246.0" />
+      <point x="-50.0" y="108.0" />
+    </edge>
+    <edge source="783243a6-e12c-4004-b749-596983a61485.TABLE:main.vendedor" target="783243a6-e12c-4004-b749-596983a61485.TABLE:main.usuario">
+      <point x="0.0" y="-39.0" />
+      <point x="0.0" y="108.0" />
+    </edge>
+    <edge source="783243a6-e12c-4004-b749-596983a61485.TABLE:main.admin" target="783243a6-e12c-4004-b749-596983a61485.TABLE:main.usuario">
+      <point x="0.0" y="-27.0" />
+      <point x="91.5" y="236.0" />
+      <point x="407.5" y="236.0" />
+      <point x="-100.0" y="108.0" />
+    </edge>
+    <edge source="783243a6-e12c-4004-b749-596983a61485.TABLE:main.Comida" target="783243a6-e12c-4004-b749-596983a61485.TABLE:main.usuario">
+      <point x="0.0" y="-96.5" />
+      <point x="967.5" y="236.0" />
+      <point x="607.5" y="236.0" />
+      <point x="100.0" y="108.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="0.6999999999999996" x="713.5714285714291" y="312.57142857142884" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Key columns</Category>
+    <Category>Columns</Category>
+  </Categories>
+</Diagram>
+
