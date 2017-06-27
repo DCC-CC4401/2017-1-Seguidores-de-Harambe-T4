@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>DATABASE</ID>
+  <OriginalElement>783243a6-e12c-4004-b749-596983a61485</OriginalElement>
+  <nodes>
+    <node x="450.0" y="0.0">783243a6-e12c-4004-b749-596983a61485.TABLE:main.auth_user</node>
+    <node x="1465.0" y="867.0">783243a6-e12c-4004-b749-596983a61485.TABLE:main.vendedorAmbulante</node>
+    <node x="480.0" y="335.0">783243a6-e12c-4004-b749-596983a61485.TABLE:main.usuario</node>
+    <node x="594.9615384615385" y="1018.0">783243a6-e12c-4004-b749-596983a61485.TABLE:main.transacciones_comida</node>
+    <node x="520.0" y="635.5">783243a6-e12c-4004-b749-596983a61485.TABLE:main.alertaPolicial</node>
+    <node x="203.0" y="601.0">783243a6-e12c-4004-b749-596983a61485.TABLE:main.Comida</node>
+    <node x="710.0" y="670.5">783243a6-e12c-4004-b749-596983a61485.TABLE:main.alumno</node>
+    <node x="1128.8076923076924" y="658.5">783243a6-e12c-4004-b749-596983a61485.TABLE:main.vendedor</node>
+    <node x="759.0" y="844.0">783243a6-e12c-4004-b749-596983a61485.TABLE:main.Favoritos</node>
+    <node x="0.0" y="670.5">783243a6-e12c-4004-b749-596983a61485.TABLE:main.admin</node>
+    <node x="1210.0" y="855.5">783243a6-e12c-4004-b749-596983a61485.TABLE:main.vendedorFijo</node>
+    <node x="949.0" y="844.0">783243a6-e12c-4004-b749-596983a61485.TABLE:main.transacciones</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="783243a6-e12c-4004-b749-596983a61485.TABLE:main.alertaPolicial" target="783243a6-e12c-4004-b749-596983a61485.TABLE:main.usuario">
+      <point x="0.0" y="-62.0" />
+      <point x="0.0" y="108.0" />
+    </edge>
+    <edge source="783243a6-e12c-4004-b749-596983a61485.TABLE:main.alumno" target="783243a6-e12c-4004-b749-596983a61485.TABLE:main.usuario">
+      <point x="0.0" y="-27.0" />
+      <point x="801.5" y="581.0" />
+      <point x="655.0" y="581.0" />
+      <point x="50.0" y="108.0" />
+    </edge>
+    <edge source="783243a6-e12c-4004-b749-596983a61485.TABLE:main.transacciones_comida" target="783243a6-e12c-4004-b749-596983a61485.TABLE:main.Comida">
+      <point x="-39.5" y="-50.5" />
+      <point x="634.4615384615385" y="993.0" />
+      <point x="351.5" y="993.0" />
+      <point x="0.0" y="96.5" />
+    </edge>
+    <edge source="783243a6-e12c-4004-b749-596983a61485.TABLE:main.usuario" target="783243a6-e12c-4004-b749-596983a61485.TABLE:main.auth_user">
+      <point x="0.0" y="-108.0" />
+      <point x="0.0" y="142.5" />
+    </edge>
+    <edge source="783243a6-e12c-4004-b749-596983a61485.TABLE:main.vendedor" target="783243a6-e12c-4004-b749-596983a61485.TABLE:main.usuario">
+      <point x="0.0" y="-39.0" />
+      <point x="1230.3076923076924" y="571.0" />
+      <point x="705.0" y="571.0" />
+      <point x="100.0" y="108.0" />
+    </edge>
+    <edge source="783243a6-e12c-4004-b749-596983a61485.TABLE:main.transacciones" target="783243a6-e12c-4004-b749-596983a61485.TABLE:main.vendedor">
+      <point x="0.0" y="-62.0" />
+      <point x="1069.5" y="824.0" />
+      <point x="1204.9326923076924" y="824.0" />
+      <point x="-25.375" y="39.0" />
+    </edge>
+    <edge source="783243a6-e12c-4004-b749-596983a61485.TABLE:main.transacciones_comida" target="783243a6-e12c-4004-b749-596983a61485.TABLE:main.transacciones">
+      <point x="39.5" y="-50.5" />
+      <point x="713.4615384615385" y="993.0" />
+      <point x="1069.5" y="993.0" />
+      <point x="0.0" y="62.0" />
+    </edge>
+    <edge source="783243a6-e12c-4004-b749-596983a61485.TABLE:main.vendedorFijo" target="783243a6-e12c-4004-b749-596983a61485.TABLE:main.vendedor">
+      <point x="0.0" y="-50.5" />
+      <point x="1327.5" y="824.0" />
+      <point x="1255.6826923076924" y="824.0" />
+      <point x="25.375" y="39.0" />
+    </edge>
+    <edge source="783243a6-e12c-4004-b749-596983a61485.TABLE:main.Favoritos" target="783243a6-e12c-4004-b749-596983a61485.TABLE:main.vendedor">
+      <point x="42.5" y="-62.0" />
+      <point x="886.5" y="814.0" />
+      <point x="1154.1826923076924" y="814.0" />
+      <point x="-76.125" y="39.0" />
+    </edge>
+    <edge source="783243a6-e12c-4004-b749-596983a61485.TABLE:main.admin" target="783243a6-e12c-4004-b749-596983a61485.TABLE:main.usuario">
+      <point x="0.0" y="-27.0" />
+      <point x="91.5" y="571.0" />
+      <point x="505.0" y="571.0" />
+      <point x="-100.0" y="108.0" />
+    </edge>
+    <edge source="783243a6-e12c-4004-b749-596983a61485.TABLE:main.Favoritos" target="783243a6-e12c-4004-b749-596983a61485.TABLE:main.alumno">
+      <point x="-42.5" y="-62.0" />
+      <point x="0.0" y="27.0" />
+    </edge>
+    <edge source="783243a6-e12c-4004-b749-596983a61485.TABLE:main.vendedorAmbulante" target="783243a6-e12c-4004-b749-596983a61485.TABLE:main.vendedor">
+      <point x="0.0" y="-39.0" />
+      <point x="1572.5" y="814.0" />
+      <point x="1306.4326923076924" y="814.0" />
+      <point x="76.125" y="39.0" />
+    </edge>
+    <edge source="783243a6-e12c-4004-b749-596983a61485.TABLE:main.Comida" target="783243a6-e12c-4004-b749-596983a61485.TABLE:main.usuario">
+      <point x="0.0" y="-96.5" />
+      <point x="351.5" y="581.0" />
+      <point x="555.0" y="581.0" />
+      <point x="-50.0" y="108.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="0.6000000000000001" x="270.49999999999983" y="569.3333333333331" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Key columns</Category>
+    <Category>Columns</Category>
+  </Categories>
+</Diagram>
+
