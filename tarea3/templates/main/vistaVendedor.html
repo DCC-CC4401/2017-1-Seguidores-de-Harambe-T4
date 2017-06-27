@@ -134,9 +134,9 @@
                 <!-- Favoritos -->
                 <div class="col s1 m1 l12">
                     <label>
+                        {% if login == False %}
                         <p class="card-title grey-text flow-text text-darken-4" style="font-size: 1.3rem;">Favoritos</p>
                         <!--<input type="checkbox"><span class="lever"></span>-->
-                        {% if login == False %}
                         <h6><i class="material-icons amber-text" style="margin-left: 80%">grade</i>
                             <span class=" grey-text flow-text text-darken-4"style="margin-left: 100%;font-size:22px; line-height:25px;" id="favoritos-movil"></span>
                         </h6>
