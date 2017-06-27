@@ -350,7 +350,13 @@ class editarproductos(View):
             except:
                 pass
         try:
-            Comida.objects.filter(nombre=nombreOriginal).update(nombre=nombre,descripcion=descripcion,precio=precio,stock=stock,imagen="productos/"+imagen,categorias=categorias)
+            # cambiar imagen
+            if imagen != None:
+                filename = nombreOriginal + ".jpg"
+                with default_storage.open('../media/productos/' + filename, 'wb+') as destination:
+                    for chunk in imagen.chunks():
+                        destination.write(chunk)
+            Comida.objects.filter(nombre=nombreOriginal).update(nombre=nombre,descripcion=descripcion,precio=precio,stock=stock,imagen='avatars/' + filename,categorias=categorias)
         except:
             return self.get(request)
 
