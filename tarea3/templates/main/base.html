@@ -300,8 +300,10 @@
            var li = document.createElement("li");
            li.setAttribute("style","margin-left:40px;")
            var input = document.createElement("input");
-
-
+           input.setAttribute("type","checkbox");
+           input.setAttribute("checked","true");
+           input.setAttribute("name","filtro"+i);
+           input.setAttribute("id",categorias[i]);
            input.setAttribute("value",categorias[i]);
            var label = document.createElement("label");
            label.setAttribute("for",categorias[i]);
@@ -324,7 +326,8 @@
         li.appendChild(button);
         form.appendChild(li);
     }
-
+    var map; //variable global con el mapa
+    var markers = []; //variable global con los pins del mapa
     function handleFiltros() {
         var form = document.forms.namedItem("aplicarFiltros");
         var formulario = new FormData(form);
@@ -336,7 +339,7 @@
                 processData: false,
                 contentType: false,
                 success: function(data) {
-//                    alert(data.filtros);
+                    alert(typeof(data.filtros));
 //                    alert(markers);
                     deleteMarkers(markers);
                     agregarMarcadoresfiltrados(data.filtros);
